@@ -32,7 +32,6 @@ export async function GET(
     return NextResponse.json({
       id: task.id,
       status: task.status,
-      progress: task.progress,
       imageUrl: task.imageUrl,
       description: task.description,
       vocabulary: task.vocabulary,

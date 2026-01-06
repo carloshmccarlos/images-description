@@ -23,7 +23,6 @@ export async function createTask(): Promise<CreateTaskResult> {
     .values({
       userId: user.id,
       status: 'pending',
-      progress: 0,
     })
     .returning({ id: analysisTasks.id });
 
