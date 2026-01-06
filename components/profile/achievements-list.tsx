@@ -3,10 +3,16 @@
 import { motion } from 'framer-motion';
 import { Trophy, Lock, Star, Flame, BookOpen, Camera, Target, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Achievement, UserStats } from '@/lib/db/schema';
+import type { UserStats } from '@/lib/db/schema';
+
+interface AchievementData {
+  id: string;
+  type: string;
+  unlockedAt: Date;
+}
 
 interface AchievementsListProps {
-  achievements: Achievement[];
+  achievements: AchievementData[];
   stats: UserStats | undefined;
 }
 
