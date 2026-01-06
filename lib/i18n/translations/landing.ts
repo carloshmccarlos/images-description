@@ -2,7 +2,7 @@ export const landingTranslations = {
   en: {
     hero: {
       badge: 'Learn from your camera roll',
-      badgeFree: '5 free / day',
+      badgeFree: '10 free / day',
       title: 'Vocabulary but make it real',
       subtitle: 'Upload a photo of anything around you and learn the words for it in your target language. No flashcards, no memorization — just real-world context.',
       cta: 'Start Learning Free',
@@ -31,7 +31,7 @@ export const landingTranslations = {
       fastEasy: 'Fast & Easy',
       fastEasyDesc: 'Get instant results with detailed word information and example sentences.',
       freeStart: 'Free to Start',
-      freeStartDesc: '5 free analyses per day, no credit card required. Start learning immediately.',
+      freeStartDesc: '10 free analyses per day, no credit card required. Start learning immediately.',
     },
     demo: {
       sectionLabel: 'Workflow',
@@ -62,10 +62,10 @@ export const landingTranslations = {
     cta: {
       title: 'Ready to Start Your',
       titleLine2: 'Language Journey?',
-      description: 'Join thousands of language learners using images to build vocabulary naturally. Start with 5 free analyses every day.',
+      description: 'Join thousands of language learners using images to build vocabulary naturally. Start with 10 free analyses every day.',
       ctaLoggedIn: 'Analyze Your First Image',
       ctaLoggedOut: 'Get Started Free',
-      disclaimer: 'No credit card required • 5 free analyses daily • Cancel anytime',
+      disclaimer: 'No credit card required • 10 free analyses daily • Cancel anytime',
     },
     footer: {
       description: 'Learn vocabulary naturally through images. Upload photos and let AI teach you words in your target language.',
@@ -77,16 +77,15 @@ export const landingTranslations = {
       privacy: 'Privacy Policy',
       terms: 'Terms of Service',
       copyright: 'All rights reserved.',
-    },
-    navbar: {
-      features: 'Features',
-      howItWorks: 'How it Works',
+      navbar: {
+        disclaimer: 'No credit card required • 10 free analyses daily • Cancel anytime',
+      },
     },
   },
   zh: {
     hero: {
       badge: '从相册中学习',
-      badgeFree: '每天5次免费',
+      badgeFree: '每天10次免费',
       title: '让词汇学习更真实',
       subtitle: '上传你周围任何事物的照片，学习目标语言中的词汇。无需闪卡，无需死记硬背——只需真实场景。',
       cta: '免费开始学习',
@@ -115,7 +114,7 @@ export const landingTranslations = {
       fastEasy: '快速简单',
       fastEasyDesc: '即时获取详细的单词信息和例句。',
       freeStart: '免费开始',
-      freeStartDesc: '每天5次免费分析，无需信用卡。立即开始学习。',
+      freeStartDesc: '每天10次免费分析，无需信用卡。立即开始学习。',
     },
     demo: {
       sectionLabel: '工作流程',
@@ -146,10 +145,10 @@ export const landingTranslations = {
     cta: {
       title: '准备好开始你的',
       titleLine2: '语言之旅了吗？',
-      description: '加入数千名使用图片自然学习词汇的语言学习者。每天5次免费分析。',
+      description: '加入数千名使用图片自然学习词汇的语言学习者。每天10次免费分析。',
       ctaLoggedIn: '分析你的第一张图片',
       ctaLoggedOut: '免费开始',
-      disclaimer: '无需信用卡 • 每天5次免费分析 • 随时取消',
+      disclaimer: '无需信用卡 • 每天10次免费分析 • 随时取消',
     },
     footer: {
       description: '通过图片自然学习词汇。上传照片，让AI用目标语言教你单词。',
@@ -161,16 +160,15 @@ export const landingTranslations = {
       privacy: '隐私政策',
       terms: '服务条款',
       copyright: '版权所有。',
-    },
-    navbar: {
-      features: '功能特点',
-      howItWorks: '使用方法',
+      navbar: {
+        disclaimer: '无需信用卡 • 每天10次免费分析 • 随时取消',
+      },
     },
   },
   ja: {
     hero: {
       badge: 'カメラロールから学ぶ',
-      badgeFree: '毎日5回無料',
+      badgeFree: '毎日10回無料',
       title: 'リアルな語彙学習',
       subtitle: '身の回りのものを撮影して、目標言語の単語を学びましょう。フラッシュカードも暗記も不要——実際の文脈だけで学べます。',
       cta: '無料で学習開始',
@@ -199,7 +197,7 @@ export const landingTranslations = {
       fastEasy: '速くて簡単',
       fastEasyDesc: '詳細な単語情報と例文を即座に取得。',
       freeStart: '無料で開始',
-      freeStartDesc: '毎日5回の無料分析、クレジットカード不要。すぐに学習開始。',
+      freeStartDesc: '毎日10回の無料分析、クレジットカード不要。すぐに学習開始。',
     },
     demo: {
       sectionLabel: 'ワークフロー',
@@ -230,10 +228,10 @@ export const landingTranslations = {
     cta: {
       title: '言語の旅を',
       titleLine2: '始める準備はできましたか？',
-      description: '画像を使って自然に語彙を構築する数千人の言語学習者に参加しましょう。毎日5回の無料分析から始めましょう。',
+      description: '画像を使って自然に語彙を構築する数千人の言語学習者に参加しましょう。毎日10回の無料分析から始めましょう。',
       ctaLoggedIn: '最初の画像を分析',
       ctaLoggedOut: '無料で始める',
-      disclaimer: 'クレジットカード不要 • 毎日5回無料分析 • いつでもキャンセル可能',
+      disclaimer: 'クレジットカード不要 • 毎日10回無料分析 • いつでもキャンセル可能',
     },
     footer: {
       description: '画像を通じて自然に語彙を学びましょう。写真をアップロードして、AIに目標言語の単語を教えてもらいましょう。',
@@ -245,16 +243,15 @@ export const landingTranslations = {
       privacy: 'プライバシーポリシー',
       terms: '利用規約',
       copyright: '全著作権所有。',
-    },
-    navbar: {
-      features: '機能',
-      howItWorks: '使い方',
+      navbar: {
+        disclaimer: 'クレジットカード不要 • 毎日10回無料分析 • いつでもキャンセル可能',
+      },
     },
   },
   ko: {
     hero: {
       badge: '카메라 롤에서 배우기',
-      badgeFree: '매일 5회 무료',
+      badgeFree: '매일 10회 무료',
       title: '진짜 어휘 학습',
       subtitle: '주변의 사진을 업로드하고 목표 언어로 단어를 배우세요. 플래시카드도, 암기도 필요 없이 — 실제 맥락만으로 학습합니다.',
       cta: '무료로 학습 시작',
@@ -283,7 +280,7 @@ export const landingTranslations = {
       fastEasy: '빠르고 쉬움',
       fastEasyDesc: '상세한 단어 정보와 예문을 즉시 받아보세요.',
       freeStart: '무료로 시작',
-      freeStartDesc: '매일 5회 무료 분석, 신용카드 불필요. 즉시 학습을 시작하세요.',
+      freeStartDesc: '매일 10회 무료 분석, 신용카드 불필요. 즉시 학습을 시작하세요.',
     },
     demo: {
       sectionLabel: '워크플로우',
@@ -314,10 +311,10 @@ export const landingTranslations = {
     cta: {
       title: '언어 여정을',
       titleLine2: '시작할 준비가 되셨나요?',
-      description: '이미지를 사용하여 자연스럽게 어휘를 구축하는 수천 명의 언어 학습자와 함께하세요. 매일 5회 무료 분석으로 시작하세요.',
+      description: '이미지를 사용하여 자연스럽게 어휘를 구축하는 수천 명의 언어 학습자와 함께하세요. 매일 10회 무료 분석으로 시작하세요.',
       ctaLoggedIn: '첫 번째 이미지 분석',
       ctaLoggedOut: '무료로 시작',
-      disclaimer: '신용카드 불필요 • 매일 5회 무료 분석 • 언제든지 취소 가능',
+      disclaimer: '신용카드 불필요 • 매일 10회 무료 분석 • 언제든지 취소 가능',
     },
     footer: {
       description: '이미지를 통해 자연스럽게 어휘를 배우세요. 사진을 업로드하고 AI가 목표 언어로 단어를 가르쳐 드립니다.',

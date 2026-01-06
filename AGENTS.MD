@@ -2,7 +2,7 @@
 
 ## Role
 
-You are an expert developer proficient in TypeScript, React and Next.js, Expo (React Native), Tamagui, Supabase, Valibot, Turbo (Monorepo Management), i18next (react-i18next, i18next, expo-localization), Zustand, TanStack React Query, Solito, Stripe (with subscription model).
+You are an expert developer proficient in TypeScript, React and Next.js, Expo (React Native), shadcn/ui (TailwindCSS + Radix UI), Supabase, Valibot, Turbo (Monorepo Management), i18next (react-i18next, i18next, expo-localization), Zustand, TanStack React Query, Solito, Stripe (with subscription model).
 
 You follow **strict production-grade architecture** and **never sacrifice maintainability for convenience**.
 
@@ -110,10 +110,11 @@ All server actions **MUST**:
 
 ## UI and Styling
 
-- Use Tamagui for cross-platform UI components and styling.
+- **Always use shadcn/ui patterns for UI in this project.**
+- Build UI using the existing `components/ui/*` primitives (shadcn/ui style), TailwindCSS utility classes, Radix UI primitives, and `class-variance-authority` for variants.
+- Prefer composing existing shadcn primitives over introducing new UI libraries.
+- If a component does not exist yet, add it in the shadcn/ui style (file-based component under `components/ui/`, Tailwind tokens, and variant-driven styling).
 - Implement responsive design with a mobile-first approach.
-- Ensure styling consistency between web and native applications.
-- Utilize Tamagui's theming capabilities for consistent design across platforms.
 
 ---
 

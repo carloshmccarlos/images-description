@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { ImageUploader } from '@/components/image/image-uploader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface AnalyzeClientProps {
   hasRunningTask?: boolean;
@@ -19,7 +19,6 @@ type AnalysisState = 'idle' | 'analyzing' | 'error';
 export function AnalyzeClient({ hasRunningTask = false }: AnalyzeClientProps) {
   const { t } = useTranslation('analyze');
   const router = useRouter();
-  const { toast } = useToast();
 
   const [state, setState] = useState<AnalysisState>(hasRunningTask ? 'analyzing' : 'idle');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -67,8 +66,7 @@ export function AnalyzeClient({ hasRunningTask = false }: AnalyzeClientProps) {
 
       // Analysis completed - navigate to saved page
       if (data.id) {
-        toast({
-          title: t('successBanner'),
+        toast.success(t('successBanner'), {
           description: `${data.vocabulary?.length || 0} ${t('wordsAdded')}`,
         });
         router.push(`/saved/${data.id}`);
@@ -77,11 +75,7 @@ export function AnalyzeClient({ hasRunningTask = false }: AnalyzeClientProps) {
       const message = err instanceof Error ? err.message : t('errorTitle');
       setError(message);
       setState('error');
-      toast({
-        title: t('errorTitle'),
-        description: message,
-        variant: 'destructive',
-      });
+      toast.error(t('errorTitle'), { description: message });
     }
   }
 

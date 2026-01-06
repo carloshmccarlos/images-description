@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { createClient } from '@/lib/supabase/client';
 import { useTranslation } from 'react-i18next';
 
@@ -27,7 +27,6 @@ export function DangerZoneCard() {
   const [confirmText, setConfirmText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
   const supabase = createClient();
 
   const canDelete = confirmText === 'DELETE';
@@ -38,10 +37,10 @@ export function DangerZoneCard() {
     setIsDeleting(true);
     try {
       await supabase.auth.signOut();
-      toast({ title: t('danger.deletionRequested'), description: t('danger.signedOut') });
+      toast.success(t('danger.deletionRequested'), { description: t('danger.signedOut') });
       router.push('/');
     } catch {
-      toast({ title: t('danger.deleteFailed'), variant: 'destructive' });
+      toast.error(t('danger.deleteFailed'));
     } finally {
       setIsDeleting(false);
       setIsDeleteDialogOpen(false);

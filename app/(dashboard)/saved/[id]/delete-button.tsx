@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface DeleteAnalysisButtonProps {
   id: string;
@@ -23,7 +23,6 @@ export function DeleteAnalysisButton({ id }: DeleteAnalysisButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
 
   async function handleDelete() {
     setIsDeleting(true);
@@ -31,11 +30,11 @@ export function DeleteAnalysisButton({ id }: DeleteAnalysisButtonProps) {
       const res = await fetch(`/api/saved/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Failed to delete');
 
-      toast({ title: 'Analysis deleted', variant: 'success' });
+      toast.success('Analysis deleted');
       router.push('/saved');
       router.refresh();
     } catch {
-      toast({ title: 'Failed to delete', variant: 'destructive' });
+      toast.error('Failed to delete');
     } finally {
       setIsDeleting(false);
       setIsOpen(false);

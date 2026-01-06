@@ -10,12 +10,11 @@ import { forgotPasswordSchema, type ForgotPasswordInput } from '@/lib/validation
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 export function ForgotPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const { toast } = useToast();
   const supabase = createClient();
 
   const {
@@ -35,21 +34,13 @@ export function ForgotPasswordForm() {
       });
 
       if (error) {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        });
+        toast.error('Error', { description: error.message });
         return;
       }
 
       setIsSubmitted(true);
     } catch {
-      toast({
-        title: 'Something went wrong',
-        description: 'Please try again later',
-        variant: 'destructive',
-      });
+      toast.error('Something went wrong', { description: 'Please try again later' });
     } finally {
       setIsLoading(false);
     }

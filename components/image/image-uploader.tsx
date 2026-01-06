@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { compressImage, validateImageType, validateImageSize, getFileSizeDisplay } from '@/lib/image/compression';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface ImageUploaderProps {
   onImageSelect: (file: File, preview: string) => void;
@@ -25,16 +25,11 @@ export function ImageUploader({
   isUploading = false,
 }: ImageUploaderProps) {
   const [isCompressing, setIsCompressing] = useState(false);
-  const { toast } = useToast();
   const { t } = useTranslation('analyze');
 
   const handleFile = useCallback(async (file: File) => {
     if (!validateImageType(file)) {
-      toast({
-        title: t('uploader.invalidType'),
-        description: t('uploader.invalidTypeDesc'),
-        variant: 'destructive',
-      });
+      toast.error(t('uploader.invalidType'), { description: t('uploader.invalidTypeDesc') });
       return;
     }
 
@@ -43,11 +38,7 @@ export function ImageUploader({
       const compressedFile = await compressImage(file);
 
       if (!validateImageSize(compressedFile)) {
-        toast({
-          title: t('uploader.tooLarge'),
-          description: t('uploader.tooLargeDesc'),
-          variant: 'destructive',
-        });
+        toast.error(t('uploader.tooLarge'), { description: t('uploader.tooLargeDesc') });
         return;
       }
 
@@ -55,21 +46,16 @@ export function ImageUploader({
       onImageSelect(compressedFile, preview);
 
       if (compressedFile.size < file.size) {
-        toast({
-          title: t('uploader.compressed'),
+        toast.success(t('uploader.compressed'), {
           description: `${getFileSizeDisplay(file.size)} → ${getFileSizeDisplay(compressedFile.size)}`,
         });
       }
     } catch {
-      toast({
-        title: t('uploader.compressionFailed'),
-        description: t('uploader.compressionFailedDesc'),
-        variant: 'destructive',
-      });
+      toast.error(t('uploader.compressionFailed'), { description: t('uploader.compressionFailedDesc') });
     } finally {
       setIsCompressing(false);
     }
-  }, [onImageSelect, toast, t]);
+  }, [onImageSelect, t]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {

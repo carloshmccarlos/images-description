@@ -10,7 +10,7 @@ import { SUPPORTED_LANGUAGES, PROFICIENCY_LEVELS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { useUserStore } from '@/stores/user-store';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,6 @@ export function LanguageSetupForm() {
   const { t } = useTranslation('auth');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
   const setPreferences = useUserStore((state) => state.setPreferences);
 
   const {
@@ -54,14 +53,12 @@ export function LanguageSetupForm() {
       }
 
       setPreferences({ ...data, name: null });
-      toast({ title: 'Preferences saved!', variant: 'success' });
+      toast.success('Preferences saved!');
       router.push('/dashboard');
       router.refresh();
     } catch (error) {
-      toast({
-        title: 'Error',
+      toast.error('Error', {
         description: error instanceof Error ? error.message : 'Failed to save preferences',
-        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Bodoni_Moda, Familjen_Grotesk, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from '@/components/providers/query-provider';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { I18nProvider } from '@/lib/i18n/provider';
 import { getServerLocale } from '@/lib/i18n/server';

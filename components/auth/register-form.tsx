@@ -10,14 +10,13 @@ import { registerSchema, type RegisterInput } from '@/lib/validations/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
 export function RegisterForm() {
   const { t } = useTranslation('auth');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
   const supabase = createClient();
 
   const {
@@ -41,25 +40,14 @@ export function RegisterForm() {
       });
 
       if (error) {
-        toast({
-          title: 'Registration failed',
-          description: error.message,
-          variant: 'destructive',
-        });
+        toast.error('Registration failed', { description: error.message });
         return;
       }
 
-      toast({
-        title: 'Check your email',
-        description: 'We sent you a confirmation link',
-      });
+      toast.success('Check your email', { description: 'We sent you a confirmation link' });
       router.push('/auth/login');
     } catch {
-      toast({
-        title: 'Something went wrong',
-        description: 'Please try again later',
-        variant: 'destructive',
-      });
+      toast.error('Something went wrong', { description: 'Please try again later' });
     } finally {
       setIsLoading(false);
     }
@@ -72,7 +60,7 @@ export function RegisterForm() {
       options: { redirectTo: `${redirectBase}/auth/callback` },
     });
     if (error) {
-      toast({ title: 'Signup failed', description: error.message, variant: 'destructive' });
+      toast.error('Signup failed', { description: error.message });
     }
   }
 

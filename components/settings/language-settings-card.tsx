@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { SUPPORTED_LANGUAGES, PROFICIENCY_LEVELS } from '@/lib/constants';
 import { useTranslation } from 'react-i18next';
 
@@ -29,7 +29,6 @@ export function LanguageSettingsCard({
   const [proficiencyLevel, setProficiencyLevel] = useState(initialLevel);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
 
   const hasChanges =
     motherLanguage !== initialMother ||
@@ -47,10 +46,10 @@ export function LanguageSettingsCard({
 
       if (!response.ok) throw new Error('Failed to save');
 
-      toast({ title: t('language.saved'), variant: 'success' });
+      toast.success(t('language.saved'));
       router.refresh();
     } catch {
-      toast({ title: t('language.saveFailed'), variant: 'destructive' });
+      toast.error(t('language.saveFailed'));
     } finally {
       setIsLoading(false);
     }

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
 interface AccountSettingsCardProps {
@@ -21,7 +21,6 @@ export function AccountSettingsCard({ name: initialName, email }: AccountSetting
   const [name, setName] = useState(initialName);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
 
   const hasChanges = name !== initialName;
 
@@ -36,10 +35,10 @@ export function AccountSettingsCard({ name: initialName, email }: AccountSetting
 
       if (!response.ok) throw new Error('Failed to save');
 
-      toast({ title: t('account.profileUpdated'), variant: 'success' });
+      toast.success(t('account.profileUpdated'));
       router.refresh();
     } catch {
-      toast({ title: t('account.updateFailed'), variant: 'destructive' });
+      toast.error(t('account.updateFailed'));
     } finally {
       setIsLoading(false);
     }

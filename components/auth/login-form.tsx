@@ -11,14 +11,13 @@ import { loginSchema, type LoginInput } from '@/lib/validations/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
 export function LoginForm() {
   const { t } = useTranslation('auth');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
   const supabase = createClient();
 
   const {
@@ -38,23 +37,15 @@ export function LoginForm() {
       });
 
       if (error) {
-        toast({
-          title: 'Login failed',
-          description: error.message,
-          variant: 'destructive',
-        });
+        toast.error('Login failed', { description: error.message });
         return;
       }
 
-      toast({ title: 'Welcome back!', variant: 'success' });
+      toast.success('Welcome back!');
       router.push('/dashboard');
       router.refresh();
     } catch {
-      toast({
-        title: 'Something went wrong',
-        description: 'Please try again later',
-        variant: 'destructive',
-      });
+      toast.error('Something went wrong', { description: 'Please try again later' });
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +58,7 @@ export function LoginForm() {
       options: { redirectTo: `${redirectBase}/auth/callback` },
     });
     if (error) {
-      toast({ title: 'Login failed', description: error.message, variant: 'destructive' });
+      toast.error('Login failed', { description: error.message });
     }
   }
 

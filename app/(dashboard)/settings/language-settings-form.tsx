@@ -10,7 +10,7 @@ import { SUPPORTED_LANGUAGES, PROFICIENCY_LEVELS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { useUserStore } from '@/stores/user-store';
 
 interface LanguageSettingsFormProps {
@@ -20,7 +20,6 @@ interface LanguageSettingsFormProps {
 export function LanguageSettingsForm({ defaultValues }: LanguageSettingsFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
   const setPreferences = useUserStore((state) => state.setPreferences);
 
   const {
@@ -52,13 +51,11 @@ export function LanguageSettingsForm({ defaultValues }: LanguageSettingsFormProp
       }
 
       setPreferences({ ...data, name: null });
-      toast({ title: 'Settings saved!', variant: 'success' });
+      toast.success('Settings saved!');
       router.refresh();
     } catch (error) {
-      toast({
-        title: 'Error',
+      toast.error('Error', {
         description: error instanceof Error ? error.message : 'Failed to save settings',
-        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
