@@ -20,7 +20,7 @@ export default async function DashboardPage() {
   const userResult = await getCurrentUser();
   
   if (!userResult.success) {
-    if (userResult.needsSetup) redirect('/auth/language-setup');
+    if (userResult.needsSetup) redirect('/auth/setup');
     redirect('/auth/login');
   }
 
