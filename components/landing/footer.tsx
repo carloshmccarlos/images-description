@@ -35,12 +35,18 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Contact */}
           <div>
-            <h4 className="font-semibold mb-4">{t('footer.legal')}</h4>
+            <h4 className="font-semibold mb-4">{t('footer.contact')}</h4>
             <ul className="space-y-2 text-zinc-600 dark:text-zinc-400">
-              <li><a href="#" className="hover:text-zinc-900 dark:hover:text-white transition-colors">{t('footer.privacy')}</a></li>
-              <li><a href="#" className="hover:text-zinc-900 dark:hover:text-white transition-colors">{t('footer.terms')}</a></li>
+              <li>
+                <a
+                  href="mailto:image-description@loveyouall.qzz.io"
+                  className="hover:text-zinc-900 dark:hover:text-white transition-colors"
+                >
+                  image-description@loveyouall.qzz.io
+                </a>
+              </li>
             </ul>
           </div>
         </div>
