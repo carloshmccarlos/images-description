@@ -29,8 +29,9 @@ export function ForgotPasswordForm() {
   async function onSubmit(data: ForgotPasswordInput) {
     setIsLoading(true);
     try {
+      const redirectBase = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
       const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
+        redirectTo: `${redirectBase}/auth/reset-password`,
       });
 
       if (error) {

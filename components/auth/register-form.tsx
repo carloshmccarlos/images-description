@@ -31,11 +31,12 @@ export function RegisterForm() {
   async function onSubmit(data: RegisterInput) {
     setIsLoading(true);
     try {
+      const redirectBase = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
       const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${redirectBase}/auth/callback`,
         },
       });
 
@@ -65,9 +66,10 @@ export function RegisterForm() {
   }
 
   async function handleGoogleSignup() {
+    const redirectBase = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: `${redirectBase}/auth/callback` },
     });
     if (error) {
       toast({ title: 'Signup failed', description: error.message, variant: 'destructive' });
