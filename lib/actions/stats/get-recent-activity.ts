@@ -2,17 +2,12 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
-import { dailyUsage } from '@/lib/db/schema';
+import { dailyUsage, type DailyUsage } from '@/lib/db/schema';
 import { desc, sql } from 'drizzle-orm';
-
-interface ActivityData {
-  date: string;
-  usageCount: number;
-}
 
 interface GetRecentActivityResult {
   success: boolean;
-  data?: ActivityData[];
+  data?: DailyUsage[];
   error?: string;
 }
 
@@ -29,19 +24,13 @@ export async function getRecentActivity(days: number = 7): Promise<GetRecentActi
   const startDateStr = startDate.toISOString().split('T')[0];
 
   const activity = await db
-    .select({
-      date: dailyUsage.date,
-      usageCount: dailyUsage.usageCount,
-    })
+    .select()
     .from(dailyUsage)
     .where(sql`${dailyUsage.userId} = ${user.id} AND ${dailyUsage.date} >= ${startDateStr}`)
     .orderBy(desc(dailyUsage.date));
 
   return {
     success: true,
-    data: activity.map(a => ({
-      date: a.date,
-      usageCount: a.usageCount,
-    })),
+    data: activity,
   };
 }
