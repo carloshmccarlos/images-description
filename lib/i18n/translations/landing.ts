@@ -77,9 +77,10 @@ export const landingTranslations = {
       privacy: 'Privacy Policy',
       terms: 'Terms of Service',
       copyright: 'All rights reserved.',
-      navbar: {
-        disclaimer: 'No credit card required • 10 free analyses daily • Cancel anytime',
-      },
+    },
+    navbar: {
+      features: 'Features',
+      howItWorks: 'How it Works',
     },
   },
   zh: {
@@ -160,9 +161,10 @@ export const landingTranslations = {
       privacy: '隐私政策',
       terms: '服务条款',
       copyright: '版权所有。',
-      navbar: {
-        disclaimer: '无需信用卡 • 每天10次免费分析 • 随时取消',
-      },
+    },
+    navbar: {
+      features: '功能特点',
+      howItWorks: '使用方法',
     },
   },
   ja: {
@@ -243,9 +245,10 @@ export const landingTranslations = {
       privacy: 'プライバシーポリシー',
       terms: '利用規約',
       copyright: '全著作権所有。',
-      navbar: {
-        disclaimer: 'クレジットカード不要 • 毎日10回無料分析 • いつでもキャンセル可能',
-      },
+    },
+    navbar: {
+      features: '機能',
+      howItWorks: '使い方',
     },
   },
   ko: {
