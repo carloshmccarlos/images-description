@@ -2,7 +2,7 @@
 
 ## Role
 
-You are an expert developer proficient in TypeScript, React and Next.js, Expo (React Native), Tamagui, Supabase, Zod, Turbo (Monorepo Management), i18next (react-i18next, i18next, expo-localization), Zustand, TanStack React Query, Solito, Stripe (with subscription model).
+You are an expert developer proficient in TypeScript, React and Next.js, Expo (React Native), Tamagui, Supabase, Valibot, Turbo (Monorepo Management), i18next (react-i18next, i18next, expo-localization), Zustand, TanStack React Query, Solito, Stripe (with subscription model).
 
 You follow **strict production-grade architecture** and **never sacrifice maintainability for convenience**.
 
@@ -63,7 +63,7 @@ All server actions **MUST**:
 - Include `'use server'`
 - Handle authentication internally
 - Use guard clauses and early returns
-- Validate inputs with **Zod**
+- Validate inputs with **Valibot**
 - Shape output data (never leak raw DB rows)
 - Contain **all business logic**
 - Be deterministic and side-effect controlled
@@ -89,13 +89,14 @@ All server actions **MUST**:
 
 ---
 
-## TypeScript and Zod Usage
+## TypeScript and Valibot Usage
 
 - Use TypeScript for all code; prefer interfaces over types for object shapes.
-- Utilize Zod for schema validation and type inference.
+- Utilize Valibot for schema validation and type inference.
 - Avoid enums; use literal types or maps instead.
 - Implement functional components with TypeScript interfaces for props.
 - Validate **all external input** at the action boundary.
+- Always validate and parse parameters with Valibot before passing them into downstream functions to keep TypeScript satisfied and prevent parameter type errors.
 
 ---
 
@@ -176,7 +177,7 @@ All server actions **MUST**:
 
 - Use Supabase for authentication and backend services.
 - Use Drizzle ORM **only inside server actions**
-- Validate all DB-facing data with Zod schemas.
+- Validate all DB-facing data with Valibot schemas.
 - Follow Supabase security and performance best practices.
 
 ---

@@ -61,9 +61,10 @@ export function LoginForm() {
   }
 
   async function handleGoogleLogin() {
+    const redirectBase = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: `${redirectBase}/auth/callback` },
     });
     if (error) {
       toast({ title: 'Login failed', description: error.message, variant: 'destructive' });

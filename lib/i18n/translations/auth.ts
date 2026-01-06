@@ -22,7 +22,7 @@ export const authTranslations = {
       decorativeDesc: 'Join thousands of learners using images to build vocabulary naturally and capture the world around them.',
       newJourney: 'New Journey',
       benefits: {
-        freeAnalyses: '5 free image analyses per day',
+        freeAnalyses: '10 free image analyses per day',
         aiPowered: 'AI-powered vocabulary extraction',
         saveReview: 'Save and review your vocabulary',
         trackProgress: 'Track your learning progress',
@@ -72,7 +72,7 @@ export const authTranslations = {
       decorativeDesc: '加入数千名使用图片自然学习词汇、捕捉周围世界的学习者。',
       newJourney: '新旅程',
       benefits: {
-        freeAnalyses: '每天5次免费图片分析',
+        freeAnalyses: '每天10次免费图片分析',
         aiPowered: 'AI驱动的词汇提取',
         saveReview: '保存和复习你的词汇',
         trackProgress: '追踪你的学习进度',
@@ -122,7 +122,7 @@ export const authTranslations = {
       decorativeDesc: '画像を使って自然に語彙を構築し、周りの世界を捉える数千人の学習者に参加しましょう。',
       newJourney: '新しい旅',
       benefits: {
-        freeAnalyses: '毎日5回の無料画像分析',
+        freeAnalyses: '毎日10回の無料画像分析',
         aiPowered: 'AI搭載の語彙抽出',
         saveReview: '語彙を保存して復習',
         trackProgress: '学習進捗を追跡',
@@ -172,7 +172,7 @@ export const authTranslations = {
       decorativeDesc: '이미지를 사용하여 자연스럽게 어휘를 구축하고 주변 세계를 포착하는 수천 명의 학습자와 함께하세요.',
       newJourney: '새로운 여정',
       benefits: {
-        freeAnalyses: '매일 5회 무료 이미지 분석',
+        freeAnalyses: '매일 10회 무료 이미지 분석',
         aiPowered: 'AI 기반 어휘 추출',
         saveReview: '어휘 저장 및 복습',
         trackProgress: '학습 진행 상황 추적',

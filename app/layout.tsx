@@ -126,7 +126,7 @@ function JsonLd() {
       '@type': 'Offer',
       price: '0',
       priceCurrency: 'USD',
-      description: '5 free image analyses per day',
+      description: '10 free image analyses per day',
     },
     featureList: [
       'AI-powered vocabulary extraction from images',
