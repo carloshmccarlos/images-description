@@ -14,15 +14,15 @@ export function Toaster() {
   const { toasts } = useToast();
 
   return (
-    <ToastProvider>
+    <ToastProvider swipeDirection="right" duration={4000}>
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
           <Toast key={id} {...props}>
-            <div className="grid gap-1">
+            <div className="flex-1 grid gap-1.5 pr-6">
               {title && <ToastTitle>{title}</ToastTitle>}
               {description && <ToastDescription>{description}</ToastDescription>}
+              {action && <div className="mt-3">{action}</div>}
             </div>
-            {action}
             <ToastClose />
           </Toast>
         );
