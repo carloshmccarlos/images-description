@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { Trophy, Lock, Star, Flame, BookOpen, Camera, Target, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { UserStats } from '@/lib/db/schema';
 
 interface AchievementData {
   id: string;
@@ -11,9 +10,17 @@ interface AchievementData {
   unlockedAt: Date;
 }
 
+interface UserStatsData {
+  totalWordsLearned: number;
+  totalAnalyses: number;
+  currentStreak: number;
+  longestStreak: number;
+  lastActivityDate: string | null;
+}
+
 interface AchievementsListProps {
   achievements: AchievementData[];
-  stats: UserStats | undefined;
+  stats: UserStatsData | undefined;
 }
 
 const achievementDefinitions = [
