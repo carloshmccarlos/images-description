@@ -35,6 +35,15 @@ export const savedTranslations = {
       deleted: 'Analysis deleted',
       deleteFailed: 'Failed to delete analysis',
     },
+    delete: {
+      button: 'Delete Exploration',
+      title: 'Delete Exploration?',
+      description: 'This will permanently remove this analysis and all its captured vocabulary. This action cannot be undone.',
+      cancel: 'Keep it',
+      confirm: 'Delete Permanently',
+      success: 'Analysis deleted',
+      error: 'Failed to delete',
+    },
   },
   zh: {
     header: {
@@ -71,6 +80,15 @@ export const savedTranslations = {
       delete: '删除',
       deleted: '分析已删除',
       deleteFailed: '删除分析失败',
+    },
+    delete: {
+      button: '删除探索',
+      title: '删除探索？',
+      description: '这将永久删除此分析及其所有捕获的词汇。此操作无法撤销。',
+      cancel: '保留',
+      confirm: '永久删除',
+      success: '分析已删除',
+      error: '删除失败',
     },
   },
   ja: {
@@ -109,6 +127,15 @@ export const savedTranslations = {
       deleted: '分析を削除しました',
       deleteFailed: '分析の削除に失敗しました',
     },
+    delete: {
+      button: '探索を削除',
+      title: '探索を削除しますか？',
+      description: 'この分析とすべての取得した語彙が完全に削除されます。この操作は取り消せません。',
+      cancel: '保持する',
+      confirm: '完全に削除',
+      success: '分析を削除しました',
+      error: '削除に失敗しました',
+    },
   },
   ko: {
     header: {
@@ -145,6 +172,15 @@ export const savedTranslations = {
       delete: '삭제',
       deleted: '분석이 삭제되었습니다',
       deleteFailed: '분석 삭제에 실패했습니다',
+    },
+    delete: {
+      button: '탐색 삭제',
+      title: '탐색을 삭제하시겠습니까?',
+      description: '이 분석과 캡처된 모든 어휘가 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다.',
+      cancel: '유지',
+      confirm: '영구 삭제',
+      success: '분석이 삭제되었습니다',
+      error: '삭제에 실패했습니다',
     },
   },
 } as const;
