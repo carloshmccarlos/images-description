@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { APP_CONFIG } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { LanguageSelector } from './language-selector';
 
 interface NavbarProps {
   user: { email: string } | null;
@@ -58,6 +59,7 @@ export function Navbar({ user }: NavbarProps) {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
+            <LanguageSelector />
             {user ? (
               <Link href="/dashboard">
                 <Button>{tCommon('nav.goToDashboard')}</Button>
@@ -104,6 +106,9 @@ export function Navbar({ user }: NavbarProps) {
               <a href="#demo" className="text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>
                 {t('navbar.howItWorks')}
               </a>
+              <div className="pt-2">
+                <LanguageSelector />
+              </div>
               <div className="flex flex-col gap-2 pt-4 border-t border-zinc-200 dark:border-zinc-800">
                 {user ? (
                   <Link href="/dashboard">
