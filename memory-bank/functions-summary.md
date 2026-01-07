@@ -1,5 +1,52 @@
 # LexiLens Functions Summary
 
+## Admin Components
+
+### AdminSidebar
+**File:** `components/admin/admin-sidebar.tsx`
+
+Dark-themed navigation sidebar for admin dashboard with editorial/magazine aesthetic. Features Playfair Display typography, gradient backgrounds, and smooth hover transitions. Includes navigation items for Overview, Users, Content, Logs, and Health monitoring.
+
+**Props:** None (uses pathname for active state)
+
+---
+
+### MetricCard
+**File:** `components/admin/metric-card.tsx`
+
+Displays key platform metrics with animated counters, trend indicators, and gradient backgrounds. Uses Playfair Display for large metric values and includes percentage change indicators with color-coded trends.
+
+**Props:** `title: string`, `value: number`, `change?: number`, `trend?: 'up' | 'down'`, `format?: 'number' | 'currency'`
+
+---
+
+### TimeSeriesChart
+**File:** `components/admin/time-series-chart.tsx`
+
+Interactive time-series visualization using Recharts with staggered animations. Supports hover tooltips, gradient fills, and responsive design. Used for displaying user growth and analysis trends over time.
+
+**Props:** `data: Array<{date: string, value: number}>`, `title: string`, `color?: string`
+
+---
+
+### AdminTable
+**File:** `components/admin/admin-table.tsx`
+
+Sortable, searchable data table with dark theme styling. Features hover states, pagination controls, and responsive design. Supports custom column definitions and action buttons.
+
+**Props:** `data: any[]`, `columns: ColumnDef[]`, `searchable?: boolean`, `sortable?: boolean`
+
+---
+
+### UserDetailCard
+**File:** `components/admin/user-detail-card.tsx`
+
+Comprehensive user information display with language settings, statistics, and admin actions. Includes suspend/reactivate functionality with confirmation dialogs and activity logging.
+
+**Props:** `user: AdminUser`, `onStatusUpdate: (status) => void`
+
+---
+
 ## Components
 
 ### AnalysisProgress
@@ -81,6 +128,106 @@ Global toast notification system using reducer pattern with in-memory state. Sup
 ---
 
 ## Server Actions
+
+### Admin Server Actions
+
+#### getPlatformStats
+**File:** `lib/actions/admin/get-platform-stats.ts`
+
+Aggregates platform-wide analytics including total users, analyses, daily active users, and words learned. Generates time-series data for user registrations and analyses over the past 30 days. Requires admin authentication.
+
+**Returns:** `{ totalUsers, totalAnalyses, dailyActiveUsers, totalWordsLearned, userGrowth[], analysisGrowth[] }`
+
+---
+
+#### getAdminUsers
+**File:** `lib/actions/admin/get-admin-users.ts`
+
+Retrieves paginated user list with search and sorting capabilities. Joins with user_stats for activity data and supports filtering by email/name. Includes role and status information for admin management.
+
+**Input:** `{ page?, limit?, search?, sortBy?, sortOrder? }`
+**Returns:** `{ users: AdminUser[], total: number, hasMore: boolean }`
+
+---
+
+#### getUserDetail
+**File:** `lib/actions/admin/get-user-detail.ts`
+
+Fetches comprehensive user details including profile, language settings, statistics, and recent analyses. Used for admin user detail pages and management operations.
+
+**Input:** `{ userId: string }`
+**Returns:** `{ user: AdminUser, stats: UserStats, recentAnalyses: Analysis[] }`
+
+---
+
+#### updateUserStatus
+**File:** `lib/actions/admin/update-user-status.ts`
+
+Updates user status (suspend/reactivate) with admin authentication and activity logging. Prevents admins from suspending themselves and creates audit trail entries.
+
+**Input:** `{ userId: string, status: 'active' | 'suspended', reason?: string }`
+**Returns:** `{ success: boolean, error?: string }`
+
+---
+
+#### getModerationContent
+**File:** `lib/actions/admin/get-moderation-content.ts`
+
+Retrieves analyses for content moderation with user information and image URLs. Supports date range filtering and pagination for efficient content review.
+
+**Input:** `{ page?, limit?, startDate?, endDate? }`
+**Returns:** `{ analyses: ModerationAnalysis[], total: number, hasMore: boolean }`
+
+---
+
+#### flagContent
+**File:** `lib/actions/admin/flag-content.ts`
+
+Flags analysis content as inappropriate with reason and admin attribution. Creates activity log entry and updates analysis record with flagged status.
+
+**Input:** `{ analysisId: string, reason: string }`
+**Returns:** `{ success: boolean, error?: string }`
+
+---
+
+#### deleteContent
+**File:** `lib/actions/admin/delete-content.ts`
+
+Permanently deletes analysis content and associated image from R2 storage. Creates activity log entry and handles cleanup of related records.
+
+**Input:** `{ analysisId: string, reason?: string }`
+**Returns:** `{ success: boolean, error?: string }`
+
+---
+
+#### getActivityLogs
+**File:** `lib/actions/admin/get-activity-logs.ts`
+
+Retrieves admin activity logs with filtering by action type and date range. Includes admin information and supports pagination for audit trail review.
+
+**Input:** `{ page?, limit?, actionType?, startDate?, endDate? }`
+**Returns:** `{ logs: ActivityLog[], total: number, hasMore: boolean }`
+
+---
+
+#### createActivityLog
+**File:** `lib/actions/admin/create-activity-log.ts`
+
+Creates audit trail entries for admin actions. Records action type, target information, admin attribution, and additional details for compliance tracking.
+
+**Input:** `{ action: string, targetType: string, targetId: string, details?: object }`
+**Returns:** `{ success: boolean, error?: string }`
+
+---
+
+#### getSystemHealth
+**File:** `lib/actions/admin/get-system-health.ts`
+
+Monitors system health metrics including API response times, storage usage, and daily API call counts. Provides threshold warnings for performance monitoring.
+
+**Returns:** `{ apiResponseTime, storageUsage, dailyApiCalls, warnings: string[] }`
+
+---
 
 ### updateTask
 **File:** `lib/actions/task/update-task.ts`

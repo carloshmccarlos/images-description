@@ -8,6 +8,41 @@
       "when": 1766986966961,
       "tag": "0000_dizzy_wildside",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766986966962,
+      "tag": "0001_analysis_tasks",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766986966963,
+      "tag": "0002_admin_users_extension",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1766986966964,
+      "tag": "0003_saved_analyses_flagging",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1766986966965,
+      "tag": "0004_admin_logs",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1766986966966,
+      "tag": "0005_system_metrics",
+      "breakpoints": true
     }
   ]
 }

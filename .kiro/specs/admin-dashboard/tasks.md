@@ -1,0 +1,277 @@
+# Implementation Plan: Admin Dashboard
+
+## Overview
+
+This implementation plan creates a comprehensive admin dashboard for LexiLens with platform analytics, user management, content moderation, activity logging, and system health monitoring. The UI follows an editorial/magazine aesthetic with dark theme and bold typography.
+
+## Tasks
+
+- [x] 1. Database schema extensions and migrations
+  - [x] 1.1 Create migration for users table extensions (role, status columns)
+    - Add `role` column with default 'user' and values: 'user', 'admin', 'super_admin'
+    - Add `status` column with default 'active' and values: 'active', 'suspended'
+    - _Requirements: 1.1, 1.4, 3.5, 3.6_
+  - [x] 1.2 Create migration for saved_analyses flagging columns
+    - Add `flagged`, `flag_reason`, `flagged_at`, `flagged_by` columns
+    - _Requirements: 4.3, 4.4_
+  - [x] 1.3 Create admin_logs table migration
+    - Create table with admin_id, action, target_type, target_id, details, created_at
+    - _Requirements: 5.1, 5.2, 5.3_
+  - [x] 1.4 Create system_metrics table migration
+    - Create table with metric_type, value, recorded_at
+    - _Requirements: 6.1, 6.3_
+  - [x] 1.5 Update Drizzle schema with new tables and columns
+    - Update `lib/db/schema.ts` with adminLogs, systemMetrics tables
+    - Update users and savedAnalyses types
+    - _Requirements: 1.4, 5.1_
+
+- [x] 2. Admin authentication and authorization
+  - [x] 2.1 Create admin middleware for role verification
+    - Create `lib/admin/middleware.ts` with role checking logic
+    - Verify user has admin or super_admin role
+    - Return appropriate error for unauthorized access
+    - _Requirements: 1.1, 1.2_
+  - [ ]* 2.2 Write property test for role-based access control
+    - **Property 1: Role-Based Access Control**
+    - **Validates: Requirements 1.1, 1.2**
+  - [x] 2.3 Create admin layout with role protection
+    - Create `app/(admin)/layout.tsx` with auth check
+    - Redirect non-admins to dashboard with error message
+    - _Requirements: 1.2, 1.3_
+
+- [x] 3. Checkpoint - Verify auth and schema
+  - Ensure migrations run successfully
+  - Ensure admin middleware blocks non-admin users
+  - Ask the user if questions arise
+
+- [x] 4. Platform analytics server actions and API
+  - [x] 4.1 Create get-platform-stats server action
+    - Create `lib/actions/admin/get-platform-stats.ts`
+    - Query total users, total analyses, DAU, total words learned
+    - Query user registrations by day for past 30 days
+    - Query analyses by day for past 30 days
+    - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
+  - [ ]* 4.2 Write property test for stats aggregation
+    - **Property 2: Platform Stats Aggregation Accuracy**
+    - **Validates: Requirements 2.1, 2.2, 2.4**
+  - [ ]* 4.3 Write property test for time-series grouping
+    - **Property 3: Time-Series Date Grouping**
+    - **Validates: Requirements 2.5, 2.6**
+  - [x] 4.4 Create admin stats API route
+    - Create `app/api/admin/stats/route.ts`
+    - Call get-platform-stats action
+    - Return JSON response with all metrics
+    - _Requirements: 2.1, 2.2, 2.3, 2.4_
+
+- [x] 5. User management server actions and API
+  - [x] 5.1 Create get-admin-users server action
+    - Create `lib/actions/admin/get-admin-users.ts`
+    - Support pagination with page and limit params
+    - Support search by email or name
+    - Support sorting by createdAt, lastActivityAt, totalAnalyses
+    - Join with user_stats for activity data
+    - _Requirements: 3.1, 3.2, 3.3, 3.7_
+  - [ ]* 5.2 Write property test for pagination
+    - **Property 4: User Pagination Correctness**
+    - **Validates: Requirements 3.1**
+  - [ ]* 5.3 Write property test for search filtering
+    - **Property 5: User Search Filtering**
+    - **Validates: Requirements 3.3**
+  - [ ]* 5.4 Write property test for sorting
+    - **Property 7: User List Sorting**
+    - **Validates: Requirements 3.7**
+  - [x] 5.5 Create get-user-detail server action
+    - Create `lib/actions/admin/get-user-detail.ts`
+    - Return user with language settings, stats, recent analyses
+    - _Requirements: 3.4_
+  - [x] 5.6 Create update-user-status server action
+    - Create `lib/actions/admin/update-user-status.ts`
+    - Support suspend and reactivate actions
+    - Prevent admin from suspending themselves
+    - Create activity log entry
+    - _Requirements: 3.5, 3.6, 5.2_
+  - [ ]* 5.7 Write property test for suspend/reactivate round-trip
+    - **Property 6: User Suspend/Reactivate Round-Trip**
+    - **Validates: Requirements 3.5, 3.6**
+  - [x] 5.8 Create admin users API routes
+    - Create `app/api/admin/users/route.ts` for list
+    - Create `app/api/admin/users/[id]/route.ts` for detail and update
+    - _Requirements: 3.1, 3.4, 3.5, 3.6_
+
+- [x] 6. Checkpoint - Verify user management
+  - Ensure user list pagination works correctly
+  - Ensure search and sort work correctly
+  - Ensure suspend/reactivate creates log entries
+  - Ask the user if questions arise
+
+- [x] 7. Content moderation server actions and API
+  - [x] 7.1 Create get-moderation-content server action
+    - Create `lib/actions/admin/get-moderation-content.ts`
+    - Return analyses with user info and image URLs
+    - Support date range filtering
+    - Support pagination
+    - _Requirements: 4.1, 4.2, 4.5_
+  - [ ]* 7.2 Write property test for date range filtering
+    - **Property 8: Content Date Range Filtering**
+    - **Validates: Requirements 4.2**
+  - [x] 7.3 Create flag-content server action
+    - Create `lib/actions/admin/flag-content.ts`
+    - Update analysis with flagged status and reason
+    - Create activity log entry
+    - _Requirements: 4.3, 5.3_
+  - [x] 7.4 Create delete-content server action
+    - Create `lib/actions/admin/delete-content.ts`
+    - Delete analysis record
+    - Delete image from R2 storage
+    - Create activity log entry
+    - _Requirements: 4.4, 5.3_
+  - [ ]* 7.5 Write property test for content deletion
+    - **Property 9: Content Deletion Removes Record**
+    - **Validates: Requirements 4.4**
+  - [x] 7.6 Create admin content API routes
+    - Create `app/api/admin/content/route.ts` for list
+    - Create `app/api/admin/content/[id]/route.ts` for flag and delete
+    - _Requirements: 4.1, 4.3, 4.4_
+
+- [-] 8. Activity logging server actions and API
+  - [x] 8.1 Create create-activity-log server action
+    - Create `lib/actions/admin/create-activity-log.ts`
+    - Accept action type, target type, target id, details
+    - Record admin who performed action
+    - _Requirements: 5.1, 5.2, 5.3, 5.5_
+  - [ ]* 8.2 Write property test for activity log creation
+    - **Property 10: Admin Actions Create Activity Logs**
+    - **Validates: Requirements 5.2, 5.3**
+  - [ ] 8.3 Create get-activity-logs server action
+    - Create `lib/actions/admin/get-activity-logs.ts`
+    - Support filtering by action type and date range
+    - Include admin info for each entry
+    - Support pagination
+    - _Requirements: 5.1, 5.4, 5.5_
+  - [ ]* 8.4 Write property test for log filtering
+    - **Property 11: Activity Log Filtering**
+    - **Validates: Requirements 5.4**
+  - [x] 8.5 Create admin logs API route
+    - Create `app/api/admin/logs/route.ts`
+    - _Requirements: 5.1, 5.4_
+
+- [x] 9. System health server actions and API
+  - [x] 9.1 Create get-system-health server action
+    - Create `lib/actions/admin/get-system-health.ts`
+    - Calculate API response time averages from metrics
+    - Get storage usage from R2 (if available)
+    - Get daily API call counts
+    - _Requirements: 6.1, 6.2, 6.3_
+  - [ ]* 9.2 Write property test for threshold warnings
+    - **Property 12: Health Metric Threshold Warnings**
+    - **Validates: Requirements 6.4**
+  - [x] 9.3 Create admin health API route
+    - Create `app/api/admin/health/route.ts`
+    - _Requirements: 6.1, 6.3, 6.4_
+
+- [x] 10. Checkpoint - Verify all server actions
+  - Ensure all API routes return correct data
+  - Ensure activity logs are created for all admin actions
+  - Ask the user if questions arise
+
+- [x] 11. Admin UI components - Core
+  - [x] 11.1 Create admin sidebar navigation component
+    - Create `components/admin/admin-sidebar.tsx`
+    - Include nav items: Overview, Users, Content, Logs, Health
+    - Dark theme styling with editorial aesthetic
+    - _Requirements: 1.3, 7.1, 7.2_
+  - [x] 11.2 Create metric card component
+    - Create `components/admin/metric-card.tsx`
+    - Display title, value, change percentage, trend indicator
+    - Playfair Display font for values
+    - Gradient background with shadows
+    - _Requirements: 7.1, 7.3, 7.4_
+  - [x] 11.3 Create time-series chart component
+    - Create `components/admin/time-series-chart.tsx`
+    - Use recharts or similar for visualization
+    - Support hover tooltips with detailed values
+    - Staggered animation on load
+    - _Requirements: 2.5, 2.6, 2.7, 7.4_
+
+- [x] 12. Admin UI components - Data display
+  - [x] 12.1 Create admin data table component
+    - Create `components/admin/admin-table.tsx`
+    - Support sorting, pagination, search
+    - Dark theme styling with hover states
+    - _Requirements: 3.1, 3.3, 3.7, 7.2_
+  - [x] 12.2 Create user detail card component
+    - Create `components/admin/user-detail-card.tsx`
+    - Display user info, language settings, stats
+    - Suspend/reactivate action buttons
+    - _Requirements: 3.4, 3.5, 3.6_
+  - [x] 12.3 Create content moderation card component
+    - Create `components/admin/content-card.tsx`
+    - Display image thumbnail, description preview, user info
+    - Flag and delete action buttons
+    - _Requirements: 4.1, 4.3, 4.4, 4.5_
+  - [x] 12.4 Create activity log entry component
+    - Create `components/admin/log-entry.tsx`
+    - Display action, target, admin, timestamp
+    - Color-coded by action type
+    - _Requirements: 5.1, 5.5_
+  - [x] 12.5 Create health indicator component
+    - Create `components/admin/health-indicator.tsx`
+    - Display metric with threshold warning styling
+    - _Requirements: 6.1, 6.4_
+
+- [x] 13. Admin pages
+  - [x] 13.1 Create admin overview page
+    - Create `app/(admin)/admin/page.tsx`
+    - Display metric cards grid
+    - Display time-series charts
+    - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
+  - [x] 13.2 Create admin users list page
+    - Create `app/(admin)/admin/users/page.tsx`
+    - Display searchable, sortable user table
+    - Link to user detail pages
+    - _Requirements: 3.1, 3.2, 3.3, 3.7_
+  - [x] 13.3 Create admin user detail page
+    - Create `app/(admin)/admin/users/[id]/page.tsx`
+    - Display user detail card
+    - Display recent analyses
+    - _Requirements: 3.4, 3.5, 3.6_
+  - [x] 13.4 Create admin content moderation page
+    - Create `app/(admin)/admin/content/page.tsx`
+    - Display content cards with date range filter
+    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
+  - [x] 13.5 Create admin activity logs page
+    - Create `app/(admin)/admin/logs/page.tsx`
+    - Display filterable log entries
+    - _Requirements: 5.1, 5.4, 5.5_
+  - [x] 13.6 Create admin system health page
+    - Create `app/(admin)/admin/health/page.tsx`
+    - Display health indicators with warnings
+    - _Requirements: 6.1, 6.3, 6.4_
+
+- [ ] 14. Animations and polish
+  - [x] 14.1 Add page transition animations
+    - Fade in with upward slide on page load
+    - _Requirements: 7.4_
+  - [x] 14.2 Add metric counter animations
+    - Count-up animation for metric values
+    - _Requirements: 7.4_
+  - [x] 14.3 Add responsive styling
+    - Collapsible sidebar for tablet
+    - Single column layout for mobile
+    - _Requirements: 7.5_
+
+- [x] 15. Final checkpoint - Complete integration
+  - Ensure all pages render correctly
+  - Ensure all animations work smoothly
+  - Ensure responsive design works on all breakpoints
+  - Ask the user if questions arise
+
+## Notes
+
+- Tasks marked with `*` are optional property-based tests and can be skipped for faster MVP
+- Each task references specific requirements for traceability
+- Checkpoints ensure incremental validation
+- Property tests validate universal correctness properties
+- Unit tests validate specific examples and edge cases
+- The admin dashboard uses a separate dark theme from the main application
+- All server actions follow the project's architecture rules (no direct DB access in pages)

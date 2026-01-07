@@ -25,6 +25,8 @@ CREATE TABLE users (
   mother_language TEXT DEFAULT 'en',
   learning_language TEXT DEFAULT 'es',
   proficiency_level TEXT DEFAULT 'beginner',
+  role TEXT DEFAULT 'user' NOT NULL,  -- 'user', 'admin', 'super_admin'
+  status TEXT DEFAULT 'active' NOT NULL,  -- 'active', 'suspended'
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
@@ -45,6 +47,10 @@ CREATE TABLE saved_analyses (
   image_url TEXT NOT NULL,
   description TEXT NOT NULL,
   vocabulary JSONB NOT NULL,
+  flagged BOOLEAN DEFAULT FALSE,
+  flag_reason TEXT,
+  flagged_at TIMESTAMP,
+  flagged_by UUID REFERENCES users(id) ON DELETE SET NULL,
   created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
@@ -67,6 +73,39 @@ CREATE TABLE achievements (
   type TEXT NOT NULL,
   unlocked_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
+
+-- Analysis tasks (for async processing)
+CREATE TABLE analysis_tasks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  status TEXT DEFAULT 'pending' NOT NULL,
+  image_url TEXT,
+  description TEXT,
+  vocabulary JSONB,
+  error_message TEXT,
+  saved_analysis_id UUID REFERENCES saved_analyses(id),
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
+-- Admin activity logs
+CREATE TABLE admin_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  action TEXT NOT NULL,  -- 'user_suspended', 'user_reactivated', 'content_flagged', 'content_deleted', 'role_changed'
+  target_type TEXT NOT NULL,  -- 'user', 'content', 'system'
+  target_id TEXT NOT NULL,
+  details JSONB,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
+-- System metrics (for health monitoring)
+CREATE TABLE system_metrics (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  metric_type TEXT NOT NULL,  -- 'api_response_time', 'api_calls', 'error_rate'
+  value NUMERIC NOT NULL,
+  recorded_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
 ```
 
 ## Project Structure
@@ -82,6 +121,19 @@ CREATE TABLE achievements (
 │   │   │   ├── page.tsx          # List all saved
 │   │   │   └── [id]/page.tsx     # Single analysis view
 │   │   └── settings/page.tsx     # Language & account settings
+│   ├── (admin)/                  # Admin route group (role-protected)
+│   │   ├── layout.tsx            # Admin layout with dark theme sidebar
+│   │   └── admin/
+│   │       ├── page.tsx          # Admin overview/analytics dashboard
+│   │       ├── users/
+│   │       │   ├── page.tsx      # User management list
+│   │       │   └── [id]/page.tsx # User detail view
+│   │       ├── content/
+│   │       │   └── page.tsx      # Content moderation
+│   │       ├── logs/
+│   │       │   └── page.tsx      # Activity logs
+│   │       └── health/
+│   │           └── page.tsx      # System health metrics
 │   ├── api/
 │   │   ├── analyze/              # AI analysis endpoints
 │   │   ├── saved/                # CRUD for saved analyses
@@ -91,6 +143,12 @@ CREATE TABLE achievements (
 │   ├── auth/                     # Authentication pages
 │   └── page.tsx                  # Landing page
 ├── components/
+│   ├── admin/                    # Admin dashboard components
+│   │   ├── admin-sidebar.tsx     # Admin navigation sidebar
+│   │   ├── metric-card.tsx       # Analytics metric cards
+│   │   ├── time-series-chart.tsx # Chart visualizations
+│   │   ├── admin-table.tsx       # Data tables with sorting/pagination
+│   │   └── user-detail-card.tsx  # User management cards
 │   ├── analysis/                 # Analysis result components
 │   │   ├── analysis-results.tsx
 │   │   ├── loading-analysis.tsx
@@ -136,6 +194,26 @@ CREATE TABLE achievements (
 ├── hooks/                        # Custom React hooks
 │   └── use-toast.ts
 ├── lib/
+│   ├── actions/                  # Server actions (business logic)
+│   │   ├── admin/                # Admin-specific server actions
+│   │   │   ├── get-platform-stats.ts
+│   │   │   ├── get-admin-users.ts
+│   │   │   ├── get-user-detail.ts
+│   │   │   ├── update-user-status.ts
+│   │   │   ├── get-moderation-content.ts
+│   │   │   ├── flag-content.ts
+│   │   │   ├── delete-content.ts
+│   │   │   ├── get-activity-logs.ts
+│   │   │   ├── create-activity-log.ts
+│   │   │   └── get-system-health.ts
+│   │   ├── achievement/
+│   │   ├── analysis/
+│   │   ├── stats/
+│   │   ├── task/
+│   │   └── user/
+│   ├── admin/                    # Admin utilities
+│   │   ├── middleware.ts         # Admin role verification
+│   │   └── utils.ts              # Admin utility functions
 │   ├── ai/                       # AI client and prompts
 │   │   ├── siliconflow-client.ts
 │   │   └── prompts.ts
@@ -152,7 +230,7 @@ CREATE TABLE achievements (
 │   │   └── middleware.ts
 │   ├── usage/                    # Daily limit tracking
 │   │   └── daily-limits.ts
-│   ├── validations/              # Zod schemas
+│   ├── validations/              # Valibot schemas
 │   ├── constants.ts
 │   └── utils.ts
 ├── stores/                       # Zustand stores
@@ -176,6 +254,20 @@ CREATE TABLE achievements (
 | PUT | /api/user/settings | Update user settings |
 | POST | /api/upload | Get signed upload URL |
 
+### Admin API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/admin/stats | Get platform analytics |
+| GET | /api/admin/users | List users with pagination |
+| GET | /api/admin/users/[id] | Get user details |
+| PATCH | /api/admin/users/[id] | Update user (suspend/reactivate) |
+| GET | /api/admin/content | List analyses for moderation |
+| PATCH | /api/admin/content/[id] | Flag/unflag content |
+| DELETE | /api/admin/content/[id] | Delete content |
+| GET | /api/admin/logs | Get activity logs |
+| GET | /api/admin/health | Get system health metrics |
+
 ## Key Features Implemented
 
 1. **Authentication**: Email/password + Google OAuth via Supabase
@@ -191,6 +283,14 @@ CREATE TABLE achievements (
    - Profile page with achievements and weekly activity chart
    - Settings page with language and account management
    - Framer Motion animations throughout
+
+9. **Admin Dashboard** (NEW):
+   - Platform analytics with user growth and analysis trends
+   - User management with search, suspend/reactivate
+   - Content moderation for flagging/deleting inappropriate content
+   - Activity logging for audit trail
+   - System health monitoring
+   - Editorial/magazine aesthetic with dark theme
 
 ## UI Components
 
@@ -223,6 +323,15 @@ CREATE TABLE achievements (
 - Language settings with flag icons
 - Account settings with name editing
 - Danger zone with delete confirmation
+
+### Admin Dashboard (Editorial/Magazine Aesthetic)
+- **Overview**: Metric cards with Playfair Display typography, gradient backgrounds
+- **Charts**: Time-series visualizations with staggered animations
+- **User Management**: Sortable/searchable data tables with hover states
+- **Content Moderation**: Image grid with flag/delete actions
+- **Activity Logs**: Filterable log entries with admin attribution
+- **System Health**: Metric gauges with threshold warnings
+- **Design**: Dark theme (#0a0a0b base), accent colors for data viz
 
 ## Environment Variables
 
@@ -303,10 +412,23 @@ lib/i18n/
 - Error: red-500
 - Neutral: zinc scale
 
+### Admin Dashboard Colors (Dark Theme)
+- Background: #0a0a0b
+- Surface: #141416
+- Surface elevated: #1c1c1f
+- Border: #2a2a2e
+- Accent blue: #3b82f6
+- Accent emerald: #10b981
+- Accent amber: #f59e0b
+- Accent rose: #f43f5e
+- Accent violet: #8b5cf6
+
 ### Typography
 - Font: Geist Sans / Geist Mono
 - Headings: Bold, tight tracking
 - Body: Regular weight
+- Admin Display: Playfair Display (serif) for metrics
+- Admin Body: Inter for data tables
 
 ### Spacing
 - Consistent 4px grid

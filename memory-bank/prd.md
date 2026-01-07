@@ -75,6 +75,16 @@ Reset time: 00:00 UTC daily
 - AI comparison with native pronunciation
 - Pronunciation score
 
+### 2.7 Admin Dashboard (Platform Management)
+| Feature | Description |
+|---------|-------------|
+| Platform Analytics | Total users, analyses, DAU, words learned, growth charts |
+| User Management | View, search, suspend/reactivate user accounts |
+| Content Moderation | Review, flag, delete inappropriate content |
+| Activity Logging | Audit trail of admin actions |
+| System Health | API response times, storage usage, error rates |
+| Role-Based Access | admin and super_admin roles |
+
 ---
 
 ## 3. User Flows
@@ -115,6 +125,15 @@ Reset time: 00:00 UTC daily
 | Saved | List of saved analyses |
 | Settings | Language preferences, account |
 | Profile | Stats, achievements |
+
+### 4.2 Admin Pages
+| Page | Description |
+|------|-------------|
+| Admin Overview | Platform metrics, growth charts |
+| User Management | User list, search, detail view |
+| Content Moderation | Analysis review, flag/delete |
+| Activity Logs | Admin action audit trail |
+| System Health | Performance metrics, warnings |
 
 ### 4.2 Design Principles
 - Mobile-first responsive design
