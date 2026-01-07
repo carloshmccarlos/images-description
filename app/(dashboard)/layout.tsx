@@ -14,6 +14,7 @@ import {
   X,
   Sparkles,
   ChevronRight,
+  Shield,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -29,6 +30,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [user, setUser] = useState<{ email: string; name?: string | null } | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
@@ -39,6 +41,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { href: '/saved', label: t('nav.saved'), icon: BookMarked },
     { href: '/profile', label: t('nav.profile'), icon: User },
     { href: '/settings', label: t('nav.settings'), icon: Settings },
+    ...(isAdmin ? [{ href: '/admin', label: 'Admin', icon: Shield }] : []),
   ];
 
   useEffect(() => {
@@ -51,7 +54,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       setUser({ email: user.email!, name: user.user_metadata?.name });
       setIsLoading(false);
     }
+    async function checkAdmin() {
+      try {
+        const res = await fetch('/api/admin/verify');
+        if (!res.ok) {
+          setIsAdmin(false);
+          return;
+        }
+        const data = await res.json();
+        setIsAdmin(data?.success && (data?.data?.role === 'admin' || data?.data?.role === 'super_admin'));
+      } catch {
+        setIsAdmin(false);
+      }
+    }
     getUser();
+    checkAdmin();
   }, [router, supabase.auth]);
 
   const initials = user?.name

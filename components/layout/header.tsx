@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Menu, LogOut, Settings, User, BarChart3, Shield } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Menu, LogOut, Settings, User, BarChart3 } from 'lucide-react';
+import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -24,40 +24,6 @@ export function Header({ user }: HeaderProps) {
   const router = useRouter();
   const supabase = createClient();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    let isMounted = true;
-    async function checkAdmin() {
-      if (!user) {
-        setIsAdmin(false);
-        return;
-      }
-      try {
-        const res = await fetch('/api/admin/verify');
-        if (!res.ok) {
-          if (isMounted) setIsAdmin(false);
-          return;
-        }
-        const data = await res.json();
-        if (
-          isMounted &&
-          data?.success &&
-          (data?.data?.role === 'admin' || data?.data?.role === 'super_admin')
-        ) {
-          setIsAdmin(true);
-        } else if (isMounted) {
-          setIsAdmin(false);
-        }
-      } catch {
-        if (isMounted) setIsAdmin(false);
-      }
-    }
-    checkAdmin();
-    return () => {
-      isMounted = false;
-    };
-  }, [user]);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -70,7 +36,7 @@ export function Header({ user }: HeaderProps) {
     : user?.email?.[0].toUpperCase() || '?';
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-zinc-950/95 dark:supports-[backdrop-filter]:bg-zinc-950/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/60 dark:bg-zinc-950/95 dark:supports-backdrop-filter:bg-zinc-950/60">
       <div className="container flex h-14 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link href={user ? '/dashboard' : '/'} className="flex items-center gap-2">
@@ -87,11 +53,6 @@ export function Header({ user }: HeaderProps) {
               <Link href="/saved" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
                 Saved
               </Link>
-              {isAdmin && (
-                <Link href="/admin" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                  Admin
-                </Link>
-              )}
             </nav>
           )}
         </div>
@@ -129,14 +90,6 @@ export function Header({ user }: HeaderProps) {
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
-                  {isAdmin && (
-                    <DropdownMenuItem asChild>
-                      <Link href="/admin">
-                        <Shield className="mr-2 h-4 w-4" />
-                        Admin
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
                   <DropdownMenuItem asChild>
                     <Link href="/profile">
                       <User className="mr-2 h-4 w-4" />
@@ -182,11 +135,6 @@ export function Header({ user }: HeaderProps) {
           <Link href="/saved" className="block py-2 text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>
             Saved
           </Link>
-          {isAdmin && (
-            <Link href="/admin" className="block py-2 text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>
-              Admin
-            </Link>
-          )}
         </div>
       )}
     </header>
