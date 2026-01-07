@@ -7,6 +7,8 @@ import { ThemeProvider } from '@/components/providers/theme-provider';
 import { I18nProvider } from '@/lib/i18n/provider';
 import { getServerLocale } from '@/lib/i18n/server';
 import { APP_CONFIG } from '@/lib/constants';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const displayFont = Bodoni_Moda({
   variable: '--font-display',
@@ -165,6 +167,8 @@ export default async function RootLayout({
             <QueryProvider>
               {children}
               <Toaster />
+              <Analytics />
+              <SpeedInsights />
             </QueryProvider>
           </I18nProvider>
         </ThemeProvider>
