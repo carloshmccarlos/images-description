@@ -10,6 +10,7 @@ interface UserStats {
 interface DailyUsage {
   usageCount: number;
   date: string;
+  dailyLimit?: number;
 }
 
 interface StatsResponse {

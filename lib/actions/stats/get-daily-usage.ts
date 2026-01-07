@@ -2,12 +2,13 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
-import { dailyUsage } from '@/lib/db/schema';
+import { dailyUsage, userLimits } from '@/lib/db/schema';
 import { sql } from 'drizzle-orm';
 
 interface DailyUsageData {
   date: string;
   usageCount: number;
+  dailyLimit: number;
 }
 
 interface GetDailyUsageResult {
@@ -30,6 +31,13 @@ export async function getDailyUsage(date?: string): Promise<GetDailyUsageResult>
 
   const targetDate = date || getTodayDate();
 
+  const [limitRow] = await db
+    .select({ dailyLimit: userLimits.dailyLimit })
+    .from(userLimits)
+    .where(sql`${userLimits.userId} = ${user.id}`);
+
+  const dailyLimit = limitRow?.dailyLimit && limitRow.dailyLimit > 0 ? limitRow.dailyLimit : 10;
+
   const [usage] = await db
     .select()
     .from(dailyUsage)
@@ -40,6 +48,7 @@ export async function getDailyUsage(date?: string): Promise<GetDailyUsageResult>
     data: {
       date: targetDate,
       usageCount: usage?.usageCount || 0,
+      dailyLimit,
     },
   };
 }

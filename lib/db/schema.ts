@@ -28,6 +28,14 @@ export const dailyUsage = pgTable('daily_usage', {
   uniqueIndex('daily_usage_user_date_idx').on(table.userId, table.date),
 ]);
 
+export const userLimits = pgTable('user_limits', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }).unique(),
+  dailyLimit: integer('daily_limit').default(10).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 export const savedAnalyses = pgTable('saved_analyses', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
@@ -119,6 +127,7 @@ export interface VocabularyItem {
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type DailyUsage = typeof dailyUsage.$inferSelect;
+export type UserLimit = typeof userLimits.$inferSelect;
 export type SavedAnalysis = typeof savedAnalyses.$inferSelect;
 export type NewSavedAnalysis = typeof savedAnalyses.$inferInsert;
 export type UserStats = typeof userStats.$inferSelect;

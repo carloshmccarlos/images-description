@@ -3,25 +3,25 @@
 import { motion } from 'framer-motion';
 import { Camera, BookOpen, Flame, Trophy } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { DAILY_FREE_LIMIT } from '@/lib/constants';
 import { useTranslation } from 'react-i18next';
 
 interface UsageStatsProps {
   used: number;
+  limit: number;
   totalWords: number;
   currentStreak: number;
   totalAnalyses: number;
 }
 
-export function UsageStats({ used, totalWords, currentStreak, totalAnalyses }: UsageStatsProps) {
+export function UsageStats({ used, limit, totalWords, currentStreak, totalAnalyses }: UsageStatsProps) {
   const { t } = useTranslation('dashboard');
-  const remaining = DAILY_FREE_LIMIT - used;
-  const usagePercent = (used / DAILY_FREE_LIMIT) * 100;
+  const remaining = limit - used;
+  const usagePercent = (used / limit) * 100;
 
   const stats = [
     {
       label: t('stats.dailyAnalyses'),
-      value: `${remaining}/${DAILY_FREE_LIMIT}`,
+      value: `${remaining}/${limit}`,
       icon: Camera,
       color: 'text-blue-500',
       bgColor: 'bg-blue-50 dark:bg-blue-950',
@@ -79,7 +79,7 @@ export function UsageStats({ used, totalWords, currentStreak, totalAnalyses }: U
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-zinc-600 dark:text-zinc-300">{t('stats.dailyUsage')}</span>
             <span className="text-sm text-zinc-500">
-              {used} {t('stats.usedOfLimit')} {DAILY_FREE_LIMIT}
+              {used} {t('stats.usedOfLimit')} {limit}
             </span>
           </div>
           <div className="h-3 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">

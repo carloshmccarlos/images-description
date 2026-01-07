@@ -1,7 +1,6 @@
 import { db } from '@/lib/db';
-import { dailyUsage, userStats } from '@/lib/db/schema';
+import { dailyUsage, userStats, userLimits } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { DAILY_FREE_LIMIT } from '@/lib/constants';
 import { getUTCDateString } from '@/lib/utils';
 
 export interface UsageInfo {
@@ -11,8 +10,23 @@ export interface UsageInfo {
   canAnalyze: boolean;
 }
 
+async function resolveDailyLimit(userId: string): Promise<number> {
+  const [limitRow] = await db
+    .select({ dailyLimit: userLimits.dailyLimit })
+    .from(userLimits)
+    .where(eq(userLimits.userId, userId));
+
+  if (limitRow?.dailyLimit && limitRow.dailyLimit > 0) {
+    return limitRow.dailyLimit;
+  }
+
+  // Fallback default if no custom row exists
+  return 10;
+}
+
 export async function checkDailyLimit(userId: string): Promise<UsageInfo> {
   const today = getUTCDateString();
+  const dailyLimit = await resolveDailyLimit(userId);
 
   const [usage] = await db
     .select()
@@ -20,11 +34,11 @@ export async function checkDailyLimit(userId: string): Promise<UsageInfo> {
     .where(and(eq(dailyUsage.userId, userId), eq(dailyUsage.date, today)));
 
   const used = usage?.usageCount ?? 0;
-  const remaining = Math.max(0, DAILY_FREE_LIMIT - used);
+  const remaining = Math.max(0, dailyLimit - used);
 
   return {
     used,
-    limit: DAILY_FREE_LIMIT,
+    limit: dailyLimit,
     remaining,
     canAnalyze: remaining > 0,
   };
@@ -32,6 +46,7 @@ export async function checkDailyLimit(userId: string): Promise<UsageInfo> {
 
 export async function incrementUsage(userId: string): Promise<UsageInfo> {
   const today = getUTCDateString();
+  const dailyLimit = await resolveDailyLimit(userId);
 
   const [existing] = await db
     .select()
@@ -87,5 +102,10 @@ export async function incrementUsage(userId: string): Promise<UsageInfo> {
     });
   }
 
-  return checkDailyLimit(userId);
+  return {
+    used: (existing?.usageCount ?? 0) + 1,
+    limit: dailyLimit,
+    remaining: Math.max(0, dailyLimit - ((existing?.usageCount ?? 0) + 1)),
+    canAnalyze: dailyLimit - ((existing?.usageCount ?? 0) + 1) > 0,
+  };
 }

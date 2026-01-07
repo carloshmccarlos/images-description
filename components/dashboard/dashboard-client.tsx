@@ -25,6 +25,7 @@ interface DashboardClientProps {
   } | null;
   initialUsage?: {
     usageCount: number;
+    dailyLimit?: number;
   } | null;
   initialAnalyses?: Array<{
     id: string;
@@ -59,7 +60,8 @@ export function DashboardClient({
   const analyses = analysesData?.analyses ?? initialAnalyses;
 
   const usageCount = usage?.usageCount ?? 0;
-  const remainingAnalyses = DAILY_FREE_LIMIT - usageCount;
+  const dailyLimit = usage?.dailyLimit ?? DAILY_FREE_LIMIT;
+  const remainingAnalyses = dailyLimit - usageCount;
 
   return (
     <div className="space-y-10 max-w-screen-2xl mx-auto">
@@ -77,6 +79,7 @@ export function DashboardClient({
       ) : (
         <UsageStats
           used={usageCount}
+          limit={dailyLimit}
           totalWords={stats?.totalWordsLearned ?? 0}
           currentStreak={stats?.currentStreak ?? 0}
           totalAnalyses={stats?.totalAnalyses ?? 0}
@@ -92,7 +95,7 @@ export function DashboardClient({
           )}
         </div>
         <div className="h-full">
-          <QuickActions canAnalyze={usageCount < DAILY_FREE_LIMIT} />
+          <QuickActions canAnalyze={usageCount < dailyLimit} />
         </div>
       </div>
     </div>

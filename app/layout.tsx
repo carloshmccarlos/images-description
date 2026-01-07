@@ -38,6 +38,7 @@ export const metadata: Metadata = {
     'vocabulary learning',
     'language learning app',
     'AI language learning',
+    'best ai language learning tools',
     'learn vocabulary from images',
     'visual vocabulary',
     'image-based learning',
