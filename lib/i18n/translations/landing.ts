@@ -80,6 +80,20 @@ export const landingTranslations = {
     navbar: {
       features: 'Features',
       howItWorks: 'How it Works',
+      openMenu: 'Open menu',
+      closeMenu: 'Close menu',
+    },
+    footer: {
+      description: 'Learn vocabulary naturally through images. Upload photos and let AI teach you words in your target language.',
+      product: 'Product',
+      features: 'Features',
+      howItWorks: 'How it Works',
+      getStarted: 'Get Started',
+      contact: 'Contact',
+      email: 'Email us',
+      copyright: 'All rights reserved.',
+      followOnTwitter: 'Follow us on Twitter',
+      viewOnGithub: 'View on GitHub',
     },
   },
   zh: {
@@ -163,6 +177,20 @@ export const landingTranslations = {
     navbar: {
       features: '功能特点',
       howItWorks: '使用方法',
+      openMenu: '打开菜单',
+      closeMenu: '关闭菜单',
+    },
+    footer: {
+      description: '通过图片自然学习词汇。上传照片，让AI用目标语言教你单词。',
+      product: '产品',
+      features: '功能特点',
+      howItWorks: '使用方法',
+      getStarted: '开始使用',
+      contact: '联系',
+      email: '联系我们',
+      copyright: '版权所有。',
+      followOnTwitter: '在Twitter上关注我们',
+      viewOnGithub: '在GitHub上查看',
     },
   },
   ja: {
@@ -246,6 +274,20 @@ export const landingTranslations = {
     navbar: {
       features: '機能',
       howItWorks: '使い方',
+      openMenu: 'メニューを開く',
+      closeMenu: 'メニューを閉じる',
+    },
+    footer: {
+      description: '画像で自然に語彙を学びましょう。写真をアップロードすると、AIが目標言語で単語を教えてくれます。',
+      product: '製品',
+      features: '機能',
+      howItWorks: '使い方',
+      getStarted: '始める',
+      contact: 'お問い合わせ',
+      email: 'メールで連絡',
+      copyright: 'All rights reserved.',
+      followOnTwitter: 'Twitterでフォロー',
+      viewOnGithub: 'GitHubで見る',
     },
   },
   ko: {
@@ -329,6 +371,20 @@ export const landingTranslations = {
     navbar: {
       features: '기능',
       howItWorks: '사용 방법',
+      openMenu: '메뉴 열기',
+      closeMenu: '메뉴 닫기',
+    },
+    footer: {
+      description: '이미지를 통해 자연스럽게 어휘를 배우세요. 사진을 업로드하고 AI가 목표 언어로 단어를 가르쳐 드립니다.',
+      product: '제품',
+      features: '기능',
+      howItWorks: '사용 방법',
+      getStarted: '시작하기',
+      contact: '문의',
+      email: '이메일로 연락',
+      copyright: '모든 권리 보유.',
+      followOnTwitter: '트위터에서 팔로우',
+      viewOnGithub: 'GitHub에서 보기',
     },
   },
 } as const;

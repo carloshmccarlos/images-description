@@ -27,7 +27,7 @@ export function Footer() {
 
           {/* Links */}
           <div>
-            <h4 className="font-semibold mb-4">{t('footer.product')}</h4>
+            <h3 className="font-semibold mb-4 text-base">{t('footer.product')}</h3>
             <ul className="space-y-2 text-zinc-600 dark:text-zinc-400">
               <li><a href="#features" className="hover:text-zinc-900 dark:hover:text-white transition-colors">{t('footer.features')}</a></li>
               <li><a href="#demo" className="hover:text-zinc-900 dark:hover:text-white transition-colors">{t('footer.howItWorks')}</a></li>
@@ -37,7 +37,7 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="font-semibold mb-4">{t('footer.contact')}</h4>
+            <h3 className="font-semibold mb-4 text-base">{t('footer.contact')}</h3>
             <ul className="space-y-2 text-zinc-600 dark:text-zinc-400">
               <li>
                 <a
@@ -56,11 +56,23 @@ export function Footer() {
             © {new Date().getFullYear()} {APP_CONFIG.name}. {t('footer.copyright')}
           </p>
           <div className="flex items-center gap-4">
-            <a href="#" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
-              <Twitter className="w-5 h-5" />
+            <a 
+              href="https://twitter.com/lexilens" 
+              className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+              aria-label={t('footer.followOnTwitter')}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Twitter className="w-5 h-5" aria-hidden="true" />
             </a>
-            <a href="#" className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
-              <Github className="w-5 h-5" />
+            <a 
+              href="https://github.com/lexilens" 
+              className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+              aria-label={t('footer.viewOnGithub')}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Github className="w-5 h-5" aria-hidden="true" />
             </a>
           </div>
         </div>
