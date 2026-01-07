@@ -13,7 +13,6 @@ import {
   Menu,
   X,
   Sparkles,
-  LogOut,
   ChevronRight,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -22,6 +21,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { APP_CONFIG } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+
+import { LogoutDialog } from '@/components/auth/logout-dialog';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation('common');
@@ -52,11 +53,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
     getUser();
   }, [router, supabase.auth]);
-
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.push('/');
-  }
 
   const initials = user?.name
     ? user.name.split(' ').map((n) => n[0]).join('').toUpperCase()
@@ -168,14 +164,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       <p className="text-sm text-zinc-500 truncate dark:text-zinc-400">{user?.email}</p>
                     </div>
                   </div>
-                  <Button
+                  <LogoutDialog
                     variant="outline"
                     className="w-full justify-start border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                    onClick={handleSignOut}
-                  >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    {t('nav.signOut')}
-                  </Button>
+                  />
                 </div>
               </div>
             </motion.aside>
@@ -244,15 +236,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <p className="text-xs text-zinc-500 truncate dark:text-zinc-400">{user?.email}</p>
               </div>
             </div>
-            <Button
+            <LogoutDialog
               variant="ghost"
               size="sm"
               className="w-full justify-start text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
-              onClick={handleSignOut}
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              {t('nav.signOut')}
-            </Button>
+            />
           </div>
         </aside>
 

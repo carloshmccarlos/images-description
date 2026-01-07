@@ -36,6 +36,13 @@ export const commonTranslations = {
       afternoon: 'Good afternoon',
       evening: 'Good evening',
     },
+    // Logout dialog
+    logout: {
+      title: 'Sign out',
+      description: 'Are you sure you want to sign out? You will need to sign in again to access your account.',
+      confirm: 'Sign out',
+      signingOut: 'Signing out...',
+    },
   },
   zh: {
     nav: {
@@ -70,6 +77,12 @@ export const commonTranslations = {
       morning: '早上好',
       afternoon: '下午好',
       evening: '晚上好',
+    },
+    logout: {
+      title: '退出登录',
+      description: '确定要退出登录吗？您需要重新登录才能访问您的账户。',
+      confirm: '退出登录',
+      signingOut: '正在退出...',
     },
   },
   ja: {
@@ -106,6 +119,12 @@ export const commonTranslations = {
       afternoon: 'こんにちは',
       evening: 'こんばんは',
     },
+    logout: {
+      title: 'ログアウト',
+      description: 'ログアウトしてもよろしいですか？アカウントにアクセスするには再度ログインが必要です。',
+      confirm: 'ログアウト',
+      signingOut: 'ログアウト中...',
+    },
   },
   ko: {
     nav: {
@@ -140,6 +159,12 @@ export const commonTranslations = {
       morning: '좋은 아침입니다',
       afternoon: '안녕하세요',
       evening: '좋은 저녁입니다',
+    },
+    logout: {
+      title: '로그아웃',
+      description: '로그아웃하시겠습니까? 계정에 접근하려면 다시 로그인해야 합니다.',
+      confirm: '로그아웃',
+      signingOut: '로그아웃 중...',
     },
   },
 } as const;
