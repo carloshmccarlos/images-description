@@ -18,7 +18,7 @@ export function GET() {
         type: 'image/png',
       },
       {
-        src: '/icon-192.png',
+        src: '/icon-192',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any maskable',
