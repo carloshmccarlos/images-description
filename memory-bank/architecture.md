@@ -1,7 +1,7 @@
 # LexiLens Architecture
 
 ## Overview
-LexiLens is an image-based language learning platform built with Next.js 16, Supabase, and AI vision models.
+LexiLens is an image-based language learning platform built with Next.js 16, Supabase, and AI vision models. The system now uses Doubao API 1.6 for vision-language understanding to improve latency and throughput. Generated descriptions are additionally translated into the user's native language, and English vocabulary outputs are normalized to lowercase.
 
 ## Tech Stack
 - **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS v4
@@ -9,7 +9,7 @@ LexiLens is an image-based language learning platform built with Next.js 16, Sup
 - **Database**: Supabase PostgreSQL with Drizzle ORM
 - **Authentication**: Supabase Auth (Email, Google OAuth)
 - **Storage**: Cloudflare R2
-- **AI**: SiliconFlow GLM 4.6V via Vercel AI SDK
+- **AI**: Doubao API 1.6 via Vercel AI SDK
 - **State**: Zustand + TanStack Query
 - **Animations**: Framer Motion
 - **UI Components**: shadcn/ui
@@ -215,7 +215,7 @@ CREATE TABLE system_metrics (
 │   │   ├── middleware.ts         # Admin role verification
 │   │   └── utils.ts              # Admin utility functions
 │   ├── ai/                       # AI client and prompts
-│   │   ├── siliconflow-client.ts
+│   │   ├── doubao-client.ts
 │   │   └── prompts.ts
 │   ├── db/                       # Drizzle schema and client
 │   │   ├── index.ts
@@ -340,8 +340,9 @@ NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY
 SUPABASE_DATABASE_URL
-SILICONFLOW_API_KEY
-SILICONFLOW_BASE_URL
+DOUBAO_API_KEY
+DOUBAO_BASE_URL
+DOUBAO_MODEL
 CLOUDFLARE_R2_ACCESS_KEY_ID
 CLOUDFLARE_R2_SECRET_ACCESS_KEY
 CLOUDFLARE_R2_BUCKET_NAME

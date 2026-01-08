@@ -7,7 +7,7 @@ Building a web-based language learning platform that uses AI to analyze user-upl
 - ✅ Next.js 16.1.1 with TypeScript and Tailwind CSS v4
 - ✅ App Router with React 19 Server Components
 - ✅ Complete authentication system with Supabase Auth
-- ✅ AI-powered image analysis with SiliconFlow GLM 4.6V
+- ✅ AI-powered image analysis with Doubao API 1.6 (vision-language) for faster responses
 - ✅ User dashboard with statistics and saved analyses
 - ✅ Profile management with achievements and progress tracking
 - ✅ Settings page with language preferences

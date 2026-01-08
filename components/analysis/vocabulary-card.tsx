@@ -78,8 +78,8 @@ export function VocabularyCard({ item, index }: VocabularyCardProps) {
             <div className="flex items-center justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <h4 className="font-bold text-2xl tracking-tight text-zinc-900 dark:text-white uppercase">
-                    {item.word}
+                  <h4 className="font-bold text-2xl tracking-tight text-zinc-900 dark:text-white">
+                    {item.word?.toLowerCase?.() ?? item.word}
                   </h4>
                   {item.category && (
                     <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg ${colors.bg} ${colors.text} border ${colors.border} shadow-sm`}>

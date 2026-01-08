@@ -8,7 +8,7 @@
 | Backend | Next.js API Routes |
 | Database | Supabase (PostgreSQL) |
 | Authentication | Supabase Auth (Google, Apple, Email) |
-| AI Service | SiliconFlow - GLM 4.6V |
+| AI Service | Doubao API 1.6 (vision-language) |
 | AI SDK | Next.js AI SDK (Vercel AI SDK) |
 | Storage | Cloudflare R2 |
 | Animation | Framer Motion |
@@ -108,9 +108,9 @@ GET    /api/saved/search?q=keyword
 
 ## AI Integration
 
-### SiliconFlow GLM 4.6V
+### Doubao API 1.6
 - Vision-language model for image understanding
-- Endpoint: SiliconFlow API
+- Endpoint: Doubao API 1.6
 - SDK: Vercel AI SDK with custom provider
 
 ### Prompt Structure

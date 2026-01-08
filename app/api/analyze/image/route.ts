@@ -147,6 +147,7 @@ export async function POST(request: Request) {
       id: saved.id,
       imageUrl,
       description: result.description,
+      descriptionNative: result.descriptionNative,
       vocabulary: result.vocabulary,
     });
   } catch (error) {

@@ -22,9 +22,11 @@ export function createAnalysisPrompt(
   return `You are a language learning assistant. Analyze this image and help the user learn ${targetLang}.
 
 INSTRUCTIONS:
-1. Write a detailed description of the image in ${targetLang}
-2. Extract 5-15 vocabulary words from objects/concepts visible in the image
-3. ${levelGuidance}
+1. Write a detailed description of the image in ${targetLang}.
+2. Also provide a translation of that description in ${nativeLang} (the user's native language).
+3. Extract 5-15 vocabulary words from objects/concepts visible in the image.
+4. ${levelGuidance}
+5. If any vocabulary word or translation is in English, make it lowercase (do not use uppercase letters). Do not change proper nouns in other languages.
 
 For each vocabulary word, provide:
 - The word in ${targetLang}
@@ -36,6 +38,7 @@ For each vocabulary word, provide:
 RESPOND IN THIS EXACT JSON FORMAT:
 {
   "description": "Description in ${targetLang}",
+  "descriptionNative": "Description translated into ${nativeLang}",
   "vocabulary": [
     {
       "word": "word in ${targetLang}",

@@ -7,15 +7,7 @@ export interface AnalysisResult {
   vocabulary: VocabularyItem[];
 }
 
-function normalizeIfEnglish(input: string): string {
-  const trimmed = input?.trim() ?? '';
-  if (trimmed && /^[A-Za-z0-9\s.,'’\-?!:;()]+$/.test(trimmed)) {
-    return trimmed.toLowerCase();
-  }
-  return trimmed || '';
-}
-
-interface SiliconFlowMessage {
+interface DoubaoMessage {
   role: 'user' | 'assistant' | 'system';
   content: Array<{
     type: 'text' | 'image_url';
@@ -24,12 +16,21 @@ interface SiliconFlowMessage {
   }>;
 }
 
-interface SiliconFlowResponse {
+interface DoubaoResponse {
   choices: Array<{
     message: {
       content: string;
     };
   }>;
+}
+
+function normalizeIfEnglish(input: string): string {
+  const trimmed = input?.trim() ?? '';
+  // If the text is primarily ASCII letters/punctuation, normalize to lowercase
+  if (trimmed && /^[A-Za-z0-9\s.,'’\-?!:;()]+$/.test(trimmed)) {
+    return trimmed.toLowerCase();
+  }
+  return trimmed || '';
 }
 
 export async function analyzeImage(
@@ -40,7 +41,7 @@ export async function analyzeImage(
 ): Promise<AnalysisResult> {
   const prompt = createAnalysisPrompt(learningLanguage, motherLanguage, proficiencyLevel);
 
-  const messages: SiliconFlowMessage[] = [
+  const messages: DoubaoMessage[] = [
     {
       role: 'user',
       content: [
@@ -50,36 +51,34 @@ export async function analyzeImage(
     },
   ];
 
-  const response = await fetch(`${process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.cn/v1'}/chat/completions`, {
+  const response = await fetch(`${process.env.DOUBAO_BASE_URL || 'https://ark.cn-beijing.volces.com/api/v3'}/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.SILICONFLOW_API_KEY}`,
+      'Authorization': `Bearer ${process.env.DOUBAO_API_KEY}`,
     },
     body: JSON.stringify({
-      model: 'zai-org/GLM-4.6V',
+      model: process.env.DOUBAO_MODEL || 'doubao-seed-1-8-251228',
       messages,
       max_tokens: 8192,
       temperature: 0.6,
       top_p: 0.95,
-      top_k: 20,
     }),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('SiliconFlow API error:', response.status, errorText);
-    throw new Error(`SiliconFlow API error: ${response.status} - ${errorText}`);
+    console.error('Doubao API error:', response.status, errorText);
+    throw new Error(`Doubao API error: ${response.status} - ${errorText}`);
   }
 
-  const data = await response.json() as SiliconFlowResponse;
+  const data = await response.json() as DoubaoResponse;
   const text = data.choices[0]?.message?.content;
 
   if (!text) {
     throw new Error('No response from AI');
   }
 
-  // Parse the JSON response
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
     console.error('Failed to parse AI response:', text);
@@ -88,15 +87,12 @@ export async function analyzeImage(
 
   const parsed = JSON.parse(jsonMatch[0]) as AnalysisResult;
 
-  // Validate the response structure
   if (!parsed.description || !Array.isArray(parsed.vocabulary)) {
     throw new Error('Invalid AI response structure');
   }
 
   parsed.description = parsed.description || '';
   parsed.descriptionNative = parsed.descriptionNative || '';
-
-  // Ensure all vocabulary items have required fields
   parsed.vocabulary = parsed.vocabulary.map((item) => ({
     word: normalizeIfEnglish(item.word || ''),
     translation: normalizeIfEnglish(item.translation || ''),
