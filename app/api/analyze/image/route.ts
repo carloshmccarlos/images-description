@@ -4,7 +4,7 @@ import { db } from '@/lib/db';
 import { users, savedAnalyses, userStats, analysisTasks } from '@/lib/db/schema';
 import { eq, and, inArray } from 'drizzle-orm';
 import { checkDailyLimit, incrementUsage } from '@/lib/usage/daily-limits';
-import { analyzeImage } from '@/lib/ai/siliconflow-client';
+import { analyzeImage } from '@/lib/ai/doubao-client';
 import { uploadToR2, generateImageKey } from '@/lib/storage/r2-client';
 import { IMAGE_CONFIG } from '@/lib/constants';
 
