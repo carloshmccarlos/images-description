@@ -222,7 +222,6 @@ All server actions **MUST**:
 - Always read `memory-bank/@architecture.md` before writing code
 - Always read `memory-bank/@prd.md` before writing code
 - Always include the **entire database schema** when required
-- After major changes, update `memory-bank/@architecture.md`
+- After major changes, update files in `memory-bank`
 - No backward compatibility — break freely
 - Always check MCP before coding
-- Always apply Claude-level architectural reasoning before writing code
