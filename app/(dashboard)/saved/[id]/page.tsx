@@ -10,6 +10,7 @@ import { formatDate } from '@/lib/utils';
 import { DeleteAnalysisButton } from './delete-button';
 import { SyncHeightLayout } from './sync-height-layout';
 import { DescriptionCard } from './description-card';
+import { AudioPrefetcher } from './audio-prefetcher';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -89,6 +90,7 @@ export default async function SavedAnalysisPage({ params }: PageProps) {
 
   return (
     <div className="max-w-screen-2xl mx-auto space-y-10 pb-12">
+      <AudioPrefetcher vocabulary={analysis.vocabulary} language={analysis.learningLanguage ?? 'en'} />
       <div className="flex items-center justify-between px-2">
         <Link href={`/${locale}/saved`}>
           <Button variant="ghost" className="rounded-xl font-bold text-zinc-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-all group">

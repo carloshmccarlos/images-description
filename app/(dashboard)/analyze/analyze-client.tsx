@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, Sparkles, AlertCircle, Loader2, Volume2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -14,9 +14,40 @@ import type { VocabularyItem } from '@/lib/db/schema';
 
 interface AnalyzeClientProps {
   hasRunningTask?: boolean;
+  runningTaskId?: string | null;
 }
 
 type AnalysisState = 'idle' | 'analyzing' | 'generating_audio' | 'error';
+
+type TaskStatus = 'pending' | 'analyzing' | 'completed' | 'error';
+
+interface AnalyzeTaskResponse {
+  id: string;
+  status: TaskStatus;
+  vocabulary?: VocabularyItem[] | null;
+  savedAnalysisId?: string | null;
+  errorMessage?: string | null;
+}
+
+async function wait(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function pollAnalyzeTask(taskId: string): Promise<AnalyzeTaskResponse> {
+  for (let attempt = 0; attempt < 45; attempt += 1) {
+    const res = await fetch(`/api/analyze/task/${encodeURIComponent(taskId)}`, { cache: 'no-store' });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: 'Failed to fetch task' }));
+      throw new Error(err.error || 'Failed to fetch task');
+    }
+
+    const data = (await res.json()) as AnalyzeTaskResponse;
+    if (data.status === 'completed' || data.status === 'error') return data;
+    await wait(1500);
+  }
+
+  throw new Error('Analysis is taking longer than expected. Please try again in a moment.');
+}
 
 async function prefetchVocabularyAudio(vocabulary: VocabularyItem[], language: string): Promise<void> {
   const lang = language.toLowerCase();
@@ -46,7 +77,7 @@ async function prefetchVocabularyAudio(vocabulary: VocabularyItem[], language: s
   );
 }
 
-export function AnalyzeClient({ hasRunningTask = false }: AnalyzeClientProps) {
+export function AnalyzeClient({ hasRunningTask = false, runningTaskId = null }: AnalyzeClientProps) {
   const t = useTranslations('analyze');
   const router = useRouter();
   const { locale } = useLanguage();
@@ -55,6 +86,47 @@ export function AnalyzeClient({ hasRunningTask = false }: AnalyzeClientProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!hasRunningTask || !runningTaskId) return;
+
+    const taskId = runningTaskId;
+
+    let isCancelled = false;
+
+    async function resume() {
+      try {
+        setState('analyzing');
+        const task = await pollAnalyzeTask(taskId);
+        if (isCancelled) return;
+
+        if (task.status === 'error') {
+          setError(task.errorMessage || t('errorTitle'));
+          setState('error');
+          return;
+        }
+
+        if (!task.savedAnalysisId) {
+          setError(t('errorTitle'));
+          setState('error');
+          return;
+        }
+
+        router.push(`/${locale}/saved/${task.savedAnalysisId}`);
+      } catch (err) {
+        if (isCancelled) return;
+        const message = err instanceof Error ? err.message : t('errorTitle');
+        setError(message);
+        setState('error');
+      }
+    }
+
+    resume();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [hasRunningTask, locale, router, runningTaskId, t]);
 
   function handleImageSelect(file: File, preview: string) {
     setSelectedImage(preview);
@@ -90,6 +162,17 @@ export function AnalyzeClient({ hasRunningTask = false }: AnalyzeClientProps) {
         if (response.status === 429) {
           setError(t('dailyLimitReached'));
           setState('error');
+          return;
+        }
+        if (response.status === 409 && typeof data?.taskId === 'string') {
+          const task = await pollAnalyzeTask(data.taskId);
+          if (task.status === 'error') {
+            throw new Error(task.errorMessage || t('errorTitle'));
+          }
+          if (!task.savedAnalysisId) {
+            throw new Error(t('errorTitle'));
+          }
+          router.push(`/${locale}/saved/${task.savedAnalysisId}`);
           return;
         }
         throw new Error(data.error || t('errorTitle'));

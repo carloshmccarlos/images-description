@@ -14,8 +14,9 @@ export default async function AnalyzePage() {
 
   const taskResult = await getPendingTask();
   const hasRunningTask = !!taskResult.data;
+  const runningTaskId = taskResult.data?.id ?? null;
 
   return (
-    <AnalyzeClient hasRunningTask={hasRunningTask} />
+    <AnalyzeClient hasRunningTask={hasRunningTask} runningTaskId={runningTaskId} />
   );
 }

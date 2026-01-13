@@ -20,13 +20,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Clean up stale tasks (older than 5 minutes) to prevent blocking
-    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    // Clean up stale tasks to prevent blocking (e.g., serverless timeouts)
+    const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
     await db
       .delete(analysisTasks)
       .where(and(
         eq(analysisTasks.userId, user.id),
-        lt(analysisTasks.createdAt, fiveMinutesAgo)
+        inArray(analysisTasks.status, ['pending', 'analyzing']),
+        lt(analysisTasks.createdAt, thirtyMinutesAgo)
+      ));
+
+    await db
+      .delete(analysisTasks)
+      .where(and(
+        eq(analysisTasks.userId, user.id),
+        inArray(analysisTasks.status, ['completed', 'error']),
+        lt(analysisTasks.createdAt, oneDayAgo)
       ));
 
     // Check for existing pending task
@@ -42,6 +53,8 @@ export async function POST(request: Request) {
     if (existingTask) {
       return NextResponse.json({
         error: 'You have an ongoing analysis. Please wait for it to complete.',
+        taskId: existingTask.id,
+        status: existingTask.status,
       }, { status: 409 });
     }
 
@@ -141,6 +154,19 @@ export async function POST(request: Request) {
       })
       .returning();
 
+    // Mark task as completed so the client can resume via /api/analyze/task/[taskId]
+    await db
+      .update(analysisTasks)
+      .set({
+        status: 'completed',
+        imageUrl,
+        description: result.description,
+        vocabulary: result.vocabulary,
+        savedAnalysisId: saved.id,
+        updatedAt: new Date(),
+      })
+      .where(eq(analysisTasks.id, taskId));
+
     // Update user stats
     const [stats] = await db.select().from(userStats).where(eq(userStats.userId, user.id));
     if (stats) {
@@ -152,9 +178,6 @@ export async function POST(request: Request) {
         })
         .where(eq(userStats.userId, user.id));
     }
-
-    // Delete the task - analysis completed successfully
-    await db.delete(analysisTasks).where(eq(analysisTasks.id, taskId));
 
     return NextResponse.json({
       id: saved.id,
@@ -168,9 +191,16 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error analyzing image:', error);
     
-    // Delete the task on failure
+    // Mark the task as failed so the client can show a meaningful state
     if (taskId) {
-      await db.delete(analysisTasks).where(eq(analysisTasks.id, taskId));
+      await db
+        .update(analysisTasks)
+        .set({
+          status: 'error',
+          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+          updatedAt: new Date(),
+        })
+        .where(eq(analysisTasks.id, taskId));
     }
     
     return NextResponse.json(
