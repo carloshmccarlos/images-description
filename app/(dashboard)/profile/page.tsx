@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { getLocale } from 'next-intl/server';
 import { getCurrentUser } from '@/lib/actions/user/get-current-user';
 import { getUserStats } from '@/lib/actions/stats/get-user-stats';
 import { getRecentActivity } from '@/lib/actions/stats/get-recent-activity';
@@ -9,13 +10,13 @@ import { StatsOverview } from '@/components/profile/stats-overview';
 import { AchievementsList } from '@/components/profile/achievements-list';
 import { LearningProgress } from '@/components/profile/learning-progress';
 import { SUPPORTED_LANGUAGES } from '@/lib/constants';
-
 export default async function ProfilePage() {
+  const locale = await getLocale();
   const userResult = await getCurrentUser();
   
   if (!userResult.success) {
-    if (userResult.needsSetup) redirect('/auth/setup');
-    redirect('/auth/login');
+    if (userResult.needsSetup) redirect(`/${locale}/auth/setup`);
+    redirect(`/${locale}/auth/login`);
   }
 
   const user = userResult.data!;
@@ -40,10 +41,10 @@ export default async function ProfilePage() {
       <ProfileHeader
         name={user.name || user.email.split('@')[0] || 'Learner'}
         email={user.email}
-        learningLanguage={learningLang?.name || 'Spanish'}
-        learningFlag={learningLang?.flag || '🇪🇸'}
-        nativeLanguage={nativeLang?.name || 'English'}
-        nativeFlag={nativeLang?.flag || '🇺🇸'}
+        learningLanguage={learningLang?.name || 'English'}
+        learningFlag={learningLang?.flag || '🇺🇸'}
+        nativeLanguage={nativeLang?.name || '中文（简体）'}
+        nativeFlag={nativeLang?.flag || '🇨🇳'}
         proficiencyLevel={user.proficiencyLevel}
         memberSince={user.createdAt}
       />

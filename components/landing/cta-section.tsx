@@ -4,15 +4,17 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/hooks/use-language';
 
 interface CTASectionProps {
   isLoggedIn: boolean;
 }
 
 export function CTASection({ isLoggedIn }: CTASectionProps) {
-  const { t } = useTranslation('landing');
-  const { t: tCommon } = useTranslation('common');
+  const t = useTranslations('landing');
+  const tCommon = useTranslations('common');
+  const { locale } = useLanguage();
 
   return (
     <section className="py-24 relative overflow-hidden">
@@ -59,14 +61,14 @@ export function CTASection({ isLoggedIn }: CTASectionProps) {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href={isLoggedIn ? '/analyze' : '/auth/register'}>
+            <Link href={isLoggedIn ? `/${locale}/analyze` : `/${locale}/auth/register`}>
               <Button size="lg" className="text-lg px-8 h-14 bg-white text-zinc-900 hover:bg-white/90 shadow-xl">
                 {isLoggedIn ? t('cta.ctaLoggedIn') : t('cta.ctaLoggedOut')}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
             {!isLoggedIn && (
-              <Link href="/auth/login">
+              <Link href={`/${locale}/auth/login`}>
                 <Button
                   size="lg"
                   variant="outline"

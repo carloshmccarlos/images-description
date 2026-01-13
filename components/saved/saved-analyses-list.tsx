@@ -8,8 +8,9 @@ import { ArrowRight, Clock, BookOpen, ChevronLeft, ChevronRight, Camera } from '
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatDate, cn } from '@/lib/utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import type { VocabularyItem } from '@/lib/db/schema';
+import { useLanguage } from '@/hooks/use-language';
 
 interface AnalysisItem {
   id: string;
@@ -32,14 +33,15 @@ export function SavedAnalysesList({
   totalPages,
   searchQuery,
 }: SavedAnalysesListProps) {
-  const { t } = useTranslation('saved');
+  const t = useTranslations('saved');
+  const { locale } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   function goToPage(page: number) {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', page.toString());
-    router.push(`/saved?${params.toString()}`);
+    router.push(`/${locale}/saved?${params.toString()}`);
   }
 
   if (analyses.length === 0) {
@@ -57,7 +59,7 @@ export function SavedAnalysesList({
               ? t('list.noResultsDesc', { query: searchQuery })
               : t('list.noAnalysesDesc')}
           </p>
-          <Link href="/analyze">
+          <Link href={`/${locale}/analyze`}>
             <Button>
               <Camera className="w-4 h-4 mr-2" />
               {t('list.analyzeImage')}
@@ -78,7 +80,7 @@ export function SavedAnalysesList({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
           >
-            <Link href={`/saved/${analysis.id}`}>
+            <Link href={`/${locale}/saved/${analysis.id}`}>
               <Card className="group overflow-hidden border border-zinc-200 bg-white/75 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-emerald-500/5 dark:border-zinc-800 dark:bg-zinc-950/40">
                 <div className="aspect-video relative overflow-hidden">
                   <Image

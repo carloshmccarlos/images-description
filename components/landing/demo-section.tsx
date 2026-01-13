@@ -2,10 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { Upload, Brain, BookOpen, ArrowRight } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 export function DemoSection() {
-  const { t } = useTranslation('landing');
+  const t = useTranslations('landing');
 
   const steps = [
     {

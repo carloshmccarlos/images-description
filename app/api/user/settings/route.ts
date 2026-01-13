@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { languagePreferencesSchema } from '@/lib/validations/user';
+import * as v from 'valibot';
 
 export async function GET() {
   try {
@@ -44,16 +45,16 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json();
-    const validatedData = languagePreferencesSchema.safeParse(body);
+    const validatedData = v.safeParse(languagePreferencesSchema, body);
 
     if (!validatedData.success) {
       return NextResponse.json(
-        { error: 'Invalid data', details: validatedData.error.flatten() },
+        { error: 'Invalid data', issues: validatedData.issues },
         { status: 400 }
       );
     }
 
-    const { motherLanguage, learningLanguage, proficiencyLevel } = validatedData.data;
+    const { motherLanguage, learningLanguage, proficiencyLevel } = validatedData.output;
 
     // Check if user exists, if not create them
     const [existingUser] = await db.select().from(users).where(eq(users.id, user.id));

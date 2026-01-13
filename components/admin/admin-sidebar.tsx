@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -15,7 +16,9 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { LanguageSelectorDark } from '@/components/ui/language-selector';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/use-language';
 
 interface AdminUser {
   id: string;
@@ -29,15 +32,31 @@ interface AdminSidebarProps {
 }
 
 const navItems = [
-  { href: '/admin', label: 'Overview', icon: LayoutDashboard },
-  { href: '/admin/users', label: 'Users', icon: Users },
-  { href: '/admin/content', label: 'Content', icon: FileText },
-  { href: '/admin/logs', label: 'Activity Logs', icon: Activity },
-  { href: '/admin/health', label: 'System Health', icon: HeartPulse },
+  { baseHref: '/admin', labelKey: 'sidebar.overview', icon: LayoutDashboard },
+  { baseHref: '/admin/users', labelKey: 'sidebar.users', icon: Users },
+  { baseHref: '/admin/content', labelKey: 'sidebar.content', icon: FileText },
+  { baseHref: '/admin/logs', labelKey: 'sidebar.logs', icon: Activity },
+  { baseHref: '/admin/health', labelKey: 'sidebar.health', icon: HeartPulse },
 ];
 
 export function AdminSidebar({ admin }: AdminSidebarProps) {
   const pathname = usePathname();
+  const t = useTranslations('admin');
+  const { locale } = useLanguage();
+
+  const LOCALES = ['en', 'zh-cn', 'zh-tw', 'ja', 'ko'] as const;
+  function stripLocale(path: string) {
+    const parts = path.split('/').filter(Boolean);
+    const first = parts[0]?.toLowerCase();
+    if (first && (LOCALES as readonly string[]).includes(first)) {
+      const rest = `/${parts.slice(1).join('/')}`;
+      return rest === '/' ? '/' : rest;
+    }
+    return path;
+  }
+
+  const basePathname = stripLocale(pathname);
+  const prefixed = `/${locale}`;
 
   const initials = admin?.name
     ? admin.name.split(' ').map((n) => n[0]).join('').toUpperCase()
@@ -51,20 +70,21 @@ export function AdminSidebar({ admin }: AdminSidebarProps) {
         </div>
         <div>
           <span className="font-bold text-2xl tracking-tight font-['Playfair_Display'] text-white">
-            Admin
+            {t('sidebar.title')}
           </span>
-          <p className="text-xs text-zinc-500 uppercase tracking-wider">Dashboard</p>
+          <p className="text-xs text-zinc-500 uppercase tracking-wider">{t('sidebar.subtitle')}</p>
         </div>
       </div>
 
       <nav className="flex-1 px-6 space-y-1.5">
         {navItems.map((item) => {
-          const isActive = pathname === item.href || 
-            (item.href !== '/admin' && pathname.startsWith(item.href));
+          const href = `${prefixed}${item.baseHref}`;
+          const isActive = basePathname === item.baseHref || 
+            (item.baseHref !== '/admin' && basePathname.startsWith(item.baseHref));
           return (
             <Link
-              key={item.href}
-              href={item.href}
+              key={item.baseHref}
+              href={href}
               className={cn(
                 'group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all relative',
                 isActive
@@ -80,7 +100,7 @@ export function AdminSidebar({ admin }: AdminSidebarProps) {
               )}
               <item.icon className={cn('w-5 h-5', isActive && 'text-violet-400')} />
               <div className="flex-1">
-                <span className="font-medium">{item.label}</span>
+                <span className="font-medium">{t(item.labelKey)}</span>
               </div>
               <ChevronRight className={cn(
                 'w-4 h-4 opacity-0 -translate-x-2 transition-all',
@@ -111,17 +131,20 @@ export function AdminSidebar({ admin }: AdminSidebarProps) {
               ? "bg-rose-500/20 text-rose-400" 
               : "bg-violet-500/20 text-violet-400"
           )}>
-            {admin?.role === 'super_admin' ? 'Super Admin' : 'Admin'}
+            {admin?.role === 'super_admin' ? t('users.roleSuperAdmin') : t('users.roleAdmin')}
           </span>
         </div>
-        <Link href="/dashboard">
+        <div className="flex items-center gap-2">
+          <LanguageSelectorDark className="flex-1" />
+        </div>
+        <Link href={`${prefixed}/dashboard`} className="mt-2 block">
           <Button 
             variant="ghost" 
             size="sm"
             className="w-full justify-start text-zinc-400 hover:text-white hover:bg-[#2a2a2e]"
           >
             <LogOut className="w-4 h-4 mr-2" />
-            Exit Admin
+            {t('sidebar.exitAdmin')}
           </Button>
         </Link>
       </div>

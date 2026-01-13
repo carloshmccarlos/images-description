@@ -2,19 +2,21 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { registerSchema, type RegisterInput } from '@/lib/validations/auth';
+import { valibotResolver } from '@/lib/validations/react-hook-form-valibot-resolver';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/hooks/use-language';
 
 export function RegisterForm() {
-  const { t } = useTranslation('auth');
+  const t = useTranslations('auth');
+  const { locale } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
@@ -24,7 +26,7 @@ export function RegisterForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterInput>({
-    resolver: zodResolver(registerSchema),
+    resolver: valibotResolver(registerSchema),
   });
 
   async function onSubmit(data: RegisterInput) {
@@ -45,7 +47,7 @@ export function RegisterForm() {
       }
 
       toast.success('Check your email', { description: 'We sent you a confirmation link' });
-      router.push('/auth/login');
+      router.push(`/${locale}/auth/login`);
     } catch {
       toast.error('Something went wrong', { description: 'Please try again later' });
     } finally {

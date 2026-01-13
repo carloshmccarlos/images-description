@@ -1,22 +1,20 @@
 import { redirect } from 'next/navigation';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { Sparkles } from 'lucide-react';
 import { checkUserSetup } from '@/lib/actions/user/check-user-setup';
 import { LanguageSetupForm } from '@/components/auth/language-setup-form';
 import { APP_CONFIG } from '@/lib/constants';
-import { getServerLocale } from '@/lib/i18n/server';
-import { getTranslations } from '@/lib/i18n';
-
 export default async function LanguageSetupPage() {
   const result = await checkUserSetup();
-  const locale = await getServerLocale();
-  const t = getTranslations('auth', locale);
+  const locale = await getLocale();
+  const t = await getTranslations('auth');
 
   if (!result.isAuthenticated) {
-    redirect('/auth/login');
+    redirect(`/${locale}/auth/login`);
   }
 
   if (result.isSetupComplete) {
-    redirect('/dashboard');
+    redirect(`/${locale}/dashboard`);
   }
 
   return (
@@ -33,9 +31,9 @@ export default async function LanguageSetupPage() {
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-linear-to-br from-sky-600 to-emerald-500 shadow-xl shadow-emerald-500/20 mb-8 animate-in zoom-in duration-500">
             <Sparkles className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-3">{t.setup.title.replace('LexiLens', APP_CONFIG.name)}</h1>
+          <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-3">{t('setup.title').replace('LexiLens', APP_CONFIG.name)}</h1>
           <p className="text-zinc-500 text-lg leading-relaxed max-w-md mx-auto">
-            {t.setup.subtitle}
+            {t('setup.subtitle')}
           </p>
         </div>
 

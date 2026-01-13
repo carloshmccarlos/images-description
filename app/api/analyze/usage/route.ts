@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { checkDailyLimit } from '@/lib/usage/daily-limits';
+import { checkDailyLimit } from '@/lib/actions/usage/check-daily-limit';
 
 export async function GET() {
   try {

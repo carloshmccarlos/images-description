@@ -6,10 +6,12 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import type { VocabularyItem } from '@/lib/db/schema';
+import { useAudioStore } from '@/stores/audio-store';
 
 interface VocabularyCardProps {
   item: VocabularyItem;
   index: number;
+  language?: string;
 }
 
 const categoryColors: Record<string, { bg: string; text: string; border: string; icon: string }> = {
@@ -45,20 +47,69 @@ const categoryColors: Record<string, { bg: string; text: string; border: string;
   },
 };
 
-export function VocabularyCard({ item, index }: VocabularyCardProps) {
-  const [isPlaying, setIsPlaying] = useState(false);
+export function VocabularyCard({ item, index, language }: VocabularyCardProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const { isPlaying: globalIsPlaying, currentWord, setPlaying, getCachedUrl, setCachedUrl } = useAudioStore();
 
   const category = item.category?.toLowerCase() || 'default';
   const colors = categoryColors[category] || categoryColors.default;
+  const word = item.word?.toLowerCase?.() ?? item.word;
+  const isThisPlaying = globalIsPlaying && currentWord === word;
+  const isDisabled = isLoading || (globalIsPlaying && currentWord !== word);
 
-  function handleSpeak() {
-    if ('speechSynthesis' in window) {
-      setIsPlaying(true);
-      const utterance = new SpeechSynthesisUtterance(item.word);
-      utterance.onend = () => setIsPlaying(false);
-      utterance.onerror = () => setIsPlaying(false);
-      speechSynthesis.speak(utterance);
+  async function handleSpeak() {
+    const lang = (language ?? 'en').toLowerCase();
+
+    setIsLoading(true);
+    setPlaying(word);
+
+    try {
+      // Check cache first
+      let audioUrl = getCachedUrl(lang, word);
+      
+      if (!audioUrl) {
+        // Fetch from API only if not cached
+        const res = await fetch('/api/audio/vocabulary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ language: lang, word }),
+        });
+
+        const data = (await res.json()) as { audioUrl?: string };
+        if (!res.ok || !data.audioUrl) throw new Error('No audio URL');
+        
+        audioUrl = data.audioUrl;
+        // Cache the URL for future plays
+        setCachedUrl(lang, word, audioUrl);
+      }
+
+      const audio = new Audio(audioUrl);
+      setIsLoading(false);
+      audio.onended = () => setPlaying(null);
+      audio.onerror = () => {
+        // Fallback to Web Speech API
+        if ('speechSynthesis' in window) {
+          const utterance = new SpeechSynthesisUtterance(word);
+          utterance.onend = () => setPlaying(null);
+          utterance.onerror = () => setPlaying(null);
+          speechSynthesis.speak(utterance);
+        } else {
+          setPlaying(null);
+        }
+      };
+      await audio.play();
+    } catch {
+      setIsLoading(false);
+      // Fallback to Web Speech API
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.onend = () => setPlaying(null);
+        utterance.onerror = () => setPlaying(null);
+        speechSynthesis.speak(utterance);
+      } else {
+        setPlaying(null);
+      }
     }
   }
 
@@ -96,10 +147,10 @@ export function VocabularyCard({ item, index }: VocabularyCardProps) {
                   e.stopPropagation();
                   handleSpeak();
                 }}
-                disabled={isPlaying}
-                className={`shrink-0 rounded-xl w-12 h-12 ${colors.bg} border ${colors.border} shadow-sm hover:scale-105 active:scale-95 transition-all`}
+                disabled={isDisabled}
+                className={`shrink-0 rounded-xl w-12 h-12 ${colors.bg} border ${colors.border} shadow-sm hover:scale-105 active:scale-95 transition-all ${isDisabled && !isThisPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                {isPlaying ? (
+                {isLoading || isThisPlaying ? (
                   <Loader2 className="h-6 w-6 animate-spin" />
                 ) : (
                   <Volume2 className="h-6 w-6" />

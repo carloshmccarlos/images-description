@@ -1,0 +1,550 @@
+{
+  "common": {
+    "nav": {
+      "dashboard": "仪表盘",
+      "analyze": "分析",
+      "saved": "已保存",
+      "profile": "个人资料",
+      "settings": "设置",
+      "signOut": "退出登录",
+      "signIn": "登录",
+      "getStarted": "免费开始",
+      "goToDashboard": "进入仪表盘"
+    },
+    "common": {
+      "loading": "加载中...",
+      "save": "保存",
+      "cancel": "取消",
+      "delete": "删除",
+      "edit": "编辑",
+      "back": "返回",
+      "next": "下一页",
+      "previous": "上一页",
+      "search": "搜索",
+      "clear": "清除",
+      "viewAll": "查看全部",
+      "learnMore": "了解更多",
+      "tryAgain": "重试",
+      "words": "个单词",
+      "days": "天"
+    },
+    "greeting": {
+      "morning": "早上好",
+      "afternoon": "下午好",
+      "evening": "晚上好"
+    },
+    "logout": {
+      "title": "退出登录",
+      "description": "确定要退出登录吗？您需要重新登录才能访问您的账户。",
+      "confirm": "退出登录",
+      "signingOut": "正在退出..."
+    }
+  },
+  "dashboard": {
+    "welcome": {
+      "greeting": "你的每日语言日志",
+      "learningFrom": "正在学习",
+      "analysesLeft": "今日剩余分析次数",
+      "startLearning": "开始学习"
+    },
+    "stats": {
+      "dailyAnalyses": "每日分析",
+      "wordsLearned": "已学单词",
+      "dayStreak": "连续天数",
+      "totalAnalyses": "总分析次数",
+      "dailyUsage": "每日使用量",
+      "usedOfLimit": "已使用，共",
+      "dailyLimitReached": "今日次数已用完，明天再来！"
+    },
+    "quickActions": {
+      "title": "快捷操作",
+      "analyzeImage": "分析图片",
+      "analyzeImageDesc": "上传新图片",
+      "viewSaved": "查看已保存",
+      "viewSavedDesc": "浏览词汇",
+      "progress": "进度",
+      "progressDesc": "追踪学习进度",
+      "settings": "设置",
+      "settingsDesc": "更新偏好设置"
+    },
+    "recentAnalyses": {
+      "title": "最近分析",
+      "viewAll": "查看全部",
+      "noAnalyses": "暂无分析",
+      "noAnalysesDesc": "上传你的第一张图片，开始建立词汇库",
+      "analyzeFirst": "分析第一张图片",
+      "words": "个单词"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "欢迎回来",
+      "subtitle": "登录以继续你的语言之旅。",
+      "noAccount": "还没有账户？",
+      "signUpFree": "免费注册",
+      "decorativeTitle": "通过图片学习",
+      "decorativeTitleHighlight": "词汇",
+      "decorativeDesc": "上传日常物品的照片，让我们的AI自然地用目标语言教你单词。",
+      "visualLearning": "视觉学习",
+      "languagesSupported": "20+种语言",
+      "supportedGlobally": "全球支持"
+    },
+    "register": {
+      "title": "创建账户",
+      "subtitle": "开始通过图片学习词汇。",
+      "hasAccount": "已有账户？",
+      "signIn": "登录",
+      "decorativeTitle": "今天开始你的",
+      "decorativeTitleHighlight": "语言之旅",
+      "decorativeDesc": "加入数千名使用图片自然学习词汇、捕捉周围世界的学习者。",
+      "newJourney": "新旅程",
+      "benefits": {
+        "freeAnalyses": "每天10次免费图片分析",
+        "aiPowered": "AI驱动的词汇提取",
+        "saveReview": "保存和复习你的词汇",
+        "trackProgress": "追踪你的学习进度",
+        "languages": "支持20+种语言"
+      }
+    },
+    "setup": {
+      "title": "欢迎来到LexiLens！",
+      "subtitle": "让我们个性化你的体验。告诉我们你的语言目标以开始。",
+      "nativeLanguage": "你的母语",
+      "learningLanguage": "你正在学习的语言",
+      "proficiencyLevel": "熟练程度",
+      "continue": "继续"
+    },
+    "form": {
+      "email": "邮箱",
+      "password": "密码",
+      "name": "姓名",
+      "signIn": "登录",
+      "signUp": "注册",
+      "signingIn": "登录中...",
+      "signingUp": "创建账户中...",
+      "orContinueWith": "或通过以下方式继续",
+      "google": "Google"
+    }
+  },
+  "settings": {
+    "header": {
+      "title": "设置",
+      "subtitle": "管理你的账户和语言偏好"
+    },
+    "uiLanguage": {
+      "title": "界面语言",
+      "subtitle": "选择应用界面的显示语言",
+      "selectLanguage": "显示语言"
+    },
+    "language": {
+      "title": "语言设置",
+      "subtitle": "配置你的母语和学习语言",
+      "nativeLanguage": "你的母语",
+      "learningLanguage": "你正在学习的语言",
+      "proficiencyLevel": "熟练程度",
+      "saveChanges": "保存更改",
+      "saved": "设置已保存！",
+      "saveFailed": "保存设置失败"
+    },
+    "account": {
+      "title": "账户设置",
+      "subtitle": "更新你的个人资料",
+      "displayName": "显示名称",
+      "enterName": "输入你的名字",
+      "email": "邮箱地址",
+      "emailCannotChange": "邮箱无法更改",
+      "updateProfile": "更新资料",
+      "profileUpdated": "资料已更新！",
+      "updateFailed": "更新资料失败"
+    },
+    "danger": {
+      "title": "危险区域",
+      "subtitle": "影响你账户的不可逆操作",
+      "deleteAccount": "删除账户",
+      "deleteAccountDesc": "永久删除你的账户和所有数据",
+      "deleteButton": "删除",
+      "deleteDialogTitle": "删除账户",
+      "deleteDialogDesc": "此操作无法撤销。这将永久删除你的账户并移除所有数据，包括保存的分析和词汇。",
+      "typeToConfirm": "输入 DELETE 以确认",
+      "cancel": "取消",
+      "deletionRequested": "账户删除请求已提交",
+      "signedOut": "你已退出登录。",
+      "deleteFailed": "处理请求失败"
+    }
+  },
+  "profile": {
+    "header": {
+      "learning": "正在学习",
+      "native": "母语",
+      "level": "等级",
+      "memberSince": "加入时间"
+    },
+    "stats": {
+      "wordsLearned": "已学单词",
+      "totalAnalyses": "总分析次数",
+      "currentStreak": "当前连续",
+      "longestStreak": "最长连续",
+      "savedAnalyses": "已保存分析"
+    },
+    "levels": {
+      "beginner": "初学者",
+      "intermediate": "中级",
+      "advanced": "高级"
+    },
+    "progress": {
+      "title": "学习进度",
+      "thisWeek": "本周",
+      "wordsPerDay": "单词/天"
+    },
+    "achievements": {
+      "title": "成就",
+      "locked": "未解锁",
+      "unlocked": "已解锁"
+    }
+  },
+  "saved": {
+    "header": {
+      "title": "已保存的分析",
+      "subtitle": "你的个人词汇库",
+      "searchPlaceholder": "搜索词汇...",
+      "totalAnalyses": "总分析数",
+      "wordsCaptured": "已捕获单词",
+      "showingResults": "显示结果：",
+      "clear": "清除"
+    },
+    "list": {
+      "noResults": "未找到结果",
+      "noResultsDesc": "没有匹配\"{query}\"的分析。请尝试其他搜索词。",
+      "noAnalyses": "暂无保存的分析",
+      "noAnalysesDesc": "开始分析图片以建立你的词汇库",
+      "analyzeImage": "分析图片",
+      "words": "个单词",
+      "viewExploration": "查看详情",
+      "previous": "上一页",
+      "next": "下一页"
+    },
+    "detail": {
+      "backToSaved": "返回已保存",
+      "words": "个单词",
+      "description": "描述",
+      "translated": "学习语言",
+      "native": "母语",
+      "listen": "播放",
+      "vocabulary": "词汇",
+      "pronunciation": "发音",
+      "example": "例句",
+      "deleteAnalysis": "删除分析",
+      "deleteConfirmTitle": "删除分析",
+      "deleteConfirmDesc": "确定要删除此分析吗？此操作无法撤销。",
+      "cancel": "取消",
+      "delete": "删除",
+      "deleted": "分析已删除",
+      "deleteFailed": "删除分析失败"
+    },
+    "delete": {
+      "button": "删除探索",
+      "title": "删除探索？",
+      "description": "这将永久删除此分析及其所有捕获的词汇。此操作无法撤销。",
+      "cancel": "保留",
+      "confirm": "永久删除",
+      "success": "分析已删除",
+      "error": "删除失败"
+    }
+  },
+  "analyze": {
+    "badge": "AI智能分析",
+    "title": "分析图片",
+    "subtitle": "上传任意图片，AI将提取词汇并提供翻译和例句",
+    "analyzeButton": "分析图片",
+    "uploadHint": "上传日常物品、食物、地点或任何你想学习词汇的照片",
+    "uploader": {
+      "captureTitle": "捕捉瞬间",
+      "dropTitle": "松开上传",
+      "dragHint": "拖拽图片或点击浏览",
+      "dropHint": "松开即可上传",
+      "optimizing": "优化图片中",
+      "optimizingHint": "正在为AI分析做准备...",
+      "processing": "处理图片中...",
+      "invalidType": "文件类型无效",
+      "invalidTypeDesc": "请上传 JPG、PNG 或 WEBP 格式的图片",
+      "tooLarge": "图片仍然太大",
+      "tooLargeDesc": "请选择较小的图片",
+      "compressionFailed": "压缩失败",
+      "compressionFailedDesc": "无法处理该图片",
+      "compressed": "图片已压缩"
+    },
+    "analyzing": "分析中...",
+    "uploading": "上传中...",
+    "errorTitle": "分析失败",
+    "tryAgain": "重试",
+    "dailyLimitReached": "今日次数已用完，明天再来吧！",
+    "successBanner": "分析已保存到你的词库！",
+    "wordsAdded": "个新单词已添加到词库",
+    "description": "描述",
+    "capturedVocabulary": "提取的词汇",
+    "words": "个单词",
+    "moreWords": "更多单词在词库中",
+    "analyzeAnother": "继续分析",
+    "viewFullAnalysis": "查看完整分析",
+    "resumingAnalysis": "正在恢复分析...",
+    "progressUploading": "正在上传图片...",
+    "progressAnalyzing": "AI正在分析图片...",
+    "progressSaving": "正在保存结果...",
+    "generatingAudio": "生成音频中...",
+    "progressGeneratingAudio": "正在为词汇准备发音..."
+  },
+  "landing": {
+    "hero": {
+      "badge": "从相册中学习",
+      "badgeFree": "每天10次免费",
+      "title": "让词汇学习更真实",
+      "subtitle": "上传你周围任何事物的照片，学习目标语言中的词汇。无需闪卡，无需死记硬背——只需真实场景。",
+      "cta": "免费开始学习",
+      "ctaHow": "了解使用方法",
+      "socialProof": "20+种语言",
+      "socialProofDesc": "快速、场景+词汇"
+    },
+    "features": {
+      "sectionLabel": "功能特点",
+      "title": "一个小系统",
+      "titleLine2": "养成每日习惯",
+      "description": "每个部分都旨在让你保持前进：拍摄、理解、重复。界面保持简洁，让单词更容易记住。",
+      "note": "备注",
+      "snapLearn": "拍照学习",
+      "snapLearnDesc": "上传任意图片，即刻从周围的真实物品中学习词汇。",
+      "aiPowered": "AI智能分析",
+      "aiPoweredDesc": "先进的AI分析图片，生成带翻译的情境词汇。",
+      "languages": "20+种语言",
+      "languagesDesc": "学习20多种语言的词汇，配有母语翻译和发音。",
+      "pronunciation": "发音指南",
+      "pronunciationDesc": "聆听母语发音，通过音频回放练习口语。",
+      "saveReview": "保存复习",
+      "saveReviewDesc": "建立个人词汇库，随时复习已学单词。",
+      "trackProgress": "追踪进度",
+      "trackProgressDesc": "通过连续天数、统计数据和成就监控学习进程。",
+      "fastEasy": "快速简单",
+      "fastEasyDesc": "即时获取详细的单词信息和例句。",
+      "freeStart": "免费开始",
+      "freeStartDesc": "每天10次免费分析，无需信用卡。立即开始学习。"
+    },
+    "demo": {
+      "sectionLabel": "工作流程",
+      "title": "三个步骤。",
+      "titleLine2": "一个日常习惯。",
+      "description": "流程故意设计得很短，这样你才会真正去做：拍摄 → 理解 → 保存。",
+      "step": "步骤",
+      "step1Title": "上传图片",
+      "step1Desc": "拍照或上传任何你想学习词汇的物品图片。",
+      "step2Title": "AI分析",
+      "step2Desc": "我们的AI识别物品，生成带翻译和例句的词汇。",
+      "step3Title": "学习保存",
+      "step3Desc": "查看词汇卡片，听发音，保存到词库。",
+      "aiDescription": "AI描述：",
+      "sampleDesc": "木桌上摆放着色彩缤纷的新鲜水果，包括一个红苹果、一个橙子和一个黄柠檬。",
+      "vocabulary": "词汇（西班牙语）",
+      "sample": "示例"
+    },
+    "stats": {
+      "sectionLabel": "快速数据",
+      "title": "为日常真实学习而设计",
+      "subtitle": "没有废话，只有练习。",
+      "languagesSupported": "支持语言",
+      "freeDaily": "每日免费分析",
+      "aiAccuracy": "AI准确率",
+      "available": "全天候可用"
+    },
+    "cta": {
+      "title": "准备好开始你的",
+      "titleLine2": "语言之旅了吗？",
+      "description": "加入数千名使用图片自然学习词汇的语言学习者。每天10次免费分析。",
+      "ctaLoggedIn": "分析你的第一张图片",
+      "ctaLoggedOut": "免费开始",
+      "disclaimer": "无需信用卡 • 每天10次免费分析 • 随时取消"
+    },
+    "navbar": {
+      "features": "功能特点",
+      "howItWorks": "使用方法",
+      "openMenu": "打开菜单",
+      "closeMenu": "关闭菜单"
+    },
+    "footer": {
+      "description": "通过图片自然学习词汇。上传照片，让AI用目标语言教你单词。",
+      "product": "产品",
+      "features": "功能特点",
+      "howItWorks": "使用方法",
+      "getStarted": "开始使用",
+      "contact": "联系",
+      "email": "联系我们",
+      "copyright": "版权所有。",
+      "followOnTwitter": "在Twitter上关注我们",
+      "viewOnGithub": "在GitHub上查看"
+    }
+  },
+  "admin": {
+    "sidebar": {
+      "title": "管理",
+      "subtitle": "仪表盘",
+      "overview": "概览",
+      "users": "用户",
+      "content": "内容",
+      "logs": "活动日志",
+      "health": "系统健康",
+      "exitAdmin": "退出管理"
+    },
+    "overview": {
+      "title": "平台概览",
+      "subtitle": "监控平台性能和增长",
+      "totalUsers": "总用户数",
+      "totalAnalyses": "总分析数",
+      "dailyActiveUsers": "日活跃用户",
+      "wordsLearned": "已学单词",
+      "userGrowth": "用户增长",
+      "analysisGrowth": "分析增长",
+      "last30Days": "过去30天"
+    },
+    "users": {
+      "title": "用户管理",
+      "subtitle": "管理平台用户及其权限",
+      "addUser": "添加用户",
+      "searchPlaceholder": "按邮箱或姓名搜索...",
+      "sortBy": "排序方式",
+      "createdDate": "创建日期",
+      "lastActivity": "最后活动",
+      "totalAnalyses": "总分析数",
+      "user": "用户",
+      "role": "角色",
+      "status": "状态",
+      "analyses": "分析",
+      "joined": "加入时间",
+      "actions": "操作",
+      "viewDetails": "查看详情",
+      "editUser": "编辑用户",
+      "suspendUser": "暂停用户",
+      "reactivateUser": "重新激活用户",
+      "deleteUser": "删除用户",
+      "noUsers": "未找到用户",
+      "showing": "显示",
+      "to": "至",
+      "of": "共",
+      "users": "用户",
+      "page": "页",
+      "roleUser": "用户",
+      "roleAdmin": "管理员",
+      "roleSuperAdmin": "超级管理员",
+      "statusActive": "活跃",
+      "statusSuspended": "已暂停"
+    },
+    "userDetail": {
+      "backToUsers": "返回用户列表",
+      "userInformation": "用户信息",
+      "languageSettings": "语言设置",
+      "email": "邮箱",
+      "name": "姓名",
+      "notSet": "未设置",
+      "joined": "加入时间",
+      "motherLanguage": "母语",
+      "learningLanguage": "学习语言",
+      "proficiencyLevel": "熟练程度",
+      "totalAnalyses": "总分析数",
+      "wordsLearned": "已学单词",
+      "currentStreak": "当前连续",
+      "lastActivity": "最后活动",
+      "never": "从未",
+      "recentAnalyses": "最近分析",
+      "noAnalyses": "暂无分析",
+      "words": "个单词",
+      "days": "天"
+    },
+    "userForm": {
+      "createTitle": "创建新用户",
+      "createSubtitle": "向平台添加新用户",
+      "editTitle": "编辑用户",
+      "editSubtitle": "更新用户信息和权限",
+      "email": "邮箱",
+      "emailPlaceholder": "user@example.com",
+      "name": "姓名",
+      "namePlaceholder": "张三",
+      "role": "角色",
+      "status": "状态",
+      "motherLanguage": "母语",
+      "learningLanguage": "学习语言",
+      "proficiencyLevel": "熟练程度",
+      "cancel": "取消",
+      "createUser": "创建用户",
+      "saveChanges": "保存更改"
+    },
+    "deleteDialog": {
+      "title": "删除用户",
+      "description": "确定要删除",
+      "warning": "此操作无法撤销，将删除所有数据。",
+      "warningWithCount": "此操作无法撤销，将删除所有数据，包括",
+      "analyses": "个分析",
+      "cancel": "取消",
+      "confirm": "删除用户"
+    },
+    "content": {
+      "title": "内容审核",
+      "subtitle": "审核和管理用户生成的内容",
+      "dateRange": "日期范围",
+      "allTime": "全部时间",
+      "last7Days": "过去7天",
+      "last30Days": "过去30天",
+      "last90Days": "过去90天",
+      "flagContent": "标记内容",
+      "unflagContent": "取消标记",
+      "deleteContent": "删除内容",
+      "flagged": "已标记",
+      "noContent": "未找到内容",
+      "by": "作者"
+    },
+    "logs": {
+      "title": "活动日志",
+      "subtitle": "跟踪所有管理操作",
+      "filterByAction": "按操作筛选",
+      "allActions": "所有操作",
+      "userSuspended": "用户暂停",
+      "userReactivated": "用户重新激活",
+      "contentFlagged": "内容标记",
+      "contentDeleted": "内容删除",
+      "roleChanged": "角色更改",
+      "noLogs": "未找到活动日志",
+      "admin": "管理员",
+      "target": "目标",
+      "action": "操作",
+      "timestamp": "时间戳"
+    },
+    "health": {
+      "title": "系统健康",
+      "subtitle": "监控系统性能和指标",
+      "apiResponseTime": "API响应时间",
+      "storageUsage": "存储使用",
+      "dailyApiCalls": "每日API调用",
+      "errorRate": "错误率",
+      "healthy": "健康",
+      "warning": "警告",
+      "critical": "严重",
+      "ms": "毫秒",
+      "gb": "GB",
+      "calls": "次调用"
+    },
+    "toast": {
+      "userCreated": "用户创建成功",
+      "userUpdated": "用户更新成功",
+      "userDeleted": "用户删除成功",
+      "userSuspended": "用户暂停成功",
+      "userReactivated": "用户重新激活成功",
+      "contentFlagged": "内容标记成功",
+      "contentUnflagged": "内容取消标记成功",
+      "contentDeleted": "内容删除成功",
+      "fetchError": "获取数据失败",
+      "createError": "创建用户失败",
+      "updateError": "更新用户失败",
+      "deleteError": "删除用户失败",
+      "statusError": "更新用户状态失败",
+      "flagError": "标记内容失败",
+      "deleteContentError": "删除内容失败",
+      "error": "错误",
+      "success": "成功"
+    }
+  }
+}

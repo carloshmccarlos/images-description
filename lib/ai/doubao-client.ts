@@ -39,14 +39,18 @@ export async function analyzeImage(
   motherLanguage: string,
   proficiencyLevel: string
 ): Promise<AnalysisResult> {
-  const prompt = createAnalysisPrompt(learningLanguage, motherLanguage, proficiencyLevel);
+  const optimizedPrompt = createAnalysisPrompt(learningLanguage, motherLanguage, proficiencyLevel);
 
   const messages: DoubaoMessage[] = [
     {
+      role: 'system',
+      content: [{ type: 'text', text: 'You are a precise language learning assistant that strictly follows formatting rules.' }],
+    },
+    {
       role: 'user',
       content: [
-        { type: 'image_url', image_url: { url: imageUrl, detail: 'auto' } },
-        { type: 'text', text: prompt },
+        { type: 'text', text: optimizedPrompt },
+        { type: 'image_url', image_url: { url: imageUrl } },
       ],
     },
   ];
@@ -58,11 +62,12 @@ export async function analyzeImage(
       'Authorization': `Bearer ${process.env.DOUBAO_API_KEY}`,
     },
     body: JSON.stringify({
-      model: process.env.DOUBAO_MODEL || 'doubao-seed-1-8-251228',
+      model: process.env.DOUBAO_MODEL || 'doubao-seed-1-6-vision',
       messages,
-      max_tokens: 8192,
-      temperature: 0.6,
-      top_p: 0.95,
+      temperature: 0.4,
+      top_p: 0.9,
+      max_tokens: 4096,
+      response_format: { type: 'json_object' },
     }),
   });
 
@@ -74,18 +79,17 @@ export async function analyzeImage(
 
   const data = await response.json() as DoubaoResponse;
   const text = data.choices[0]?.message?.content;
-
   if (!text) {
     throw new Error('No response from AI');
   }
 
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
+  let parsed: AnalysisResult;
+  try {
+    parsed = JSON.parse(text) as AnalysisResult;
+  } catch {
     console.error('Failed to parse AI response:', text);
     throw new Error('Failed to parse AI response');
   }
-
-  const parsed = JSON.parse(jsonMatch[0]) as AnalysisResult;
 
   if (!parsed.description || !Array.isArray(parsed.vocabulary)) {
     throw new Error('Invalid AI response structure');

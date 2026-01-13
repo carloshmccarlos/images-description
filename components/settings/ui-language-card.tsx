@@ -1,39 +1,32 @@
 'use client';
-
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Languages } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useTranslation } from 'react-i18next';
-import { SUPPORTED_LOCALES, type SupportedLocale } from '@/lib/i18n/locales';
+import { useTranslations } from 'next-intl';
+import { locales, type Locale } from '@/i18n/config';
+import { useLanguage } from '@/hooks/use-language';
 
 const UI_LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
+  { code: 'zh-cn', name: '中文（简体）', flag: '🇨🇳' },
+  { code: 'zh-tw', name: '中文（繁體）', flag: '🇹🇼' },
   { code: 'ja', name: '日本語', flag: '🇯🇵' },
   { code: 'ko', name: '한국어', flag: '🇰🇷' },
 ] as const;
 
 export function UILanguageCard() {
-  const { t, i18n } = useTranslation('settings');
-  const [currentLang, setCurrentLang] = useState<SupportedLocale>(
-    (i18n.language?.split('-')[0] as SupportedLocale) || 'en'
-  );
+  const t = useTranslations('settings');
+  const { locale, changeLanguage } = useLanguage();
 
-  function handleLanguageChange(locale: string) {
-    const validLocale = SUPPORTED_LOCALES.includes(locale as SupportedLocale) 
-      ? locale as SupportedLocale 
+  const currentLang: Locale = locales.includes(locale as Locale) ? locale : 'en';
+
+  function handleLanguageChange(nextLocale: string) {
+    const validLocale = locales.includes(nextLocale as Locale)
+      ? (nextLocale as Locale)
       : 'en';
-    
-    setCurrentLang(validLocale);
-    i18n.changeLanguage(validLocale);
-    
-    // Persist to localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('locale', validLocale);
-    }
+    changeLanguage(validLocale);
   }
 
   return (
@@ -49,16 +42,16 @@ export function UILanguageCard() {
             <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-500/10 flex items-center justify-center border border-violet-100 dark:border-violet-500/20">
               <Languages className="w-4 h-4 text-violet-600 dark:text-violet-400" />
             </div>
-            {t('uiLanguage.title', 'Interface Language')}
+            {t('uiLanguage.title')}
           </CardTitle>
           <CardDescription className="text-zinc-500">
-            {t('uiLanguage.subtitle', 'Choose the language for the app interface')}
+            {t('uiLanguage.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent className="relative z-10">
           <div className="space-y-2">
             <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">
-              {t('uiLanguage.selectLanguage', 'Display Language')}
+              {t('uiLanguage.selectLanguage')}
             </Label>
             <Select value={currentLang} onValueChange={handleLanguageChange}>
               <SelectTrigger className="h-12 rounded-xl border-zinc-200 bg-white/50 dark:border-zinc-800 dark:bg-zinc-900/50">

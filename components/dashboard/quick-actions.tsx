@@ -5,18 +5,21 @@ import Link from 'next/link';
 import { Camera, BookMarked, Settings, TrendingUp, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/hooks/use-language';
 
 interface QuickActionsProps {
   canAnalyze: boolean;
 }
 
 export function QuickActions({ canAnalyze }: QuickActionsProps) {
-  const { t } = useTranslation('dashboard');
+  const t = useTranslations('dashboard');
+  const { locale } = useLanguage();
+  const prefixed = `/${locale}`;
 
   const actions = [
     {
-      href: '/analyze',
+      href: `${prefixed}/analyze`,
       label: t('quickActions.analyzeImage'),
       description: t('quickActions.analyzeImageDesc'),
       icon: Camera,
@@ -24,7 +27,7 @@ export function QuickActions({ canAnalyze }: QuickActionsProps) {
       requiresAnalysis: true,
     },
     {
-      href: '/saved',
+      href: `${prefixed}/saved`,
       label: t('quickActions.viewSaved'),
       description: t('quickActions.viewSavedDesc'),
       icon: BookMarked,
@@ -32,7 +35,7 @@ export function QuickActions({ canAnalyze }: QuickActionsProps) {
       requiresAnalysis: false,
     },
     {
-      href: '/profile',
+      href: `${prefixed}/profile`,
       label: t('quickActions.progress'),
       description: t('quickActions.progressDesc'),
       icon: TrendingUp,
@@ -40,7 +43,7 @@ export function QuickActions({ canAnalyze }: QuickActionsProps) {
       requiresAnalysis: false,
     },
     {
-      href: '/settings',
+      href: `${prefixed}/settings`,
       label: t('quickActions.settings'),
       description: t('quickActions.settingsDesc'),
       icon: Settings,

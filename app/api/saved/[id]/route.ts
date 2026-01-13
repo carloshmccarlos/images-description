@@ -58,12 +58,20 @@ export async function DELETE(
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    // Delete image from R2
-    try {
-      const key = getKeyFromUrl(analysis.imageUrl);
-      await deleteFromR2(key);
-    } catch (e) {
-      console.error('Failed to delete image from R2:', e);
+    // Delete media from R2 (image + description audios if present)
+    const mediaUrls = [
+      analysis.imageUrl,
+      analysis.descriptionAudioUrl,
+      analysis.descriptionNativeAudioUrl,
+    ].filter(Boolean) as string[];
+
+    for (const url of mediaUrls) {
+      try {
+        const key = getKeyFromUrl(url);
+        await deleteFromR2(key);
+      } catch (e) {
+        console.error('Failed to delete media from R2:', e);
+      }
     }
 
     // Delete from database

@@ -7,8 +7,9 @@ import { ArrowRight, BookOpen, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import type { VocabularyItem } from '@/lib/db/schema';
+import { useLanguage } from '@/hooks/use-language';
 
 interface RecentAnalysis {
   id: string;
@@ -23,7 +24,8 @@ interface RecentAnalysesProps {
 }
 
 export function RecentAnalyses({ analyses }: RecentAnalysesProps) {
-  const { t } = useTranslation('dashboard');
+  const t = useTranslations('dashboard');
+  const { locale } = useLanguage();
 
   if (analyses.length === 0) {
     return (
@@ -36,7 +38,7 @@ export function RecentAnalyses({ analyses }: RecentAnalysesProps) {
           <p className="text-zinc-500 mb-4 max-w-sm">
             {t('recentAnalyses.noAnalysesDesc')}
           </p>
-          <Link href="/analyze">
+          <Link href={`/${locale}/analyze`}>
             <Button>
               {t('recentAnalyses.analyzeFirst')}
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -52,7 +54,7 @@ export function RecentAnalyses({ analyses }: RecentAnalysesProps) {
       <div className="absolute inset-0 opacity-50 bg-[linear-gradient(to_bottom,rgba(24,24,27,0.03)_1px,transparent_1px)] bg-size-[100%_28px] dark:opacity-10" />
       <CardHeader className="flex flex-row items-center justify-between relative z-10">
         <CardTitle className="text-xl font-semibold tracking-tight">{t('recentAnalyses.title')}</CardTitle>
-        <Link href="/saved">
+        <Link href={`/${locale}/saved`}>
           <Button variant="ghost" size="sm" className="hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
             {t('recentAnalyses.viewAll')}
             <ArrowRight className="w-4 h-4 ml-1" />
@@ -68,7 +70,7 @@ export function RecentAnalyses({ analyses }: RecentAnalysesProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Link href={`/saved/${analysis.id}`}>
+              <Link href={`/${locale}/saved/${analysis.id}`}>
                 <div className="group relative overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/30 dark:hover:border-emerald-500/30 transition-all hover:shadow-xl hover:shadow-emerald-500/5 bg-white/50 dark:bg-zinc-900/50">
                   <div className="aspect-video relative overflow-hidden">
                     <Image

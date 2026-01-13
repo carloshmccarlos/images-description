@@ -12,6 +12,7 @@ interface AnalysisCompleteProps {
   imageUrl: string;
   description: string;
   vocabulary: VocabularyItem[];
+  language?: string;
   onViewAnalysis: () => void;
   onAnalyzeAnother: () => void;
   translations?: {
@@ -29,6 +30,7 @@ export function AnalysisComplete({
   imageUrl,
   description,
   vocabulary,
+  language,
   onViewAnalysis,
   onAnalyzeAnother,
   translations,
@@ -108,7 +110,7 @@ export function AnalysisComplete({
           </div>
           <div className="grid gap-4 xl:grid-cols-2 max-h-[500px] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">
             {vocabulary.slice(0, 6).map((item, index) => (
-              <VocabularyCard key={index} item={item} index={index} />
+              <VocabularyCard key={index} item={item} index={index} language={language} />
             ))}
           </div>
           {vocabulary.length > 6 && (

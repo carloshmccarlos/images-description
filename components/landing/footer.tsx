@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import { Sparkles, Github, Twitter } from 'lucide-react';
 import { APP_CONFIG } from '@/lib/constants';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/hooks/use-language';
 
 export function Footer() {
-  const { t } = useTranslation('landing');
+  const t = useTranslations('landing');
+  const { locale } = useLanguage();
 
   return (
     <footer className="bg-zinc-50 dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800">
@@ -14,7 +16,7 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4">
+            <Link href={`/${locale}`} className="flex items-center gap-2 mb-4">
               <div className="w-9 h-9 rounded-xl bg-linear-to-br from-sky-600 to-emerald-500 flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
@@ -31,7 +33,7 @@ export function Footer() {
             <ul className="space-y-2 text-zinc-600 dark:text-zinc-400">
               <li><a href="#features" className="hover:text-zinc-900 dark:hover:text-white transition-colors">{t('footer.features')}</a></li>
               <li><a href="#demo" className="hover:text-zinc-900 dark:hover:text-white transition-colors">{t('footer.howItWorks')}</a></li>
-              <li><Link href="/auth/register" className="hover:text-zinc-900 dark:hover:text-white transition-colors">{t('footer.getStarted')}</Link></li>
+              <li><Link href={`/${locale}/auth/register`} className="hover:text-zinc-900 dark:hover:text-white transition-colors">{t('footer.getStarted')}</Link></li>
             </ul>
           </div>
 

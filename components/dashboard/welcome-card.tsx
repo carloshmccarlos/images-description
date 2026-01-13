@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/hooks/use-language';
 
 interface WelcomeCardProps {
   userName: string;
@@ -21,7 +22,8 @@ export function WelcomeCard({
   learningFlag,
   remainingAnalyses,
 }: WelcomeCardProps) {
-  const { t } = useTranslation('dashboard');
+  const t = useTranslations('dashboard');
+  const { locale } = useLanguage();
   const greeting = useGreeting();
 
   return (
@@ -82,7 +84,7 @@ export function WelcomeCard({
             <div className="px-4 py-2 bg-white/70 dark:bg-zinc-950/50 backdrop-blur-sm rounded-full border border-zinc-200 dark:border-zinc-800">
               <span className="font-semibold text-zinc-900 dark:text-white">{remainingAnalyses} {t('welcome.analysesLeft')}</span>
             </div>
-            <Link href="/analyze">
+            <Link href={`/${locale}/analyze`}>
               <Button
                 size="lg"
                 className="bg-linear-to-r from-sky-600 via-teal-500 to-emerald-500 hover:from-sky-700 hover:via-teal-600 hover:to-emerald-600 text-white shadow-lg shadow-emerald-500/10"
@@ -99,9 +101,9 @@ export function WelcomeCard({
 }
 
 function useGreeting(): string {
-  const { t: tCommon } = useTranslation('common');
+  const t = useTranslations('common');
   const hour = new Date().getHours();
-  if (hour < 12) return tCommon('greeting.morning');
-  if (hour < 18) return tCommon('greeting.afternoon');
-  return tCommon('greeting.evening');
+  if (hour < 12) return t('greeting.morning');
+  if (hour < 18) return t('greeting.afternoon');
+  return t('greeting.evening');
 }

@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { languagePreferencesSchema, type LanguagePreferencesInput } from '@/lib/validations/user';
+import { valibotResolver } from '@/lib/validations/react-hook-form-valibot-resolver';
 import { SUPPORTED_LANGUAGES, PROFICIENCY_LEVELS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -28,7 +28,7 @@ export function LanguageSettingsForm({ defaultValues }: LanguageSettingsFormProp
     watch,
     formState: { errors },
   } = useForm<LanguagePreferencesInput>({
-    resolver: zodResolver(languagePreferencesSchema),
+    resolver: valibotResolver(languagePreferencesSchema),
     defaultValues,
   });
 

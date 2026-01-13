@@ -2,10 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { Settings } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 export function SettingsHeader() {
-  const { t } = useTranslation('settings');
+  const t = useTranslations('settings');
 
   return (
     <motion.div

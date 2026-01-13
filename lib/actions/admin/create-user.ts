@@ -11,8 +11,8 @@ const CreateUserSchema = v.object({
   name: v.optional(v.string()),
   role: v.optional(v.picklist(['user', 'admin', 'super_admin']), 'user'),
   status: v.optional(v.picklist(['active', 'suspended']), 'active'),
-  motherLanguage: v.optional(v.string(), 'en'),
-  learningLanguage: v.optional(v.string(), 'es'),
+  motherLanguage: v.optional(v.string(), 'zh-cn'),
+  learningLanguage: v.optional(v.string(), 'en'),
   proficiencyLevel: v.optional(v.picklist(['beginner', 'intermediate', 'advanced']), 'beginner'),
 });
 

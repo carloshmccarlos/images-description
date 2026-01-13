@@ -5,7 +5,7 @@ import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { compressImage, validateImageType, validateImageSize, getFileSizeDisplay } from '@/lib/image/compression';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,7 @@ export function ImageUploader({
   isUploading = false,
 }: ImageUploaderProps) {
   const [isCompressing, setIsCompressing] = useState(false);
-  const { t } = useTranslation('analyze');
+  const t = useTranslations('analyze');
 
   const handleFile = useCallback(async (file: File) => {
     if (!validateImageType(file)) {

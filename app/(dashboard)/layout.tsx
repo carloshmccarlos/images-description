@@ -21,12 +21,14 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { APP_CONFIG } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/hooks/use-language';
 
 import { LogoutDialog } from '@/components/auth/logout-dialog';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { t } = useTranslation('common');
+  const t = useTranslations('common');
+  const { locale } = useLanguage();
   const [user, setUser] = useState<{ email: string; name?: string | null } | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,20 +37,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const supabase = createClient();
 
+  const LOCALES = ['en', 'zh-cn', 'zh-tw', 'ja', 'ko'] as const;
+  function stripLocale(path: string) {
+    const parts = path.split('/').filter(Boolean);
+    const first = parts[0]?.toLowerCase();
+    if (first && (LOCALES as readonly string[]).includes(first)) {
+      const rest = `/${parts.slice(1).join('/')}`;
+      return rest === '/' ? '/' : rest;
+    }
+    return path;
+  }
+
+  const basePathname = stripLocale(pathname);
+  const prefixed = `/${locale}`;
+
   const navItems = [
-    { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
-    { href: '/analyze', label: t('nav.analyze'), icon: Camera },
-    { href: '/saved', label: t('nav.saved'), icon: BookMarked },
-    { href: '/profile', label: t('nav.profile'), icon: User },
-    { href: '/settings', label: t('nav.settings'), icon: Settings },
-    ...(isAdmin ? [{ href: '/admin', label: 'Admin', icon: Shield }] : []),
+    { href: `${prefixed}/dashboard`, baseHref: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { href: `${prefixed}/analyze`, baseHref: '/analyze', label: t('nav.analyze'), icon: Camera },
+    { href: `${prefixed}/saved`, baseHref: '/saved', label: t('nav.saved'), icon: BookMarked },
+    { href: `${prefixed}/profile`, baseHref: '/profile', label: t('nav.profile'), icon: User },
+    { href: `${prefixed}/settings`, baseHref: '/settings', label: t('nav.settings'), icon: Settings },
+    ...(isAdmin ? [{ href: `${prefixed}/admin`, baseHref: '/admin', label: 'Admin', icon: Shield }] : []),
   ];
 
   useEffect(() => {
     async function getUser() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        router.push('/auth/login');
+        router.push(`${prefixed}/auth/login`);
         return;
       }
       setUser({ email: user.email!, name: user.user_metadata?.name });
@@ -69,7 +85,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
     getUser();
     checkAdmin();
-  }, [router, supabase.auth]);
+  }, [router, supabase.auth, prefixed]);
 
   const initials = user?.name
     ? user.name.split(' ').map((n) => n[0]).join('').toUpperCase()
@@ -105,7 +121,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Mobile Header */}
       <header className="lg:hidden sticky top-0 z-50 bg-white/70 dark:bg-zinc-950/60 backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-800">
         <div className="flex items-center justify-between px-4 h-16">
-          <Link href="/dashboard" className="flex items-center gap-2">
+          <Link href={`${prefixed}/dashboard`} className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-linear-to-br from-sky-600 to-emerald-500 flex items-center justify-center shadow-sm shadow-emerald-500/10">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
@@ -137,7 +153,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800">
-                  <Link href="/dashboard" className="flex items-center gap-2">
+                  <Link href={`${prefixed}/dashboard`} className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-lg bg-linear-to-br from-sky-600 to-emerald-500 flex items-center justify-center shadow-sm shadow-emerald-500/10">
                       <Sparkles className="w-4 h-4 text-white" />
                     </div>
@@ -149,8 +165,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
                 <nav className="flex-1 p-4 space-y-1">
                   {navItems.map((item) => {
-                    const isActive = pathname === item.href || 
-                      (item.href === '/saved' && pathname.startsWith('/saved/'));
+                    const isActive = basePathname === item.baseHref ||
+                      (item.baseHref === '/saved' && basePathname.startsWith('/saved/'));
                     return (
                       <Link
                         key={item.href}
@@ -196,7 +212,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Desktop Sidebar */}
         <aside className="hidden lg:flex flex-col w-72 h-screen sticky top-0 bg-white/70 dark:bg-zinc-950/50 backdrop-blur-xl border-r border-zinc-200 dark:border-zinc-800">
           <div className="p-8 flex items-center justify-between">
-            <Link href="/dashboard" className="flex items-center gap-3">
+            <Link href={`${prefixed}/dashboard`} className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-linear-to-br from-sky-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/15">
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
@@ -208,8 +224,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           <nav className="flex-1 px-6 space-y-1.5">
             {navItems.map((item) => {
-              const isActive = pathname === item.href || 
-                (item.href === '/saved' && pathname.startsWith('/saved/'));
+              const isActive = basePathname === item.baseHref ||
+                (item.baseHref === '/saved' && basePathname.startsWith('/saved/'));
               return (
                 <Link
                   key={item.href}

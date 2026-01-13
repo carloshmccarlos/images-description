@@ -7,7 +7,8 @@ import { Search, BookMarked, BookOpen, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/hooks/use-language';
 
 interface SavedHeaderProps {
   totalAnalyses: number;
@@ -16,7 +17,8 @@ interface SavedHeaderProps {
 }
 
 export function SavedHeader({ totalAnalyses, totalWords, searchQuery }: SavedHeaderProps) {
-  const { t } = useTranslation('saved');
+  const t = useTranslations('saved');
+  const { locale } = useLanguage();
   const [query, setQuery] = useState(searchQuery || '');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -30,7 +32,7 @@ export function SavedHeader({ totalAnalyses, totalWords, searchQuery }: SavedHea
     } else {
       params.delete('q');
     }
-    router.push(`/saved?${params.toString()}`);
+    router.push(`/${locale}/saved?${params.toString()}`);
   }
 
   function clearSearch() {
@@ -38,7 +40,7 @@ export function SavedHeader({ totalAnalyses, totalWords, searchQuery }: SavedHea
     const params = new URLSearchParams(searchParams.toString());
     params.delete('q');
     params.delete('page');
-    router.push(`/saved?${params.toString()}`);
+    router.push(`/${locale}/saved?${params.toString()}`);
   }
 
   return (

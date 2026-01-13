@@ -10,22 +10,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useTranslation } from 'react-i18next';
-import { SUPPORTED_LOCALES, type SupportedLocale } from '@/lib/i18n/locales';
+import { locales, type Locale } from '@/i18n/config';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/use-language';
 
 const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
+  { code: 'zh-cn', name: '中文（简体）', flag: '🇨🇳' },
+  { code: 'zh-tw', name: '中文（繁體）', flag: '🇹🇼' },
   { code: 'ja', name: '日本語', flag: '🇯🇵' },
   { code: 'ko', name: '한국어', flag: '🇰🇷' },
 ] as const;
 
 export function LanguageSelector() {
-  const { i18n } = useTranslation();
-  const [currentLang, setCurrentLang] = useState<SupportedLocale>(
-    (i18n.language?.split('-')[0] as SupportedLocale) || 'en'
-  );
+  const { locale: currentLang, changeLanguage } = useLanguage();
   const [open, setOpen] = useState(false);
 
   const currentLanguage = useMemo(
@@ -34,16 +32,11 @@ export function LanguageSelector() {
   );
 
   function handleLanguageChange(locale: string) {
-    const validLocale = SUPPORTED_LOCALES.includes(locale as SupportedLocale)
-      ? (locale as SupportedLocale)
+    const validLocale = locales.includes(locale as Locale)
+      ? (locale as Locale)
       : 'en';
 
-    setCurrentLang(validLocale);
-    i18n.changeLanguage(validLocale);
-
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('locale', validLocale);
-    }
+    changeLanguage(validLocale);
     setOpen(false);
   }
 

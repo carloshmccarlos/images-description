@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 interface AccountSettingsCardProps {
   name: string;
@@ -17,7 +17,7 @@ interface AccountSettingsCardProps {
 }
 
 export function AccountSettingsCard({ name: initialName, email }: AccountSettingsCardProps) {
-  const { t } = useTranslation('settings');
+  const t = useTranslations('settings');
   const [name, setName] = useState(initialName);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();

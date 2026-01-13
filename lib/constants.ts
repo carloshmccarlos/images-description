@@ -1,24 +1,9 @@
 export const SUPPORTED_LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'zh-cn', name: '中文（简体）', flag: '🇨🇳' },
+  { code: 'zh-tw', name: '中文（繁體）', flag: '🇹🇼' },
   { code: 'ja', name: '日本語', flag: '🇯🇵' },
   { code: 'ko', name: '한국어', flag: '🇰🇷' },
-  { code: 'pt', name: 'Português', flag: '🇵🇹' },
-  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-  { code: 'th', name: 'ไทย', flag: '🇹🇭' },
-  { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
-  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
-  { code: 'pl', name: 'Polski', flag: '🇵🇱' },
-  { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
-  { code: 'id', name: 'Bahasa Indonesia', flag: '🇮🇩' },
-  { code: 'ms', name: 'Bahasa Melayu', flag: '🇲🇾' },
-  { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
 ] as const;
 
 export const PROFICIENCY_LEVELS = [

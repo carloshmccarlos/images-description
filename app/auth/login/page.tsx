@@ -1,11 +1,9 @@
 import Link from 'next/link';
+import { getLocale, getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { Sparkles } from 'lucide-react';
 import { LoginForm } from '@/components/auth/login-form';
 import { APP_CONFIG } from '@/lib/constants';
-import { getServerLocale } from '@/lib/i18n/server';
-import { getTranslations } from '@/lib/i18n';
-
 export const metadata: Metadata = {
   title: 'Sign In',
   description: 'Sign in to LexiLens to continue your language learning journey. Access your saved vocabulary, track progress, and analyze new images.',
@@ -16,8 +14,8 @@ export const metadata: Metadata = {
 };
 
 export default async function LoginPage() {
-  const locale = await getServerLocale();
-  const t = getTranslations('auth', locale);
+  const locale = await getLocale();
+  const t = await getTranslations('auth');
 
   return (
     <div className="min-h-screen flex bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden">
@@ -27,7 +25,7 @@ export default async function LoginPage() {
       {/* Left side - Form */}
       <div className="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24 relative z-10">
         <div className="mx-auto w-full max-w-sm">
-          <Link href="/" className="flex items-center gap-3 mb-10 group">
+          <Link href={`/${locale}`} className="flex items-center gap-3 mb-10 group">
             <div className="w-11 h-11 rounded-xl bg-linear-to-br from-sky-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
@@ -35,22 +33,29 @@ export default async function LoginPage() {
           </Link>
 
           <div className="space-y-2 mb-8">
-            <h1 className="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">{t.login.title}</h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">{t('login.title')}</h1>
             <p className="text-zinc-500 text-lg">
-              {t.login.subtitle}
+              {t('login.subtitle')}
             </p>
           </div>
 
           <div className="p-1 rounded-3xl bg-white/40 backdrop-blur-sm border border-zinc-200 shadow-xl shadow-zinc-200/50 dark:bg-zinc-900/40 dark:border-zinc-800 dark:shadow-none">
             <div className="p-6">
               <LoginForm />
+              {/* Mobile: register link directly under login button */}
+              <p className="mt-4 text-center text-sm font-medium text-zinc-500 md:hidden">
+                {t('login.noAccount')}{' '}
+                <Link href={`/${locale}/auth/register`} className="text-emerald-600 hover:text-emerald-500 font-bold underline underline-offset-4 decoration-emerald-500/30">
+                  {t('login.signUpFree')}
+                </Link>
+              </p>
             </div>
           </div>
 
-          <p className="mt-8 text-center text-sm font-medium text-zinc-500">
-            {t.login.noAccount}{' '}
-            <Link href="/auth/register" className="text-emerald-600 hover:text-emerald-500 font-bold underline underline-offset-4 decoration-emerald-500/30">
-              {t.login.signUpFree}
+          <p className="mt-8 text-center text-sm font-medium text-zinc-500 hidden md:block">
+            {t('login.noAccount')}{' '}
+            <Link href={`/${locale}/auth/register`} className="text-emerald-600 hover:text-emerald-500 font-bold underline underline-offset-4 decoration-emerald-500/30">
+              {t('login.signUpFree')}
             </Link>
           </p>
         </div>
@@ -69,20 +74,20 @@ export default async function LoginPage() {
         <div className="relative z-10 flex flex-col justify-center px-16 text-white max-w-2xl">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-bold uppercase tracking-widest text-emerald-400">
-              {t.login.visualLearning}
+              {t('login.visualLearning')}
             </div>
             <h2 className="text-5xl font-bold leading-[1.1] tracking-tight">
-              {t.login.decorativeTitle}
+              {t('login.decorativeTitle')}
               <br />
-              <span className="text-emerald-400">{t.login.decorativeTitleHighlight}</span>
+              <span className="text-emerald-400">{t('login.decorativeTitleHighlight')}</span>
             </h2>
             <p className="text-zinc-400 text-xl leading-relaxed">
-              {t.login.decorativeDesc}
+              {t('login.decorativeDesc')}
             </p>
             
             <div className="pt-8 flex items-center gap-6">
               <div className="flex -space-x-3">
-                {['🇺🇸', '🇪🇸', '🇫🇷', '🇯🇵', '🇩🇪'].map((flag, i) => (
+                {['🇺🇸', '🇨🇳', '🇹🇼', '🇯🇵', '🇰🇷'].map((flag, i) => (
                   <div
                     key={i}
                     className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-xl border border-white/20 shadow-xl"
@@ -92,8 +97,8 @@ export default async function LoginPage() {
                 ))}
               </div>
               <div>
-                <p className="text-white font-bold">{t.login.languagesSupported}</p>
-                <p className="text-zinc-500 text-sm font-medium">{t.login.supportedGlobally}</p>
+                <p className="text-white font-bold">{t('login.languagesSupported')}</p>
+                <p className="text-zinc-500 text-sm font-medium">{t('login.supportedGlobally')}</p>
               </div>
             </div>
           </div>

@@ -1,9 +1,11 @@
 import Link from 'next/link';
+import { getLocale } from 'next-intl/server';
 import { Sparkles, ArrowLeft } from 'lucide-react';
 import { ForgotPasswordForm } from '@/components/auth/forgot-password-form';
 import { APP_CONFIG } from '@/lib/constants';
+export default async function ForgotPasswordPage() {
+  const locale = await getLocale();
 
-export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 px-4 relative overflow-hidden text-center">
       {/* Background Texture */}
@@ -14,7 +16,7 @@ export default function ForgotPasswordPage() {
 
       <div className="w-full max-w-sm relative z-10">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3 mb-10 group">
+          <Link href={`/${locale}`} className="inline-flex items-center gap-3 mb-10 group">
             <div className="w-11 h-11 rounded-xl bg-linear-to-br from-sky-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
@@ -34,7 +36,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         <Link 
-          href="/auth/login" 
+          href={`/${locale}/auth/login`} 
           className="mt-8 inline-flex items-center justify-center gap-2 text-sm font-bold text-zinc-500 hover:text-emerald-600 transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />

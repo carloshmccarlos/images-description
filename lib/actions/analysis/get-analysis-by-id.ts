@@ -1,20 +1,25 @@
 'use server';
 
-import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { savedAnalyses } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import type { VocabularyItem } from '@/lib/db/schema';
+import * as v from 'valibot';
 
-const inputSchema = z.object({
-  id: z.string().uuid(),
+const inputSchema = v.object({
+  id: v.pipe(v.string(), v.uuid()),
 });
 
 interface AnalysisDetail {
   id: string;
   imageUrl: string;
   description: string;
+  descriptionNative: string | null;
+  learningLanguage: string | null;
+  motherLanguage: string | null;
+  descriptionAudioUrl: string | null;
+  descriptionNativeAudioUrl: string | null;
   vocabulary: VocabularyItem[];
   createdAt: Date;
 }
@@ -26,7 +31,7 @@ interface GetAnalysisByIdResult {
 }
 
 export async function getAnalysisById(
-  input: z.infer<typeof inputSchema>
+  input: v.InferInput<typeof inputSchema>
 ): Promise<GetAnalysisByIdResult> {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -35,16 +40,14 @@ export async function getAnalysisById(
     return { success: false, error: 'Not authenticated' };
   }
 
-  const validated = inputSchema.safeParse(input);
-  if (!validated.success) {
-    return { success: false, error: 'Invalid analysis ID' };
-  }
+  const validated = v.safeParse(inputSchema, input);
+  if (!validated.success) return { success: false, error: 'Invalid analysis ID' };
 
   const [analysis] = await db
     .select()
     .from(savedAnalyses)
     .where(and(
-      eq(savedAnalyses.id, validated.data.id),
+      eq(savedAnalyses.id, validated.output.id),
       eq(savedAnalyses.userId, user.id)
     ));
 
@@ -58,6 +61,11 @@ export async function getAnalysisById(
       id: analysis.id,
       imageUrl: analysis.imageUrl,
       description: analysis.description,
+      descriptionNative: analysis.descriptionNative ?? null,
+      learningLanguage: analysis.learningLanguage ?? null,
+      motherLanguage: analysis.motherLanguage ?? null,
+      descriptionAudioUrl: analysis.descriptionAudioUrl ?? null,
+      descriptionNativeAudioUrl: analysis.descriptionNativeAudioUrl ?? null,
       vocabulary: analysis.vocabulary,
       createdAt: analysis.createdAt,
     },

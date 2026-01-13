@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { users, userStats, savedAnalyses, UserRole, UserStatus } from '@/lib/db/schema';
+import { users, userStats, savedAnalyses, userLimits, UserRole, UserStatus } from '@/lib/db/schema';
 import { verifyAdminAccess } from '@/lib/admin/middleware';
 import { eq, desc } from 'drizzle-orm';
 import * as v from 'valibot';
@@ -21,6 +21,7 @@ export interface UserDetail {
   motherLanguage: string;
   learningLanguage: string;
   proficiencyLevel: string;
+  dailyLimit: number;
   createdAt: Date;
   updatedAt: Date;
   stats: {
@@ -78,9 +79,11 @@ export async function getUserDetail(input: GetUserDetailInput): Promise<GetUserD
         currentStreak: userStats.currentStreak,
         longestStreak: userStats.longestStreak,
         lastActivityDate: userStats.lastActivityDate,
+        dailyLimit: userLimits.dailyLimit,
       })
       .from(users)
       .leftJoin(userStats, eq(users.id, userStats.userId))
+      .leftJoin(userLimits, eq(users.id, userLimits.userId))
       .where(eq(users.id, userId));
 
     if (!userData) {
@@ -106,9 +109,10 @@ export async function getUserDetail(input: GetUserDetailInput): Promise<GetUserD
       name: userData.name,
       status: userData.status as UserStatus,
       role: userData.role as UserRole,
-      motherLanguage: userData.motherLanguage || 'en',
-      learningLanguage: userData.learningLanguage || 'es',
+      motherLanguage: userData.motherLanguage || 'zh-cn',
+      learningLanguage: userData.learningLanguage || 'en',
       proficiencyLevel: userData.proficiencyLevel || 'beginner',
+      dailyLimit: userData.dailyLimit ?? 10,
       createdAt: userData.createdAt,
       updatedAt: userData.updatedAt,
       stats: {

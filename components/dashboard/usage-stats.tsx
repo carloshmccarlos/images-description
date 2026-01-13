@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Camera, BookOpen, Flame, Trophy } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 interface UsageStatsProps {
   used: number;
@@ -14,7 +14,7 @@ interface UsageStatsProps {
 }
 
 export function UsageStats({ used, limit, totalWords, currentStreak, totalAnalyses }: UsageStatsProps) {
-  const { t } = useTranslation('dashboard');
+  const t = useTranslations('dashboard');
   const remaining = limit - used;
   const usagePercent = (used / limit) * 100;
 

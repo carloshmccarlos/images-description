@@ -39,11 +39,13 @@ export async function deleteContent(input: DeleteContentInput): Promise<DeleteCo
   const { analysisId, reason } = parseResult.output;
 
   try {
-    // Get analysis with image URL
+    // Get analysis with media URLs
     const [analysis] = await db
       .select({
         id: savedAnalyses.id,
         imageUrl: savedAnalyses.imageUrl,
+        descriptionAudioUrl: savedAnalyses.descriptionAudioUrl,
+        descriptionNativeAudioUrl: savedAnalyses.descriptionNativeAudioUrl,
       })
       .from(savedAnalyses)
       .where(eq(savedAnalyses.id, analysisId));
@@ -52,13 +54,21 @@ export async function deleteContent(input: DeleteContentInput): Promise<DeleteCo
       return { success: false, error: 'Analysis not found' };
     }
 
-    // Delete image from R2 storage
-    try {
-      const imageKey = getKeyFromUrl(analysis.imageUrl);
-      await deleteFromR2(imageKey);
-    } catch (error) {
-      console.error('Failed to delete image from R2:', error);
-      // Continue with database deletion even if R2 deletion fails
+    // Delete media from R2 storage (image + description audios)
+    const mediaUrls = [
+      analysis.imageUrl,
+      analysis.descriptionAudioUrl,
+      analysis.descriptionNativeAudioUrl,
+    ].filter(Boolean) as string[];
+
+    for (const url of mediaUrls) {
+      try {
+        const key = getKeyFromUrl(url);
+        await deleteFromR2(key);
+      } catch (error) {
+        console.error('Failed to delete media from R2:', error);
+        // Continue with database deletion even if R2 deletion fails
+      }
     }
 
     // Delete analysis from database

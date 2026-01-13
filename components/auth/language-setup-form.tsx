@@ -2,20 +2,22 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { Loader2, Sparkles } from 'lucide-react';
 import { languagePreferencesSchema, type LanguagePreferencesInput } from '@/lib/validations/user';
+import { valibotResolver } from '@/lib/validations/react-hook-form-valibot-resolver';
 import { SUPPORTED_LANGUAGES, PROFICIENCY_LEVELS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { useUserStore } from '@/stores/user-store';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/hooks/use-language';
 
 export function LanguageSetupForm() {
-  const { t } = useTranslation('auth');
+  const t = useTranslations('auth');
+  const { locale } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const setPreferences = useUserStore((state) => state.setPreferences);
@@ -26,10 +28,10 @@ export function LanguageSetupForm() {
     watch,
     formState: { errors },
   } = useForm<LanguagePreferencesInput>({
-    resolver: zodResolver(languagePreferencesSchema),
+    resolver: valibotResolver(languagePreferencesSchema),
     defaultValues: {
-      motherLanguage: 'en',
-      learningLanguage: 'es',
+      motherLanguage: 'zh-cn',
+      learningLanguage: 'en',
       proficiencyLevel: 'beginner',
     },
   });
@@ -54,7 +56,7 @@ export function LanguageSetupForm() {
 
       setPreferences({ ...data, name: null });
       toast.success('Preferences saved!');
-      router.push('/dashboard');
+      router.push(`/${locale}/dashboard`);
       router.refresh();
     } catch (error) {
       toast.error('Error', {

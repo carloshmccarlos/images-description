@@ -1,0 +1,550 @@
+{
+  "common": {
+    "nav": {
+      "dashboard": "ダッシュボード",
+      "analyze": "分析",
+      "saved": "保存済み",
+      "profile": "プロフィール",
+      "settings": "設定",
+      "signOut": "ログアウト",
+      "signIn": "ログイン",
+      "getStarted": "無料で始める",
+      "goToDashboard": "ダッシュボードへ"
+    },
+    "common": {
+      "loading": "読み込み中...",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "edit": "編集",
+      "back": "戻る",
+      "next": "次へ",
+      "previous": "前へ",
+      "search": "検索",
+      "clear": "クリア",
+      "viewAll": "すべて見る",
+      "learnMore": "詳しく見る",
+      "tryAgain": "もう一度試す",
+      "words": "単語",
+      "days": "日"
+    },
+    "greeting": {
+      "morning": "おはようございます",
+      "afternoon": "こんにちは",
+      "evening": "こんばんは"
+    },
+    "logout": {
+      "title": "ログアウト",
+      "description": "ログアウトしてもよろしいですか？アカウントにアクセスするには再度ログインが必要です。",
+      "confirm": "ログアウト",
+      "signingOut": "ログアウト中..."
+    }
+  },
+  "dashboard": {
+    "welcome": {
+      "greeting": "毎日の言語ログ",
+      "learningFrom": "学習中",
+      "analysesLeft": "本日の残り分析回数",
+      "startLearning": "学習を始める"
+    },
+    "stats": {
+      "dailyAnalyses": "毎日の分析",
+      "wordsLearned": "学習した単語",
+      "dayStreak": "連続日数",
+      "totalAnalyses": "総分析回数",
+      "dailyUsage": "毎日の使用量",
+      "usedOfLimit": "使用済み、上限",
+      "dailyLimitReached": "本日の上限に達しました。明日また来てください！"
+    },
+    "quickActions": {
+      "title": "クイックアクション",
+      "analyzeImage": "画像を分析",
+      "analyzeImageDesc": "新しい画像をアップロード",
+      "viewSaved": "保存済みを見る",
+      "viewSavedDesc": "語彙を閲覧",
+      "progress": "進捗",
+      "progressDesc": "学習を追跡",
+      "settings": "設定",
+      "settingsDesc": "設定を更新"
+    },
+    "recentAnalyses": {
+      "title": "最近の分析",
+      "viewAll": "すべて見る",
+      "noAnalyses": "まだ分析がありません",
+      "noAnalysesDesc": "最初の画像をアップロードして、語彙ライブラリを構築しましょう",
+      "analyzeFirst": "最初の画像を分析",
+      "words": "単語"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "おかえりなさい",
+      "subtitle": "ログインして言語の旅を続けましょう。",
+      "noAccount": "アカウントをお持ちでないですか？",
+      "signUpFree": "無料で登録",
+      "decorativeTitle": "画像で学ぶ",
+      "decorativeTitleHighlight": "語彙",
+      "decorativeDesc": "日常の物の写真をアップロードして、AIに目標言語の単語を自然に教えてもらいましょう。",
+      "visualLearning": "ビジュアル学習",
+      "languagesSupported": "20以上の言語",
+      "supportedGlobally": "グローバルサポート"
+    },
+    "register": {
+      "title": "アカウント作成",
+      "subtitle": "画像を通じて語彙学習を始めましょう。",
+      "hasAccount": "すでにアカウントをお持ちですか？",
+      "signIn": "ログイン",
+      "decorativeTitle": "今日から始める",
+      "decorativeTitleHighlight": "言語の旅",
+      "decorativeDesc": "画像を使って自然に語彙を構築し、周りの世界を捉える数千人の学習者に参加しましょう。",
+      "newJourney": "新しい旅",
+      "benefits": {
+        "freeAnalyses": "毎日10回の無料画像分析",
+        "aiPowered": "AI搭載の語彙抽出",
+        "saveReview": "語彙を保存して復習",
+        "trackProgress": "学習進捗を追跡",
+        "languages": "20以上の言語をサポート"
+      }
+    },
+    "setup": {
+      "title": "LexiLensへようこそ！",
+      "subtitle": "体験をパーソナライズしましょう。言語の目標を教えてください。",
+      "nativeLanguage": "母国語",
+      "learningLanguage": "学習中の言語",
+      "proficiencyLevel": "習熟度",
+      "continue": "続ける"
+    },
+    "form": {
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "name": "氏名",
+      "signIn": "ログイン",
+      "signUp": "登録",
+      "signingIn": "ログイン中...",
+      "signingUp": "アカウント作成中...",
+      "orContinueWith": "または以下で続ける",
+      "google": "Google"
+    }
+  },
+  "settings": {
+    "header": {
+      "title": "設定",
+      "subtitle": "アカウントと言語設定を管理"
+    },
+    "uiLanguage": {
+      "title": "インターフェース言語",
+      "subtitle": "アプリの表示言語を選択",
+      "selectLanguage": "表示言語"
+    },
+    "language": {
+      "title": "言語設定",
+      "subtitle": "母国語と学習言語を設定",
+      "nativeLanguage": "母国語",
+      "learningLanguage": "学習中の言語",
+      "proficiencyLevel": "習熟度",
+      "saveChanges": "変更を保存",
+      "saved": "設定を保存しました！",
+      "saveFailed": "設定の保存に失敗しました"
+    },
+    "account": {
+      "title": "アカウント設定",
+      "subtitle": "プロフィール情報を更新",
+      "displayName": "表示名",
+      "enterName": "名前を入力",
+      "email": "メールアドレス",
+      "emailCannotChange": "メールアドレスは変更できません",
+      "updateProfile": "プロフィールを更新",
+      "profileUpdated": "プロフィールを更新しました！",
+      "updateFailed": "プロフィールの更新に失敗しました"
+    },
+    "danger": {
+      "title": "危険ゾーン",
+      "subtitle": "アカウントに影響する取り消し不可能な操作",
+      "deleteAccount": "アカウントを削除",
+      "deleteAccountDesc": "アカウントとすべてのデータを完全に削除",
+      "deleteButton": "削除",
+      "deleteDialogTitle": "アカウントを削除",
+      "deleteDialogDesc": "この操作は取り消せません。アカウントが完全に削除され、保存された分析や語彙を含むすべてのデータが削除されます。",
+      "typeToConfirm": "確認のため DELETE と入力",
+      "cancel": "キャンセル",
+      "deletionRequested": "アカウント削除リクエストを受け付けました",
+      "signedOut": "ログアウトしました。",
+      "deleteFailed": "リクエストの処理に失敗しました"
+    }
+  },
+  "profile": {
+    "header": {
+      "learning": "学習中",
+      "native": "母国語",
+      "level": "レベル",
+      "memberSince": "登録日"
+    },
+    "stats": {
+      "wordsLearned": "学習した単語",
+      "totalAnalyses": "総分析回数",
+      "currentStreak": "現在の連続",
+      "longestStreak": "最長連続",
+      "savedAnalyses": "保存した分析"
+    },
+    "levels": {
+      "beginner": "初級",
+      "intermediate": "中級",
+      "advanced": "上級"
+    },
+    "progress": {
+      "title": "学習進捗",
+      "thisWeek": "今週",
+      "wordsPerDay": "単語/日"
+    },
+    "achievements": {
+      "title": "実績",
+      "locked": "ロック中",
+      "unlocked": "解除済み"
+    }
+  },
+  "saved": {
+    "header": {
+      "title": "保存した分析",
+      "subtitle": "あなたの語彙ライブラリ",
+      "searchPlaceholder": "語彙を検索...",
+      "totalAnalyses": "総分析数",
+      "wordsCaptured": "取得した単語",
+      "showingResults": "検索結果：",
+      "clear": "クリア"
+    },
+    "list": {
+      "noResults": "結果が見つかりません",
+      "noResultsDesc": "「{query}」に一致する分析がありません。別の検索語をお試しください。",
+      "noAnalyses": "保存した分析がありません",
+      "noAnalysesDesc": "画像の分析を開始して語彙ライブラリを構築しましょう",
+      "analyzeImage": "画像を分析",
+      "words": "単語",
+      "viewExploration": "詳細を見る",
+      "previous": "前へ",
+      "next": "次へ"
+    },
+    "detail": {
+      "backToSaved": "保存済みに戻る",
+      "words": "単語",
+      "description": "説明",
+      "translated": "学習言語",
+      "native": "母語",
+      "listen": "再生",
+      "vocabulary": "語彙",
+      "pronunciation": "発音",
+      "example": "例文",
+      "deleteAnalysis": "分析を削除",
+      "deleteConfirmTitle": "分析を削除",
+      "deleteConfirmDesc": "この分析を削除してもよろしいですか？この操作は取り消せません。",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "deleted": "分析を削除しました",
+      "deleteFailed": "分析の削除に失敗しました"
+    },
+    "delete": {
+      "button": "探索を削除",
+      "title": "探索を削除しますか？",
+      "description": "この分析とすべての取得した語彙が完全に削除されます。この操作は取り消せません。",
+      "cancel": "保持する",
+      "confirm": "完全に削除",
+      "success": "分析を削除しました",
+      "error": "削除に失敗しました"
+    }
+  },
+  "analyze": {
+    "badge": "AI画像分析",
+    "title": "画像を分析",
+    "subtitle": "画像をアップロードすると、AIが語彙を抽出し、翻訳と例文を提供します",
+    "analyzeButton": "画像を分析",
+    "uploadHint": "日用品、食べ物、場所など、語彙を学びたいものの写真をアップロード",
+    "uploader": {
+      "captureTitle": "瞬間をキャプチャ",
+      "dropTitle": "ドロップしてキャプチャ",
+      "dragHint": "画像をドラッグまたはクリックして参照",
+      "dropHint": "リリースしてアップロード",
+      "optimizing": "画像を最適化中",
+      "optimizingHint": "AI分析に最適化しています...",
+      "processing": "画像を処理中...",
+      "invalidType": "無効なファイル形式",
+      "invalidTypeDesc": "JPG、PNG、またはWEBP画像をアップロードしてください",
+      "tooLarge": "画像がまだ大きすぎます",
+      "tooLargeDesc": "より小さい画像を選択してください",
+      "compressionFailed": "圧縮に失敗しました",
+      "compressionFailedDesc": "画像を処理できませんでした",
+      "compressed": "画像を圧縮しました"
+    },
+    "analyzing": "分析中...",
+    "uploading": "アップロード中...",
+    "errorTitle": "分析に失敗しました",
+    "tryAgain": "もう一度試す",
+    "dailyLimitReached": "本日の利用回数に達しました。明日また来てください！",
+    "successBanner": "分析がライブラリに保存されました！",
+    "wordsAdded": "個の新しい単語がライブラリに追加されました",
+    "description": "説明",
+    "capturedVocabulary": "抽出された語彙",
+    "words": "単語",
+    "moreWords": "個の単語がライブラリにあります",
+    "analyzeAnother": "別の画像を分析",
+    "viewFullAnalysis": "完全な分析を見る",
+    "resumingAnalysis": "分析を再開しています...",
+    "progressUploading": "画像をアップロード中...",
+    "progressAnalyzing": "AIが画像を分析中...",
+    "progressSaving": "結果を保存中...",
+    "generatingAudio": "音声を生成中...",
+    "progressGeneratingAudio": "語彙の発音を準備しています..."
+  },
+  "landing": {
+    "hero": {
+      "badge": "カメラロールから学ぶ",
+      "badgeFree": "毎日10回無料",
+      "title": "リアルな語彙学習",
+      "subtitle": "身の回りのものを撮影して、目標言語の単語を学びましょう。フラッシュカードも暗記も不要——実際の文脈だけで学べます。",
+      "cta": "無料で学習開始",
+      "ctaHow": "使い方を見る",
+      "socialProof": "20以上の言語",
+      "socialProofDesc": "高速、シーン+語彙"
+    },
+    "features": {
+      "sectionLabel": "機能セット",
+      "title": "小さなシステムで",
+      "titleLine2": "毎日の習慣に",
+      "description": "すべてのセクションは前進し続けるように設計されています：撮影、理解、繰り返し。UIは静かに、単語が定着するように。",
+      "note": "ノート",
+      "snapLearn": "撮って学ぶ",
+      "snapLearnDesc": "画像をアップロードして、身の回りの実物から即座に語彙を学びましょう。",
+      "aiPowered": "AI分析",
+      "aiPoweredDesc": "高度なAIが画像を分析し、翻訳付きの文脈語彙を生成します。",
+      "languages": "20以上の言語",
+      "languagesDesc": "20以上の言語で、ネイティブ翻訳と発音付きの語彙を学べます。",
+      "pronunciation": "発音ガイド",
+      "pronunciationDesc": "ネイティブの発音を聞いて、音声再生でスピーキング練習。",
+      "saveReview": "保存＆復習",
+      "saveReviewDesc": "個人の語彙ライブラリを構築し、いつでも学んだ単語を復習。",
+      "trackProgress": "進捗追跡",
+      "trackProgressDesc": "連続日数、統計、実績で学習の旅を監視。",
+      "fastEasy": "速くて簡単",
+      "fastEasyDesc": "詳細な単語情報と例文を即座に取得。",
+      "freeStart": "無料で開始",
+      "freeStartDesc": "毎日10回の無料分析、クレジットカード不要。すぐに学習開始。"
+    },
+    "demo": {
+      "sectionLabel": "ワークフロー",
+      "title": "3つのステップ。",
+      "titleLine2": "毎日の儀式。",
+      "description": "ループは意図的に短くしています。実際にやるために：撮影 → 理解 → 保存。",
+      "step": "ステップ",
+      "step1Title": "画像をアップロード",
+      "step1Desc": "語彙を学びたい物の写真を撮るか、画像をアップロード。",
+      "step2Title": "AIが分析",
+      "step2Desc": "AIが物を識別し、翻訳と例文付きの語彙を生成。",
+      "step3Title": "学習＆保存",
+      "step3Desc": "語彙カードを確認し、発音を聞いて、ライブラリに保存。",
+      "aiDescription": "AI説明：",
+      "sampleDesc": "木のテーブルの上に、赤いリンゴ、オレンジ、黄色いレモンなど、色とりどりの新鮮な果物が並んでいます。",
+      "vocabulary": "語彙（スペイン語）",
+      "sample": "サンプル"
+    },
+    "stats": {
+      "sectionLabel": "クイック数字",
+      "title": "毎日の実践的な学習のために",
+      "subtitle": "無駄なし。練習のみ。",
+      "languagesSupported": "対応言語",
+      "freeDaily": "毎日の無料分析",
+      "aiAccuracy": "AI精度",
+      "available": "利用可能"
+    },
+    "cta": {
+      "title": "言語の旅を",
+      "titleLine2": "始める準備はできましたか？",
+      "description": "画像を使って自然に語彙を構築する数千人の言語学習者に参加しましょう。毎日10回の無料分析から始めましょう。",
+      "ctaLoggedIn": "最初の画像を分析",
+      "ctaLoggedOut": "無料で始める",
+      "disclaimer": "クレジットカード不要 • 毎日10回無料分析 • いつでもキャンセル可能"
+    },
+    "navbar": {
+      "features": "機能",
+      "howItWorks": "使い方",
+      "openMenu": "メニューを開く",
+      "closeMenu": "メニューを閉じる"
+    },
+    "footer": {
+      "description": "画像で自然に語彙を学びましょう。写真をアップロードすると、AIが目標言語で単語を教えてくれます。",
+      "product": "製品",
+      "features": "機能",
+      "howItWorks": "使い方",
+      "getStarted": "始める",
+      "contact": "お問い合わせ",
+      "email": "メールで連絡",
+      "copyright": "All rights reserved.",
+      "followOnTwitter": "Twitterでフォロー",
+      "viewOnGithub": "GitHubで見る"
+    }
+  },
+  "admin": {
+    "sidebar": {
+      "title": "管理",
+      "subtitle": "ダッシュボード",
+      "overview": "概要",
+      "users": "ユーザー",
+      "content": "コンテンツ",
+      "logs": "アクティビティログ",
+      "health": "システム健全性",
+      "exitAdmin": "管理を終了"
+    },
+    "overview": {
+      "title": "プラットフォーム概要",
+      "subtitle": "プラットフォームのパフォーマンスと成長を監視",
+      "totalUsers": "総ユーザー数",
+      "totalAnalyses": "総分析数",
+      "dailyActiveUsers": "デイリーアクティブユーザー",
+      "wordsLearned": "学習した単語",
+      "userGrowth": "ユーザー成長",
+      "analysisGrowth": "分析成長",
+      "last30Days": "過去30日間"
+    },
+    "users": {
+      "title": "ユーザー管理",
+      "subtitle": "プラットフォームユーザーと権限を管理",
+      "addUser": "ユーザーを追加",
+      "searchPlaceholder": "メールまたは名前で検索...",
+      "sortBy": "並び替え",
+      "createdDate": "作成日",
+      "lastActivity": "最終アクティビティ",
+      "totalAnalyses": "総分析数",
+      "user": "ユーザー",
+      "role": "役割",
+      "status": "ステータス",
+      "analyses": "分析",
+      "joined": "参加日",
+      "actions": "アクション",
+      "viewDetails": "詳細を見る",
+      "editUser": "ユーザーを編集",
+      "suspendUser": "ユーザーを停止",
+      "reactivateUser": "ユーザーを再有効化",
+      "deleteUser": "ユーザーを削除",
+      "noUsers": "ユーザーが見つかりません",
+      "showing": "表示中",
+      "to": "〜",
+      "of": "/",
+      "users": "ユーザー",
+      "page": "ページ",
+      "roleUser": "ユーザー",
+      "roleAdmin": "管理者",
+      "roleSuperAdmin": "スーパー管理者",
+      "statusActive": "アクティブ",
+      "statusSuspended": "停止中"
+    },
+    "userDetail": {
+      "backToUsers": "ユーザー一覧に戻る",
+      "userInformation": "ユーザー情報",
+      "languageSettings": "言語設定",
+      "email": "メール",
+      "name": "名前",
+      "notSet": "未設定",
+      "joined": "参加日",
+      "motherLanguage": "母国語",
+      "learningLanguage": "学習言語",
+      "proficiencyLevel": "習熟度",
+      "totalAnalyses": "総分析数",
+      "wordsLearned": "学習した単語",
+      "currentStreak": "現在の連続",
+      "lastActivity": "最終アクティビティ",
+      "never": "なし",
+      "recentAnalyses": "最近の分析",
+      "noAnalyses": "まだ分析がありません",
+      "words": "単語",
+      "days": "日"
+    },
+    "userForm": {
+      "createTitle": "新規ユーザー作成",
+      "createSubtitle": "プラットフォームに新しいユーザーを追加",
+      "editTitle": "ユーザーを編集",
+      "editSubtitle": "ユーザー情報と権限を更新",
+      "email": "メール",
+      "emailPlaceholder": "user@example.com",
+      "name": "名前",
+      "namePlaceholder": "山田太郎",
+      "role": "役割",
+      "status": "ステータス",
+      "motherLanguage": "母国語",
+      "learningLanguage": "学習言語",
+      "proficiencyLevel": "習熟度",
+      "cancel": "キャンセル",
+      "createUser": "ユーザーを作成",
+      "saveChanges": "変更を保存"
+    },
+    "deleteDialog": {
+      "title": "ユーザーを削除",
+      "description": "本当に削除しますか",
+      "warning": "この操作は取り消せません。すべてのデータが削除されます。",
+      "warningWithCount": "この操作は取り消せません。以下を含むすべてのデータが削除されます",
+      "analyses": "件の分析",
+      "cancel": "キャンセル",
+      "confirm": "ユーザーを削除"
+    },
+    "content": {
+      "title": "コンテンツモデレーション",
+      "subtitle": "ユーザー生成コンテンツを審査・管理",
+      "dateRange": "日付範囲",
+      "allTime": "全期間",
+      "last7Days": "過去7日間",
+      "last30Days": "過去30日間",
+      "last90Days": "過去90日間",
+      "flagContent": "コンテンツをフラグ",
+      "unflagContent": "フラグを解除",
+      "deleteContent": "コンテンツを削除",
+      "flagged": "フラグ付き",
+      "noContent": "コンテンツが見つかりません",
+      "by": "作成者"
+    },
+    "logs": {
+      "title": "アクティビティログ",
+      "subtitle": "すべての管理操作を追跡",
+      "filterByAction": "アクションでフィルター",
+      "allActions": "すべてのアクション",
+      "userSuspended": "ユーザー停止",
+      "userReactivated": "ユーザー再有効化",
+      "contentFlagged": "コンテンツフラグ",
+      "contentDeleted": "コンテンツ削除",
+      "roleChanged": "役割変更",
+      "noLogs": "アクティビティログが見つかりません",
+      "admin": "管理者",
+      "target": "ターゲット",
+      "action": "アクション",
+      "timestamp": "タイムスタンプ"
+    },
+    "health": {
+      "title": "システム健全性",
+      "subtitle": "システムパフォーマンスと指標を監視",
+      "apiResponseTime": "API応答時間",
+      "storageUsage": "ストレージ使用量",
+      "dailyApiCalls": "日次API呼び出し",
+      "errorRate": "エラー率",
+      "healthy": "正常",
+      "warning": "警告",
+      "critical": "重大",
+      "ms": "ミリ秒",
+      "gb": "GB",
+      "calls": "回"
+    },
+    "toast": {
+      "userCreated": "ユーザーを作成しました",
+      "userUpdated": "ユーザーを更新しました",
+      "userDeleted": "ユーザーを削除しました",
+      "userSuspended": "ユーザーを停止しました",
+      "userReactivated": "ユーザーを再有効化しました",
+      "contentFlagged": "コンテンツをフラグしました",
+      "contentUnflagged": "フラグを解除しました",
+      "contentDeleted": "コンテンツを削除しました",
+      "fetchError": "データの取得に失敗しました",
+      "createError": "ユーザーの作成に失敗しました",
+      "updateError": "ユーザーの更新に失敗しました",
+      "deleteError": "ユーザーの削除に失敗しました",
+      "statusError": "ユーザーステータスの更新に失敗しました",
+      "flagError": "コンテンツのフラグに失敗しました",
+      "deleteContentError": "コンテンツの削除に失敗しました",
+      "error": "エラー",
+      "success": "成功"
+    }
+  }
+}

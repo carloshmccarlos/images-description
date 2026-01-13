@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Users, FileText, TrendingUp, BookOpen } from 'lucide-react';
 import { MetricCard } from '@/components/admin/metric-card';
@@ -16,6 +17,7 @@ interface PlatformStats {
 }
 
 export default function AdminOverviewPage() {
+  const t = useTranslations('admin');
   const [stats, setStats] = useState<PlatformStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,24 +34,24 @@ export default function AdminOverviewPage() {
         }
 
         setStats(result.data);
-      } catch (err) {
-        setError('Failed to load platform statistics');
+      } catch {
+        setError(t('toast.fetchError'));
       } finally {
         setLoading(false);
       }
     }
 
     fetchStats();
-  }, []);
+  }, [t]);
 
   if (loading) {
     return (
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-white font-['Playfair_Display'] mb-2">
-            Platform Overview
+            {t('overview.title')}
           </h1>
-          <p className="text-zinc-400">Loading platform statistics...</p>
+          <p className="text-zinc-400">{t('toast.fetchError')}...</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
@@ -65,9 +67,9 @@ export default function AdminOverviewPage() {
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-white font-['Playfair_Display'] mb-2">
-            Platform Overview
+            {t('overview.title')}
           </h1>
-          <p className="text-rose-400">Error: {error}</p>
+          <p className="text-rose-400">{t('toast.error')}: {error}</p>
         </div>
       </div>
     );
@@ -83,44 +85,44 @@ export default function AdminOverviewPage() {
         transition={{ duration: 0.3 }}
       >
         <h1 className="text-3xl font-bold text-white font-['Playfair_Display'] mb-2">
-          Platform Overview
+          {t('overview.title')}
         </h1>
         <p className="text-zinc-400">
-          Monitor key metrics and platform performance
+          {t('overview.subtitle')}
         </p>
       </motion.div>
 
       {/* Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard
-          title="Total Users"
+          title={t('overview.totalUsers')}
           value={stats.totalUsers}
           icon={Users}
           trend="up"
           change={12}
-          changeLabel="vs last month"
+          changeLabel={t('overview.last30Days')}
         />
         <MetricCard
-          title="Total Analyses"
+          title={t('overview.totalAnalyses')}
           value={stats.totalAnalyses}
           icon={FileText}
           trend="up"
           change={8}
-          changeLabel="vs last month"
+          changeLabel={t('overview.last30Days')}
         />
         <MetricCard
-          title="Daily Active Users"
+          title={t('overview.dailyActiveUsers')}
           value={stats.dailyActiveUsers}
           icon={TrendingUp}
           trend="neutral"
         />
         <MetricCard
-          title="Words Learned"
+          title={t('overview.wordsLearned')}
           value={stats.totalWordsLearned}
           icon={BookOpen}
           trend="up"
           change={15}
-          changeLabel="vs last month"
+          changeLabel={t('overview.last30Days')}
         />
       </div>
 
@@ -128,12 +130,12 @@ export default function AdminOverviewPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TimeSeriesChart
           data={stats.userGrowth}
-          title="User Registrations"
+          title={t('overview.userGrowth')}
           color="#8b5cf6"
         />
         <TimeSeriesChart
           data={stats.analysisGrowth}
-          title="Image Analyses"
+          title={t('overview.analysisGrowth')}
           color="#f43f5e"
         />
       </div>

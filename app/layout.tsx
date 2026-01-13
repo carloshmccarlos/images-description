@@ -1,14 +1,16 @@
 import type { Metadata, Viewport } from 'next';
 import { Bodoni_Moda, Familjen_Grotesk, Geist_Mono } from 'next/font/google';
+import { headers } from 'next/headers';
+import { getLocale, getMessages } from 'next-intl/server';
 import './globals.css';
 import { QueryProvider } from '@/components/providers/query-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/components/providers/theme-provider';
-import { I18nProvider } from '@/lib/i18n/provider';
-import { getServerLocale } from '@/lib/i18n/server';
+import { I18nProvider } from '@/i18n/provider';
 import { APP_CONFIG } from '@/lib/constants';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { locales, defaultLocale, type Locale } from '@/i18n/config';
 
 const displayFont = Bodoni_Moda({
   variable: '--font-display',
@@ -27,72 +29,103 @@ const geistMono = Geist_Mono({
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lexilens.app';
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: `${APP_CONFIG.name} - Learn Vocabulary Through Images | AI-Powered Language Learning`,
-    template: `%s | ${APP_CONFIG.name}`,
-  },
-  description: 'Learn vocabulary naturally by uploading photos. Our AI extracts words from images and teaches you in your target language. Support for 20+ languages including Chinese, Japanese, Korean, Spanish, and more.',
-  keywords: [
-    'vocabulary learning',
-    'language learning app',
-    'AI language learning',
-    'best ai language learning tools',
-    'learn vocabulary from images',
-    'visual vocabulary',
-    'image-based learning',
-    'learn Chinese',
-    'learn Japanese',
-    'learn Korean',
-    'learn Spanish',
-    'flashcard alternative',
-    'vocabulary builder',
-    'language learning tool',
-    'AI vocabulary extraction',
-    'photo vocabulary',
-  ],
-  authors: [{ name: 'LexiLens Team' }],
-  creator: 'LexiLens',
-  publisher: 'LexiLens',
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+function getBcp47Locale(locale: Locale): string {
+  if (locale === 'zh-cn') return 'zh-CN';
+  if (locale === 'zh-tw') return 'zh-TW';
+  return locale;
+}
+
+function stripLocalePrefix(pathname: string): string {
+  const parts = pathname.split('/').filter(Boolean);
+  const first = parts[0]?.toLowerCase();
+  if (first && locales.includes(first as Locale)) {
+    const rest = `/${parts.slice(1).join('/')}`;
+    return rest === '/' ? '/' : rest;
+  }
+  return pathname;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers();
+  const originalPathname = headersList.get('x-original-pathname') ?? '/';
+  const localeHeader = (headersList.get('x-locale') ?? '').toLowerCase();
+
+  const isPrefixed = locales.some((l) => originalPathname.toLowerCase().startsWith(`/${l}`));
+  const canonicalLocale = (isPrefixed
+    ? (localeHeader as Locale)
+    : defaultLocale) || defaultLocale;
+
+  const suffix = stripLocalePrefix(originalPathname);
+  const canonicalPathname = `/${canonicalLocale}${suffix === '/' ? '' : suffix}`;
+  const canonical = `${siteUrl}${canonicalPathname}`;
+
+  const languages = Object.fromEntries([
+    ...locales.map((l) => [getBcp47Locale(l), `${siteUrl}/${l}${suffix === '/' ? '' : suffix}`]),
+    ['x-default', `${siteUrl}/${defaultLocale}${suffix === '/' ? '' : suffix}`],
+  ]);
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: `${APP_CONFIG.name} - Learn Vocabulary Through Images | AI-Powered Language Learning`,
+      template: `%s | ${APP_CONFIG.name}`,
+    },
+    description: 'Learn vocabulary naturally by uploading photos. Our AI extracts words from images and teaches you in your target language. Support for English, Chinese (Simplified/Traditional), Japanese, and Korean.',
+    keywords: [
+      'vocabulary learning',
+      'language learning app',
+      'AI language learning',
+      'best ai language learning tools',
+      'learn vocabulary from images',
+      'visual vocabulary',
+      'image-based learning',
+      'learn Chinese',
+      'learn Japanese',
+      'learn Korean',
+      'flashcard alternative',
+      'vocabulary builder',
+      'language learning tool',
+      'AI vocabulary extraction',
+      'photo vocabulary',
+      'photo vocabulary',
+    ],
+    authors: [{ name: 'LexiLens Team' }],
+    creator: 'LexiLens',
+    publisher: 'LexiLens',
+    robots: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    alternateLocale: ['zh_CN', 'ja_JP', 'ko_KR'],
-    url: siteUrl,
-    siteName: APP_CONFIG.name,
-    title: `${APP_CONFIG.name} - Learn Vocabulary Through Images`,
-    description: 'Upload photos and learn vocabulary in your target language. AI-powered visual learning for 20+ languages.',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: `${APP_CONFIG.name} - Learn Vocabulary Through Images`,
-    description: 'Upload photos and learn vocabulary in your target language. AI-powered visual learning for 20+ languages.',
-    creator: '@lexilens',
-  },
-  alternates: {
-    canonical: siteUrl,
-    languages: {
-      'en': `${siteUrl}/en`,
-      'zh': `${siteUrl}/zh`,
-      'ja': `${siteUrl}/ja`,
-      'ko': `${siteUrl}/ko`,
+    openGraph: {
+      type: 'website',
+      locale: 'en_US',
+      alternateLocale: ['zh_CN', 'zh_TW', 'ja_JP', 'ko_KR'],
+      url: canonical,
+      siteName: APP_CONFIG.name,
+      title: `${APP_CONFIG.name} - Learn Vocabulary Through Images`,
+      description: 'Upload photos and learn vocabulary in your target language. AI-powered visual learning for English, Chinese (Simplified/Traditional), Japanese, and Korean.',
     },
-  },
-  category: 'education',
-  classification: 'Language Learning',
-};
+    twitter: {
+      card: 'summary_large_image',
+      title: `${APP_CONFIG.name} - Learn Vocabulary Through Images`,
+      description: 'Upload photos and learn vocabulary in your target language. AI-powered visual learning for English, Chinese (Simplified/Traditional), Japanese, and Korean.',
+      creator: '@lexilens',
+    },
+    alternates: {
+      canonical,
+      languages,
+    },
+    category: 'education',
+    classification: 'Language Learning',
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: [
@@ -133,7 +166,7 @@ function JsonLd() {
     },
     featureList: [
       'AI-powered vocabulary extraction from images',
-      'Support for 20+ languages',
+      'Support for English, Chinese (Simplified/Traditional), Japanese, and Korean',
       'Save and review vocabulary',
       'Track learning progress',
       'Visual learning approach',
@@ -153,7 +186,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await getServerLocale();
+  const locale = await getLocale();
+  const messages = await getMessages();
   
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -164,7 +198,7 @@ export default async function RootLayout({
       </head>
       <body className={`${displayFont.variable} ${bodyFont.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider>
-          <I18nProvider initialLocale={locale}>
+          <I18nProvider locale={locale} messages={messages as Record<string, unknown>}>
             <QueryProvider>
               {children}
               <Toaster />

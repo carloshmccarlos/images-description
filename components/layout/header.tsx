@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Menu, LogOut, Settings, User, BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -15,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { APP_CONFIG } from '@/lib/constants';
+import { useLanguage } from '@/hooks/use-language';
 
 interface HeaderProps {
   user: { email: string; name?: string | null } | null;
@@ -22,12 +24,14 @@ interface HeaderProps {
 
 export function Header({ user }: HeaderProps) {
   const router = useRouter();
+  const { locale } = useLanguage();
+  const t = useTranslations('common');
   const supabase = createClient();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
-    router.push('/');
+    router.push(`/${locale}`);
     router.refresh();
   }
 
@@ -39,19 +43,19 @@ export function Header({ user }: HeaderProps) {
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/60 dark:bg-zinc-950/95 dark:supports-backdrop-filter:bg-zinc-950/60">
       <div className="container flex h-14 items-center justify-between px-4">
         <div className="flex items-center gap-6">
-          <Link href={user ? '/dashboard' : '/'} className="flex items-center gap-2">
+          <Link href={user ? `/${locale}/dashboard` : `/${locale}`} className="flex items-center gap-2">
             <span className="text-xl font-bold">{APP_CONFIG.name}</span>
           </Link>
           {user && (
             <nav className="hidden md:flex items-center gap-4">
-              <Link href="/dashboard" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                Dashboard
+              <Link href={`/${locale}/dashboard`} className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
+                {t('nav.dashboard')}
               </Link>
-              <Link href="/analyze" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                Analyze
+              <Link href={`/${locale}/analyze`} className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
+                {t('nav.analyze')}
               </Link>
-              <Link href="/saved" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                Saved
+              <Link href={`/${locale}/saved`} className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
+                {t('nav.saved')}
               </Link>
             </nav>
           )}
@@ -85,38 +89,38 @@ export function Header({ user }: HeaderProps) {
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard">
+                    <Link href={`/${locale}/dashboard`}>
                       <BarChart3 className="mr-2 h-4 w-4" />
-                      Dashboard
+                      {t('nav.dashboard')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/profile">
+                    <Link href={`/${locale}/profile`}>
                       <User className="mr-2 h-4 w-4" />
-                      Profile
+                      {t('nav.profile')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/settings">
+                    <Link href={`/${locale}/settings`}>
                       <Settings className="mr-2 h-4 w-4" />
-                      Settings
+                      {t('nav.settings')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    Sign out
+                    {t('nav.signOut')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
           ) : (
             <div className="flex items-center gap-2">
-              <Link href="/auth/login">
-                <Button variant="ghost">Sign in</Button>
+              <Link href={`/${locale}/auth/login`}>
+                <Button variant="ghost">{t('nav.signIn')}</Button>
               </Link>
-              <Link href="/auth/register">
-                <Button>Get Started</Button>
+              <Link href={`/${locale}/auth/register`}>
+                <Button>{t('nav.getStarted')}</Button>
               </Link>
             </div>
           )}
@@ -126,14 +130,14 @@ export function Header({ user }: HeaderProps) {
       {/* Mobile menu */}
       {user && isMobileMenuOpen && (
         <div className="md:hidden border-t p-4 space-y-2">
-          <Link href="/dashboard" className="block py-2 text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>
-            Dashboard
+          <Link href={`/${locale}/dashboard`} className="block py-2 text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+            {t('nav.dashboard')}
           </Link>
-          <Link href="/analyze" className="block py-2 text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>
-            Analyze
+          <Link href={`/${locale}/analyze`} className="block py-2 text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+            {t('nav.analyze')}
           </Link>
-          <Link href="/saved" className="block py-2 text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>
-            Saved
+          <Link href={`/${locale}/saved`} className="block py-2 text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+            {t('nav.saved')}
           </Link>
         </div>
       )}

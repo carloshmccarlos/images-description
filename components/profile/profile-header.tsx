@@ -5,7 +5,7 @@ import { Calendar, Globe, GraduationCap } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 interface ProfileHeaderProps {
   name: string;
@@ -28,7 +28,7 @@ export function ProfileHeader({
   proficiencyLevel,
   memberSince,
 }: ProfileHeaderProps) {
-  const { t } = useTranslation('profile');
+  const t = useTranslations('profile');
   const initials = name
     .split(' ')
     .map((n) => n[0])

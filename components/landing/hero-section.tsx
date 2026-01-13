@@ -4,15 +4,18 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Play, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/hooks/use-language';
 
 interface HeroSectionProps {
   isLoggedIn: boolean;
 }
 
 export function HeroSection({ isLoggedIn }: HeroSectionProps) {
-  const { t } = useTranslation('landing');
-  const { t: tCommon } = useTranslation('common');
+  const t = useTranslations('landing');
+  const tCommon = useTranslations('common');
+  const { locale } = useLanguage();
+  const prefixed = `/${locale}`;
 
   return (
     <section className="relative overflow-hidden pt-28 pb-16 md:pt-32 md:pb-24">
@@ -80,7 +83,7 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
               transition={{ delay: 0.26 }}
               className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center"
             >
-              <Link href={isLoggedIn ? '/dashboard' : '/auth/register'}>
+              <Link href={isLoggedIn ? `${prefixed}/dashboard` : `${prefixed}/auth/register`}>
                 <Button
                   size="lg"
                   className="h-14 px-7 text-base shadow-lg shadow-emerald-500/10 bg-linear-to-r from-sky-600 via-teal-500 to-emerald-500 hover:from-sky-700 hover:via-teal-600 hover:to-emerald-600"

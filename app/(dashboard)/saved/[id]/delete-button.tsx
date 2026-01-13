@@ -15,14 +15,16 @@ import {
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { useDeleteSavedAnalysis } from '@/hooks/use-saved-analyses';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/hooks/use-language';
 
 interface DeleteAnalysisButtonProps {
   id: string;
 }
 
 export function DeleteAnalysisButton({ id }: DeleteAnalysisButtonProps) {
-  const { t } = useTranslation('saved');
+  const t = useTranslations('saved');
+  const { locale } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const deleteMutation = useDeleteSavedAnalysis();
@@ -30,12 +32,12 @@ export function DeleteAnalysisButton({ id }: DeleteAnalysisButtonProps) {
   function handleDelete() {
     deleteMutation.mutate(id, {
       onSuccess: () => {
-        toast.success(t('delete.success', 'Analysis deleted'));
+        toast.success(t('delete.success'));
         setIsOpen(false);
-        router.push('/saved');
+        router.push(`/${locale}/saved`);
       },
       onError: () => {
-        toast.error(t('delete.error', 'Failed to delete'));
+        toast.error(t('delete.error'));
       },
     });
   }
@@ -48,16 +50,16 @@ export function DeleteAnalysisButton({ id }: DeleteAnalysisButtonProps) {
           className="rounded-xl font-bold text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all"
         >
           <Trash2 className="mr-2 h-4 w-4" />
-          {t('delete.button', 'Delete Exploration')}
+          {t('delete.button')}
         </Button>
       </DialogTrigger>
       <DialogContent className="rounded-[32px] border-zinc-200 dark:border-zinc-800 shadow-2xl">
         <DialogHeader className="space-y-3">
           <DialogTitle className="text-2xl font-bold tracking-tight">
-            {t('delete.title', 'Delete Exploration?')}
+            {t('delete.title')}
           </DialogTitle>
           <DialogDescription className="text-zinc-500 text-base leading-relaxed">
-            {t('delete.description', 'This will permanently remove this analysis and all its captured vocabulary. This action cannot be undone.')}
+            {t('delete.description')}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-3 sm:gap-0 pt-4">
@@ -67,7 +69,7 @@ export function DeleteAnalysisButton({ id }: DeleteAnalysisButtonProps) {
             disabled={deleteMutation.isPending}
             className="rounded-xl font-bold h-11 px-6"
           >
-            {t('delete.cancel', 'Keep it')}
+            {t('delete.cancel')}
           </Button>
           <Button
             variant="destructive"
@@ -76,7 +78,7 @@ export function DeleteAnalysisButton({ id }: DeleteAnalysisButtonProps) {
             className="rounded-xl font-bold h-11 px-8 shadow-lg shadow-red-500/20 active:scale-[0.98] transition-all"
           >
             {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {t('delete.confirm', 'Delete Permanently')}
+            {t('delete.confirm')}
           </Button>
         </DialogFooter>
       </DialogContent>

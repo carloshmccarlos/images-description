@@ -2,20 +2,22 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { loginSchema, type LoginInput } from '@/lib/validations/auth';
+import { valibotResolver } from '@/lib/validations/react-hook-form-valibot-resolver';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/hooks/use-language';
 
 export function LoginForm() {
-  const { t } = useTranslation('auth');
+  const t = useTranslations('auth');
+  const { locale } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
@@ -25,7 +27,7 @@ export function LoginForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
+    resolver: valibotResolver(loginSchema),
   });
 
   async function onSubmit(data: LoginInput) {
@@ -42,7 +44,7 @@ export function LoginForm() {
       }
 
       toast.success('Welcome back!');
-      router.push('/dashboard');
+      router.push(`/${locale}/dashboard`);
       router.refresh();
     } catch {
       toast.error('Something went wrong', { description: 'Please try again later' });
@@ -80,7 +82,7 @@ export function LoginForm() {
         <div className="flex items-center justify-between ml-1">
           <Label htmlFor="password" className="text-xs font-bold uppercase tracking-widest text-zinc-500">{t('form.password')}</Label>
           <Link 
-            href="/auth/forgot-password" 
+            href={`/${locale}/auth/forgot-password`} 
             className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 hover:text-emerald-500 transition-colors"
           >
             Forgot?

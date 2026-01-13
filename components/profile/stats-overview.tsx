@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { BookOpen, Camera, Flame, Trophy, BookMarked } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 interface StatsOverviewProps {
   totalWords: number;
@@ -20,8 +20,8 @@ export function StatsOverview({
   longestStreak,
   savedAnalyses,
 }: StatsOverviewProps) {
-  const { t } = useTranslation('profile');
-  const { t: tCommon } = useTranslation('common');
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
 
   const stats = [
     {

@@ -3,6 +3,7 @@ import { getUserDetail } from '@/lib/actions/admin/get-user-detail';
 import { updateUserStatus } from '@/lib/actions/admin/update-user-status';
 import { updateUser } from '@/lib/actions/admin/update-user';
 import { deleteUser } from '@/lib/actions/admin/delete-user';
+import { updateUserLimit } from '@/lib/actions/admin/update-user-limit';
 
 export async function GET(
   request: NextRequest,
@@ -48,6 +49,27 @@ export async function PATCH(
                  result.error === 'Admin access required' ? 403 :
                  result.error === 'User not found' ? 404 :
                  result.error === 'Cannot suspend your own account' ? 400 : 400 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: result.data,
+    });
+  }
+
+  // If dailyLimit is provided, update user limit
+  if (body.dailyLimit !== undefined) {
+    const result = await updateUserLimit({
+      userId: id,
+      dailyLimit: body.dailyLimit,
+    });
+
+    if (!result.success) {
+      return NextResponse.json(
+        { success: false, error: result.error },
+        { status: result.error === 'Not authenticated' ? 401 : 
+                 result.error === 'Admin access required' ? 403 : 400 }
       );
     }
 

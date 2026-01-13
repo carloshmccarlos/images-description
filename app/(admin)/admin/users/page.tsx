@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, 
@@ -14,8 +15,7 @@ import {
   Trash2,
   Ban,
   CheckCircle,
-  Loader2,
-  X
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,6 +68,7 @@ type SortField = 'createdAt' | 'lastActivityAt' | 'totalAnalyses';
 type SortDirection = 'asc' | 'desc';
 
 export default function AdminUsersPage() {
+  const t = useTranslations('admin');
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -103,14 +104,14 @@ export default function AdminUsersPage() {
         setUsers(data.data.users);
         setPagination(data.data.pagination);
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        toast({ title: t('toast.error'), description: data.error, variant: 'destructive' });
       }
     } catch {
-      toast({ title: 'Error', description: 'Failed to fetch users', variant: 'destructive' });
+      toast({ title: t('toast.error'), description: t('toast.fetchError'), variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
-  }, [page, search, sortBy, sortDirection, toast]);
+  }, [page, search, sortBy, sortDirection, toast, t]);
 
   useEffect(() => {
     fetchUsers();
@@ -142,15 +143,15 @@ export default function AdminUsersPage() {
 
       if (data.success) {
         toast({ 
-          title: 'Success', 
-          description: `User ${action === 'suspend' ? 'suspended' : 'reactivated'} successfully` 
+          title: t('toast.success'), 
+          description: action === 'suspend' ? t('toast.userSuspended') : t('toast.userReactivated')
         });
         fetchUsers();
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        toast({ title: t('toast.error'), description: data.error, variant: 'destructive' });
       }
     } catch {
-      toast({ title: 'Error', description: 'Failed to update user status', variant: 'destructive' });
+      toast({ title: t('toast.error'), description: t('toast.statusError'), variant: 'destructive' });
     }
   };
 
@@ -165,15 +166,15 @@ export default function AdminUsersPage() {
       const data = await response.json();
 
       if (data.success) {
-        toast({ title: 'Success', description: 'User deleted successfully' });
+        toast({ title: t('toast.success'), description: t('toast.userDeleted') });
         setIsDeleteModalOpen(false);
         setSelectedUser(null);
         fetchUsers();
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        toast({ title: t('toast.error'), description: data.error, variant: 'destructive' });
       }
     } catch {
-      toast({ title: 'Error', description: 'Failed to delete user', variant: 'destructive' });
+      toast({ title: t('toast.error'), description: t('toast.deleteError'), variant: 'destructive' });
     } finally {
       setIsSubmitting(false);
     }
@@ -203,15 +204,15 @@ export default function AdminUsersPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white font-serif">User Management</h1>
-            <p className="text-zinc-400 mt-1">Manage platform users and their permissions</p>
+            <h1 className="text-3xl font-bold text-white font-serif">{t('users.title')}</h1>
+            <p className="text-zinc-400 mt-1">{t('users.subtitle')}</p>
           </div>
           <Button 
             onClick={() => setIsCreateModalOpen(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add User
+            {t('users.addUser')}
           </Button>
         </div>
 
@@ -221,7 +222,7 @@ export default function AdminUsersPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
               <Input
-                placeholder="Search by email or name..."
+                placeholder={t('users.searchPlaceholder')}
                 value={search}
                 onChange={(e) => handleSearch(e.target.value)}
                 className="pl-10 bg-[#0a0a0b] border-[#2a2a2e] text-white placeholder:text-zinc-500"
@@ -229,12 +230,12 @@ export default function AdminUsersPage() {
             </div>
             <Select value={sortBy} onValueChange={(v) => handleSort(v as SortField)}>
               <SelectTrigger className="w-[180px] bg-[#0a0a0b] border-[#2a2a2e] text-white">
-                <SelectValue placeholder="Sort by" />
+                <SelectValue placeholder={t('users.sortBy')} />
               </SelectTrigger>
               <SelectContent className="bg-[#141416] border-[#2a2a2e]">
-                <SelectItem value="createdAt">Created Date</SelectItem>
-                <SelectItem value="lastActivityAt">Last Activity</SelectItem>
-                <SelectItem value="totalAnalyses">Total Analyses</SelectItem>
+                <SelectItem value="createdAt">{t('users.createdDate')}</SelectItem>
+                <SelectItem value="lastActivityAt">{t('users.lastActivity')}</SelectItem>
+                <SelectItem value="totalAnalyses">{t('users.totalAnalyses')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -246,15 +247,15 @@ export default function AdminUsersPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[#2a2a2e]">
-                  <th className="text-left p-4 text-zinc-400 font-medium">User</th>
-                  <th className="text-left p-4 text-zinc-400 font-medium">Role</th>
-                  <th className="text-left p-4 text-zinc-400 font-medium">Status</th>
+                  <th className="text-left p-4 text-zinc-400 font-medium">{t('users.user')}</th>
+                  <th className="text-left p-4 text-zinc-400 font-medium">{t('users.role')}</th>
+                  <th className="text-left p-4 text-zinc-400 font-medium">{t('users.status')}</th>
                   <th className="text-left p-4 text-zinc-400 font-medium">
                     <button 
                       onClick={() => handleSort('totalAnalyses')}
                       className="flex items-center gap-1 hover:text-white transition-colors"
                     >
-                      Analyses
+                      {t('users.analyses')}
                       <ArrowUpDown className="w-3 h-3" />
                     </button>
                   </th>
@@ -263,11 +264,11 @@ export default function AdminUsersPage() {
                       onClick={() => handleSort('createdAt')}
                       className="flex items-center gap-1 hover:text-white transition-colors"
                     >
-                      Joined
+                      {t('users.joined')}
                       <ArrowUpDown className="w-3 h-3" />
                     </button>
                   </th>
-                  <th className="text-right p-4 text-zinc-400 font-medium">Actions</th>
+                  <th className="text-right p-4 text-zinc-400 font-medium">{t('users.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -281,7 +282,7 @@ export default function AdminUsersPage() {
                   <tr>
                     <td colSpan={6} className="p-8 text-center text-zinc-500">
                       <Users className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                      No users found
+                      {t('users.noUsers')}
                     </td>
                   </tr>
                 ) : (
@@ -328,7 +329,7 @@ export default function AdminUsersPage() {
                               <DropdownMenuItem asChild>
                                 <Link href={`/admin/users/${user.id}`} className="flex items-center cursor-pointer">
                                   <Users className="w-4 h-4 mr-2" />
-                                  View Details
+                                  {t('users.viewDetails')}
                                 </Link>
                               </DropdownMenuItem>
                               <DropdownMenuItem 
@@ -336,7 +337,7 @@ export default function AdminUsersPage() {
                                 className="cursor-pointer"
                               >
                                 <Pencil className="w-4 h-4 mr-2" />
-                                Edit User
+                                {t('users.editUser')}
                               </DropdownMenuItem>
                               <DropdownMenuSeparator className="bg-[#2a2a2e]" />
                               {user.status === 'active' ? (
@@ -345,7 +346,7 @@ export default function AdminUsersPage() {
                                   className="text-amber-400 cursor-pointer"
                                 >
                                   <Ban className="w-4 h-4 mr-2" />
-                                  Suspend User
+                                  {t('users.suspendUser')}
                                 </DropdownMenuItem>
                               ) : (
                                 <DropdownMenuItem 
@@ -353,7 +354,7 @@ export default function AdminUsersPage() {
                                   className="text-emerald-400 cursor-pointer"
                                 >
                                   <CheckCircle className="w-4 h-4 mr-2" />
-                                  Reactivate User
+                                  {t('users.reactivateUser')}
                                 </DropdownMenuItem>
                               )}
                               <DropdownMenuItem 
@@ -361,7 +362,7 @@ export default function AdminUsersPage() {
                                 className="text-rose-400 cursor-pointer"
                               >
                                 <Trash2 className="w-4 h-4 mr-2" />
-                                Delete User
+                                {t('users.deleteUser')}
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -378,7 +379,7 @@ export default function AdminUsersPage() {
           {pagination && pagination.totalPages > 1 && (
             <div className="flex items-center justify-between p-4 border-t border-[#2a2a2e]">
               <div className="text-sm text-zinc-500">
-                Showing {((page - 1) * pagination.limit) + 1} to {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} users
+                {t('users.showing')} {((page - 1) * pagination.limit) + 1} {t('users.to')} {Math.min(page * pagination.limit, pagination.total)} {t('users.of')} {pagination.total} {t('users.users')}
               </div>
               <div className="flex items-center gap-2">
                 <Button
@@ -391,7 +392,7 @@ export default function AdminUsersPage() {
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
                 <span className="text-sm text-zinc-400">
-                  Page {page} of {pagination.totalPages}
+                  {t('users.page')} {page} {t('users.of')} {pagination.totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -427,10 +428,10 @@ export default function AdminUsersPage() {
       <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <DialogContent className="bg-[#141416] border-[#2a2a2e] text-white">
           <DialogHeader>
-            <DialogTitle>Delete User</DialogTitle>
+            <DialogTitle>{t('deleteDialog.title')}</DialogTitle>
             <DialogDescription className="text-zinc-400">
-              Are you sure you want to delete <span className="text-white font-medium">{selectedUser?.email}</span>? 
-              This action cannot be undone and will remove all their data.
+              {t('deleteDialog.description')} <span className="text-white font-medium">{selectedUser?.email}</span>? 
+              {t('deleteDialog.warning')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -439,7 +440,7 @@ export default function AdminUsersPage() {
               onClick={() => setIsDeleteModalOpen(false)}
               className="border-[#2a2a2e] text-zinc-400"
             >
-              Cancel
+              {t('deleteDialog.cancel')}
             </Button>
             <Button 
               onClick={handleDelete}
@@ -447,7 +448,7 @@ export default function AdminUsersPage() {
               className="bg-rose-600 hover:bg-rose-700 text-white"
             >
               {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              Delete User
+              {t('deleteDialog.confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -467,14 +468,15 @@ function CreateUserModal({
   onClose: () => void; 
   onSuccess: () => void;
 }) {
+  const t = useTranslations('admin');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     name: '',
     role: 'user' as 'user' | 'admin' | 'super_admin',
     status: 'active' as 'active' | 'suspended',
-    motherLanguage: 'en',
-    learningLanguage: 'es',
+    motherLanguage: 'zh-cn',
+    learningLanguage: 'en',
     proficiencyLevel: 'beginner' as 'beginner' | 'intermediate' | 'advanced',
   });
   const { toast } = useToast();
@@ -492,22 +494,22 @@ function CreateUserModal({
       const data = await response.json();
 
       if (data.success) {
-        toast({ title: 'Success', description: 'User created successfully' });
+        toast({ title: t('toast.success'), description: t('toast.userCreated') });
         setFormData({
           email: '',
           name: '',
           role: 'user',
           status: 'active',
-          motherLanguage: 'en',
-          learningLanguage: 'es',
+          motherLanguage: 'zh-cn',
+          learningLanguage: 'en',
           proficiencyLevel: 'beginner',
         });
         onSuccess();
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        toast({ title: t('toast.error'), description: data.error, variant: 'destructive' });
       }
     } catch {
-      toast({ title: 'Error', description: 'Failed to create user', variant: 'destructive' });
+      toast({ title: t('toast.error'), description: t('toast.createError'), variant: 'destructive' });
     } finally {
       setIsSubmitting(false);
     }
@@ -519,15 +521,15 @@ function CreateUserModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Plus className="w-5 h-5 text-blue-400" />
-            Create New User
+            {t('userForm.createTitle')}
           </DialogTitle>
           <DialogDescription className="text-zinc-400">
-            Add a new user to the platform
+            {t('userForm.createSubtitle')}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-zinc-300">Email *</Label>
+            <Label htmlFor="email" className="text-zinc-300">{t('userForm.email')} *</Label>
             <Input
               id="email"
               type="email"
@@ -535,22 +537,22 @@ function CreateUserModal({
               value={formData.email}
               onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
               className="bg-[#0a0a0b] border-[#2a2a2e] text-white"
-              placeholder="user@example.com"
+              placeholder={t('userForm.emailPlaceholder')}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-zinc-300">Name</Label>
+            <Label htmlFor="name" className="text-zinc-300">{t('userForm.name')}</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
               className="bg-[#0a0a0b] border-[#2a2a2e] text-white"
-              placeholder="John Doe"
+              placeholder={t('userForm.namePlaceholder')}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-zinc-300">Role</Label>
+              <Label className="text-zinc-300">{t('userForm.role')}</Label>
               <Select 
                 value={formData.role} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, role: v as typeof formData.role }))}
@@ -559,14 +561,14 @@ function CreateUserModal({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[#141416] border-[#2a2a2e]">
-                  <SelectItem value="user">User</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="super_admin">Super Admin</SelectItem>
+                  <SelectItem value="user">{t('users.roleUser')}</SelectItem>
+                  <SelectItem value="admin">{t('users.roleAdmin')}</SelectItem>
+                  <SelectItem value="super_admin">{t('users.roleSuperAdmin')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-zinc-300">Status</Label>
+              <Label className="text-zinc-300">{t('userForm.status')}</Label>
               <Select 
                 value={formData.status} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, status: v as typeof formData.status }))}
@@ -575,15 +577,15 @@ function CreateUserModal({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[#141416] border-[#2a2a2e]">
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="suspended">Suspended</SelectItem>
+                  <SelectItem value="active">{t('users.statusActive')}</SelectItem>
+                  <SelectItem value="suspended">{t('users.statusSuspended')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-zinc-300">Mother Language</Label>
+              <Label className="text-zinc-300">{t('userForm.motherLanguage')}</Label>
               <Select 
                 value={formData.motherLanguage} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, motherLanguage: v }))}
@@ -593,17 +595,15 @@ function CreateUserModal({
                 </SelectTrigger>
                 <SelectContent className="bg-[#141416] border-[#2a2a2e]">
                   <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="zh">Chinese</SelectItem>
-                  <SelectItem value="ja">Japanese</SelectItem>
-                  <SelectItem value="ko">Korean</SelectItem>
-                  <SelectItem value="es">Spanish</SelectItem>
-                  <SelectItem value="fr">French</SelectItem>
-                  <SelectItem value="de">German</SelectItem>
+                  <SelectItem value="zh-cn">中文（简体）</SelectItem>
+                  <SelectItem value="zh-tw">中文（繁體）</SelectItem>
+                  <SelectItem value="ja">日本語</SelectItem>
+                  <SelectItem value="ko">한국어</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-zinc-300">Learning Language</Label>
+              <Label className="text-zinc-300">{t('userForm.learningLanguage')}</Label>
               <Select 
                 value={formData.learningLanguage} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, learningLanguage: v }))}
@@ -613,18 +613,16 @@ function CreateUserModal({
                 </SelectTrigger>
                 <SelectContent className="bg-[#141416] border-[#2a2a2e]">
                   <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="zh">Chinese</SelectItem>
-                  <SelectItem value="ja">Japanese</SelectItem>
-                  <SelectItem value="ko">Korean</SelectItem>
-                  <SelectItem value="es">Spanish</SelectItem>
-                  <SelectItem value="fr">French</SelectItem>
-                  <SelectItem value="de">German</SelectItem>
+                  <SelectItem value="zh-cn">中文（简体）</SelectItem>
+                  <SelectItem value="zh-tw">中文（繁體）</SelectItem>
+                  <SelectItem value="ja">日本語</SelectItem>
+                  <SelectItem value="ko">한국어</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="space-y-2">
-            <Label className="text-zinc-300">Proficiency Level</Label>
+            <Label className="text-zinc-300">{t('userForm.proficiencyLevel')}</Label>
             <Select 
               value={formData.proficiencyLevel} 
               onValueChange={(v) => setFormData(prev => ({ ...prev, proficiencyLevel: v as typeof formData.proficiencyLevel }))}
@@ -646,7 +644,7 @@ function CreateUserModal({
               onClick={onClose}
               className="border-[#2a2a2e] text-zinc-400"
             >
-              Cancel
+              {t('userForm.cancel')}
             </Button>
             <Button 
               type="submit"
@@ -654,7 +652,7 @@ function CreateUserModal({
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              Create User
+              {t('userForm.createUser')}
             </Button>
           </DialogFooter>
         </form>
@@ -675,6 +673,7 @@ function EditUserModal({
   onClose: () => void; 
   onSuccess: () => void;
 }) {
+  const t = useTranslations('admin');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -711,13 +710,13 @@ function EditUserModal({
       const data = await response.json();
 
       if (data.success) {
-        toast({ title: 'Success', description: 'User updated successfully' });
+        toast({ title: t('toast.success'), description: t('toast.userUpdated') });
         onSuccess();
       } else {
-        toast({ title: 'Error', description: data.error, variant: 'destructive' });
+        toast({ title: t('toast.error'), description: data.error, variant: 'destructive' });
       }
     } catch {
-      toast({ title: 'Error', description: 'Failed to update user', variant: 'destructive' });
+      toast({ title: t('toast.error'), description: t('toast.updateError'), variant: 'destructive' });
     } finally {
       setIsSubmitting(false);
     }
@@ -729,15 +728,15 @@ function EditUserModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Pencil className="w-5 h-5 text-blue-400" />
-            Edit User
+            {t('userForm.editTitle')}
           </DialogTitle>
           <DialogDescription className="text-zinc-400">
-            Update user information and permissions
+            {t('userForm.editSubtitle')}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="edit-email" className="text-zinc-300">Email</Label>
+            <Label htmlFor="edit-email" className="text-zinc-300">{t('userForm.email')}</Label>
             <Input
               id="edit-email"
               type="email"
@@ -748,7 +747,7 @@ function EditUserModal({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="edit-name" className="text-zinc-300">Name</Label>
+            <Label htmlFor="edit-name" className="text-zinc-300">{t('userForm.name')}</Label>
             <Input
               id="edit-name"
               value={formData.name}
@@ -758,7 +757,7 @@ function EditUserModal({
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-zinc-300">Role</Label>
+              <Label className="text-zinc-300">{t('userForm.role')}</Label>
               <Select 
                 value={formData.role} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, role: v as typeof formData.role }))}
@@ -767,14 +766,14 @@ function EditUserModal({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[#141416] border-[#2a2a2e]">
-                  <SelectItem value="user">User</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="super_admin">Super Admin</SelectItem>
+                  <SelectItem value="user">{t('users.roleUser')}</SelectItem>
+                  <SelectItem value="admin">{t('users.roleAdmin')}</SelectItem>
+                  <SelectItem value="super_admin">{t('users.roleSuperAdmin')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-zinc-300">Status</Label>
+              <Label className="text-zinc-300">{t('userForm.status')}</Label>
               <Select 
                 value={formData.status} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, status: v as typeof formData.status }))}
@@ -783,8 +782,8 @@ function EditUserModal({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[#141416] border-[#2a2a2e]">
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="suspended">Suspended</SelectItem>
+                  <SelectItem value="active">{t('users.statusActive')}</SelectItem>
+                  <SelectItem value="suspended">{t('users.statusSuspended')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -796,7 +795,7 @@ function EditUserModal({
               onClick={onClose}
               className="border-[#2a2a2e] text-zinc-400"
             >
-              Cancel
+              {t('userForm.cancel')}
             </Button>
             <Button 
               type="submit"
@@ -804,7 +803,7 @@ function EditUserModal({
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              Save Changes
+              {t('userForm.saveChanges')}
             </Button>
           </DialogFooter>
         </form>

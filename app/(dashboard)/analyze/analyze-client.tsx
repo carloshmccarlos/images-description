@@ -2,23 +2,54 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Sparkles, AlertCircle, Loader2 } from 'lucide-react';
+import { Camera, Sparkles, AlertCircle, Loader2, Volume2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { ImageUploader } from '@/components/image/image-uploader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useLanguage } from '@/hooks/use-language';
+import type { VocabularyItem } from '@/lib/db/schema';
 
 interface AnalyzeClientProps {
   hasRunningTask?: boolean;
 }
 
-type AnalysisState = 'idle' | 'analyzing' | 'error';
+type AnalysisState = 'idle' | 'analyzing' | 'generating_audio' | 'error';
+
+async function prefetchVocabularyAudio(vocabulary: VocabularyItem[], language: string): Promise<void> {
+  const lang = language.toLowerCase();
+  
+  await Promise.all(
+    vocabulary.map(async (item) => {
+      const word = item.word?.toLowerCase?.() ?? item.word;
+      try {
+        const res = await fetch('/api/audio/vocabulary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ language: lang, word }),
+        });
+        if (res.ok) {
+          const { audioUrl } = (await res.json()) as { audioUrl?: string };
+          if (audioUrl) {
+            // Preload audio into browser cache
+            const audio = new Audio();
+            audio.preload = 'auto';
+            audio.src = audioUrl;
+          }
+        }
+      } catch {
+        // Silently fail
+      }
+    })
+  );
+}
 
 export function AnalyzeClient({ hasRunningTask = false }: AnalyzeClientProps) {
-  const { t } = useTranslation('analyze');
+  const t = useTranslations('analyze');
   const router = useRouter();
+  const { locale } = useLanguage();
 
   const [state, setState] = useState<AnalysisState>(hasRunningTask ? 'analyzing' : 'idle');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -64,12 +95,19 @@ export function AnalyzeClient({ hasRunningTask = false }: AnalyzeClientProps) {
         throw new Error(data.error || t('errorTitle'));
       }
 
-      // Analysis completed - navigate to saved page
+      // Analysis completed - generate audio
       if (data.id) {
         toast.success(t('successBanner'), {
           description: `${data.vocabulary?.length || 0} ${t('wordsAdded')}`,
         });
-        router.push(`/saved/${data.id}`);
+
+        // Prefetch vocabulary audio before navigating
+        if (data.vocabulary?.length > 0 && data.learningLanguage) {
+          setState('generating_audio');
+          await prefetchVocabularyAudio(data.vocabulary, data.learningLanguage);
+        }
+
+        router.push(`/${locale}/saved/${data.id}`);
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : t('errorTitle');
@@ -80,6 +118,7 @@ export function AnalyzeClient({ hasRunningTask = false }: AnalyzeClientProps) {
   }
 
   const showAnalyzing = state === 'analyzing';
+  const showGeneratingAudio = state === 'generating_audio';
   const showUploader = state === 'idle';
   const showError = state === 'error';
 
@@ -191,6 +230,38 @@ export function AnalyzeClient({ hasRunningTask = false }: AnalyzeClientProps) {
                     </p>
                   </div>
                   <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {showGeneratingAudio && (
+          <motion.div
+            key="generating-audio"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+          >
+            <Card className="border border-zinc-200 bg-white/75 shadow-lg backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/40">
+              <CardContent className="py-16">
+                <div className="flex flex-col items-center gap-6">
+                  <motion.div
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                    className="w-20 h-20 rounded-2xl bg-linear-to-br from-violet-500 via-purple-500 to-fuchsia-500 flex items-center justify-center shadow-xl shadow-purple-500/25"
+                  >
+                    <Volume2 className="w-10 h-10 text-white" />
+                  </motion.div>
+                  <div className="text-center space-y-2">
+                    <h3 className="text-xl font-semibold text-zinc-900 dark:text-white">
+                      {t('generatingAudio')}
+                    </h3>
+                    <p className="text-zinc-500 dark:text-zinc-400">
+                      {t('progressGeneratingAudio')}
+                    </p>
+                  </div>
+                  <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
                 </div>
               </CardContent>
             </Card>

@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
   const [count, setCount] = useState(0);
@@ -39,7 +39,7 @@ function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
 }
 
 export function StatsSection() {
-  const { t } = useTranslation('landing');
+  const t = useTranslations('landing');
 
   const stats = [
     { value: 20, suffix: '+', label: t('stats.languagesSupported') },

@@ -1,7 +1,7 @@
 # LexiLens Architecture
 
 ## Overview
-LexiLens is an image-based language learning platform built with Next.js 16, Supabase, and AI vision models. The system now uses Doubao API 1.6 for vision-language understanding to improve latency and throughput. Generated descriptions are additionally translated into the user's native language, and English vocabulary outputs are normalized to lowercase.
+LexiLens is an image-based language learning platform built with Next.js 16, Supabase, and AI vision models. The system currently uses SiliconFlow (Qwen/Qwen3-VL-32B-Instruct) for vision-language analysis with JSON-enforced outputs. Descriptions are translated into the user's native language, and English vocabulary outputs are normalized to lowercase.
 
 ## Tech Stack
 - **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS v4
@@ -9,7 +9,7 @@ LexiLens is an image-based language learning platform built with Next.js 16, Sup
 - **Database**: Supabase PostgreSQL with Drizzle ORM
 - **Authentication**: Supabase Auth (Email, Google OAuth)
 - **Storage**: Cloudflare R2
-- **AI**: Doubao API 1.6 via Vercel AI SDK
+- **AI**: SiliconFlow (Qwen3-VL) vision-language model
 - **State**: Zustand + TanStack Query
 - **Animations**: Framer Motion
 - **UI Components**: shadcn/ui
@@ -195,41 +195,20 @@ CREATE TABLE system_metrics (
 │   └── use-toast.ts
 ├── lib/
 │   ├── actions/                  # Server actions (business logic)
-│   │   ├── admin/                # Admin-specific server actions
-│   │   │   ├── get-platform-stats.ts
-│   │   │   ├── get-admin-users.ts
-│   │   │   ├── get-user-detail.ts
-│   │   │   ├── update-user-status.ts
-│   │   │   ├── get-moderation-content.ts
-│   │   │   ├── flag-content.ts
-│   │   │   ├── delete-content.ts
-│   │   │   ├── get-activity-logs.ts
-│   │   │   ├── create-activity-log.ts
-│   │   │   └── get-system-health.ts
+│   │   ├── admin/ …              # Admin-specific server actions
 │   │   ├── achievement/
 │   │   ├── analysis/
 │   │   ├── stats/
 │   │   ├── task/
 │   │   └── user/
-│   ├── admin/                    # Admin utilities
-│   │   ├── middleware.ts         # Admin role verification
-│   │   └── utils.ts              # Admin utility functions
-│   ├── ai/                       # AI client and prompts
-│   │   ├── doubao-client.ts
+│   ├── admin/                    # Admin utilities (role checks, helpers)
+│   ├── ai/                       # AI clients and prompts
+│   │   ├── siliconflow-client.ts # SiliconFlow (Qwen3-VL) vision client
+│   │   ├── doubao-client.ts      # Legacy client
 │   │   └── prompts.ts
 │   ├── db/                       # Drizzle schema and client
-│   │   ├── index.ts
-│   │   └── schema.ts
-│   ├── image/                    # Image compression utilities
-│   │   └── compression.ts
 │   ├── storage/                  # R2 client
-│   │   └── r2-client.ts
-│   ├── supabase/                 # Supabase clients
-│   │   ├── client.ts
-│   │   ├── server.ts
-│   │   └── middleware.ts
-│   ├── usage/                    # Daily limit tracking
-│   │   └── daily-limits.ts
+│   ├── supabase/                 # Supabase clients and middleware
 │   ├── validations/              # Valibot schemas
 │   ├── constants.ts
 │   └── utils.ts
@@ -340,9 +319,9 @@ NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY
 SUPABASE_DATABASE_URL
-DOUBAO_API_KEY
-DOUBAO_BASE_URL
-DOUBAO_MODEL
+SILICONFLOW_API_KEY
+SILICONFLOW_BASE_URL
+SILICONFLOW_MODEL
 CLOUDFLARE_R2_ACCESS_KEY_ID
 CLOUDFLARE_R2_SECRET_ACCESS_KEY
 CLOUDFLARE_R2_BUCKET_NAME
@@ -354,34 +333,15 @@ CLOUDFLARE_R2_PUBLIC_URL
 
 ### Supported Languages
 - English (en) - default
-- Chinese (zh)
+- Chinese (zh-cn, zh-tw)
 - Japanese (ja)
 - Korean (ko)
 
 ### Architecture
-```
-lib/i18n/
-├── locales.ts          # Shared locale definitions (server + client safe)
-├── config.ts           # Client-side i18next config ('use client')
-├── server.ts           # Server-side translation utilities (uses next/headers)
-├── provider.tsx        # I18nProvider wrapper component
-├── index.ts            # Re-exports
-└── translations/       # Translation files by namespace
-    ├── common.ts
-    ├── landing.ts
-    ├── dashboard.ts
-    ├── auth.ts
-    ├── settings.ts
-    ├── profile.ts
-    ├── saved.ts
-    └── analyze-translations.ts
-```
-
-### Usage Patterns
-- **Client Components:** Use `useTranslation('namespace')` hook for reactive language switching
-- **Server Components:** Use `getTranslations()` from `lib/i18n/server.ts`
-- **Language Detection:** Browser Accept-Language header → localStorage preference
-- **Language Switching:** Settings page UI Language card persists to localStorage
+- Migrated to **next-intl** for web (server + client).
+- Shared locale definitions in `lib/i18n/locales.ts`; messages via next-intl loader.
+- Language detection via middleware/proxy headers and NEXT_LOCALE cookie; locale prefixes in routes.
+- Client hooks use next-intl (`useTranslations`, `useLocale`); legacy i18next code removed.
 
 ---
 

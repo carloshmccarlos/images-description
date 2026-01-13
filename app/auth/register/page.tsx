@@ -1,14 +1,12 @@
 import Link from 'next/link';
+import { getLocale, getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { Sparkles, Check } from 'lucide-react';
 import { RegisterForm } from '@/components/auth/register-form';
 import { APP_CONFIG } from '@/lib/constants';
-import { getServerLocale } from '@/lib/i18n/server';
-import { getTranslations } from '@/lib/i18n';
-
 export const metadata: Metadata = {
   title: 'Create Account - Start Learning Free',
-  description: 'Create your free LexiLens account and start learning vocabulary through images. 5 free analyses per day, 20+ languages supported. No credit card required.',
+  description: 'Create your free LexiLens account and start learning vocabulary through images. No credit card required.',
   robots: {
     index: true,
     follow: true,
@@ -16,15 +14,15 @@ export const metadata: Metadata = {
 };
 
 export default async function RegisterPage() {
-  const locale = await getServerLocale();
-  const t = getTranslations('auth', locale);
+  const locale = await getLocale();
+  const t = await getTranslations('auth');
 
   const benefits = [
-    t.register.benefits.freeAnalyses,
-    t.register.benefits.aiPowered,
-    t.register.benefits.saveReview,
-    t.register.benefits.trackProgress,
-    t.register.benefits.languages,
+    t('register.benefits.freeAnalyses'),
+    t('register.benefits.aiPowered'),
+    t('register.benefits.saveReview'),
+    t('register.benefits.trackProgress'),
+    t('register.benefits.languages'),
   ];
 
   return (
@@ -45,15 +43,15 @@ export default async function RegisterPage() {
         <div className="relative z-10 flex flex-col justify-center px-16 text-white max-w-2xl">
           <div className="space-y-8">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-bold uppercase tracking-widest text-sky-400">
-              {t.register.newJourney}
+              {t('register.newJourney')}
             </div>
             <h2 className="text-5xl font-bold leading-[1.1] tracking-tight">
-              {t.register.decorativeTitle}
+              {t('register.decorativeTitle')}
               <br />
-              <span className="text-sky-400">{t.register.decorativeTitleHighlight}</span>
+              <span className="text-sky-400">{t('register.decorativeTitleHighlight')}</span>
             </h2>
             <p className="text-zinc-400 text-xl leading-relaxed">
-              {t.register.decorativeDesc}
+              {t('register.decorativeDesc')}
             </p>
             
             <ul className="space-y-5">
@@ -76,7 +74,7 @@ export default async function RegisterPage() {
       {/* Right side - Form */}
       <div className="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24 relative z-10">
         <div className="mx-auto w-full max-w-sm">
-          <Link href="/" className="flex items-center gap-3 mb-10 group">
+          <Link href={`/${locale}`} className="flex items-center gap-3 mb-10 group">
             <div className="w-11 h-11 rounded-xl bg-linear-to-br from-sky-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
@@ -84,9 +82,9 @@ export default async function RegisterPage() {
           </Link>
 
           <div className="space-y-2 mb-8">
-            <h1 className="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">{t.register.title}</h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">{t('register.title')}</h1>
             <p className="text-zinc-500 text-lg">
-              {t.register.subtitle}
+              {t('register.subtitle')}
             </p>
           </div>
 
@@ -97,9 +95,9 @@ export default async function RegisterPage() {
           </div>
 
           <p className="mt-8 text-center text-sm font-medium text-zinc-500">
-            {t.register.hasAccount}{' '}
-            <Link href="/auth/login" className="text-emerald-600 hover:text-emerald-500 font-bold underline underline-offset-4 decoration-emerald-500/30">
-              {t.register.signIn}
+            {t('register.hasAccount')}{' '}
+            <Link href={`/${locale}/auth/login`} className="text-emerald-600 hover:text-emerald-500 font-bold underline underline-offset-4 decoration-emerald-500/30">
+              {t('register.signIn')}
             </Link>
           </p>
         </div>

@@ -1,17 +1,18 @@
 import { redirect } from 'next/navigation';
+import { getLocale } from 'next-intl/server';
 import { getCurrentUser } from '@/lib/actions/user/get-current-user';
 import { SettingsHeader } from '@/components/settings/settings-header';
 import { UILanguageCard } from '@/components/settings/ui-language-card';
 import { LanguageSettingsCard } from '@/components/settings/language-settings-card';
 import { AccountSettingsCard } from '@/components/settings/account-settings-card';
 import { DangerZoneCard } from '@/components/settings/danger-zone-card';
-
 export default async function SettingsPage() {
+  const locale = await getLocale();
   const userResult = await getCurrentUser();
 
   if (!userResult.success) {
-    if (userResult.needsSetup) redirect('/auth/setup');
-    redirect('/auth/login');
+    if (userResult.needsSetup) redirect(`/${locale}/auth/setup`);
+    redirect(`/${locale}/auth/login`);
   }
 
   const user = userResult.data!;

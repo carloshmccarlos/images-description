@@ -19,10 +19,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { createClient } from '@/lib/supabase/client';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/hooks/use-language';
 
 export function DangerZoneCard() {
-  const { t } = useTranslation('settings');
+  const t = useTranslations('settings');
+  const { locale } = useLanguage();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -38,7 +40,7 @@ export function DangerZoneCard() {
     try {
       await supabase.auth.signOut();
       toast.success(t('danger.deletionRequested'), { description: t('danger.signedOut') });
-      router.push('/');
+      router.push(`/${locale}`);
     } catch {
       toast.error(t('danger.deleteFailed'));
     } finally {

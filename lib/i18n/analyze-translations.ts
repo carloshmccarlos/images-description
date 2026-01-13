@@ -39,6 +39,8 @@ export const analyzeTranslations = {
     progressUploading: 'Uploading image...',
     progressAnalyzing: 'AI is analyzing your image...',
     progressSaving: 'Saving results...',
+    generatingAudio: 'Generating Audio...',
+    progressGeneratingAudio: 'Preparing pronunciation for vocabulary words...',
   },
   zh: {
     badge: 'AI智能分析',
@@ -80,6 +82,8 @@ export const analyzeTranslations = {
     progressUploading: '正在上传图片...',
     progressAnalyzing: 'AI正在分析图片...',
     progressSaving: '正在保存结果...',
+    generatingAudio: '生成音频中...',
+    progressGeneratingAudio: '正在为词汇准备发音...',
   },
   ja: {
     badge: 'AI画像分析',
@@ -121,6 +125,8 @@ export const analyzeTranslations = {
     progressUploading: '画像をアップロード中...',
     progressAnalyzing: 'AIが画像を分析中...',
     progressSaving: '結果を保存中...',
+    generatingAudio: '音声を生成中...',
+    progressGeneratingAudio: '語彙の発音を準備しています...',
   },
   ko: {
     badge: 'AI 이미지 분석',
@@ -162,19 +168,18 @@ export const analyzeTranslations = {
     progressUploading: '이미지 업로드 중...',
     progressAnalyzing: 'AI가 이미지를 분석 중...',
     progressSaving: '결과 저장 중...',
+    generatingAudio: '오디오 생성 중...',
+    progressGeneratingAudio: '어휘 발음을 준비하는 중...',
   },
 } as const;
 
 export type AnalyzeTranslationKey = keyof typeof analyzeTranslations.en;
-export type SupportedLocale = keyof typeof analyzeTranslations;
+export type AnalyzeTranslationsLocale = keyof typeof analyzeTranslations;
 
 export function getAnalyzeTranslations(locale: string) {
-  const supportedLocales: SupportedLocale[] = ['zh', 'ja', 'ko'];
-  const normalizedLocale = locale.toLowerCase().split('-')[0] as SupportedLocale;
-  
-  if (supportedLocales.includes(normalizedLocale)) {
-    return analyzeTranslations[normalizedLocale];
-  }
-  
+  const normalized = locale.toLowerCase();
+  if (normalized.startsWith('zh')) return analyzeTranslations.zh;
+  if (normalized.startsWith('ja')) return analyzeTranslations.ja;
+  if (normalized.startsWith('ko')) return analyzeTranslations.ko;
   return analyzeTranslations.en;
 }

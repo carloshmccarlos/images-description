@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { SUPPORTED_LANGUAGES, PROFICIENCY_LEVELS } from '@/lib/constants';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 interface LanguageSettingsCardProps {
   motherLanguage: string;
@@ -23,7 +23,7 @@ export function LanguageSettingsCard({
   learningLanguage: initialLearning,
   proficiencyLevel: initialLevel,
 }: LanguageSettingsCardProps) {
-  const { t } = useTranslation('settings');
+  const t = useTranslations('settings');
   const [motherLanguage, setMotherLanguage] = useState(initialMother);
   const [learningLanguage, setLearningLanguage] = useState(initialLearning);
   const [proficiencyLevel, setProficiencyLevel] = useState(initialLevel);

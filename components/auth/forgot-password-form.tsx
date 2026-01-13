@@ -2,27 +2,29 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { forgotPasswordSchema, type ForgotPasswordInput } from '@/lib/validations/auth';
+import { valibotResolver } from '@/lib/validations/react-hook-form-valibot-resolver';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { useLanguage } from '@/hooks/use-language';
 
 export function ForgotPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const supabase = createClient();
+  const { locale } = useLanguage();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ForgotPasswordInput>({
-    resolver: zodResolver(forgotPasswordSchema),
+    resolver: valibotResolver(forgotPasswordSchema),
   });
 
   async function onSubmit(data: ForgotPasswordInput) {
@@ -60,7 +62,7 @@ export function ForgotPasswordForm() {
             We&apos;ve sent a password reset link to your inbox. It should arrive within a few minutes.
           </p>
         </div>
-        <Link href="/auth/login">
+        <Link href={`/${locale}/auth/login`}>
           <Button variant="outline" className="mt-4 h-11 px-8 rounded-xl font-bold border-zinc-200 bg-white/50 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900 transition-all active:scale-[0.98]">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to login

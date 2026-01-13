@@ -19,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/use-language';
 
 interface AdminUser {
   id: string;
@@ -34,13 +35,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const { locale } = useLanguage();
+
+  const LOCALES = ['en', 'zh-cn', 'zh-tw', 'ja', 'ko'] as const;
+  function stripLocale(path: string) {
+    const parts = path.split('/').filter(Boolean);
+    const first = parts[0]?.toLowerCase();
+    if (first && (LOCALES as readonly string[]).includes(first)) {
+      const rest = `/${parts.slice(1).join('/')}`;
+      return rest === '/' ? '/' : rest;
+    }
+    return path;
+  }
+
+  const basePathname = stripLocale(pathname);
+  const prefixed = `/${locale}`;
 
   const navItems = [
-    { href: '/admin', label: 'Overview', icon: LayoutDashboard },
-    { href: '/admin/users', label: 'Users', icon: Users },
-    { href: '/admin/content', label: 'Content', icon: FileText },
-    { href: '/admin/logs', label: 'Activity Logs', icon: Activity },
-    { href: '/admin/health', label: 'System Health', icon: HeartPulse },
+    { href: `${prefixed}/admin`, baseHref: '/admin', label: 'Overview', icon: LayoutDashboard },
+    { href: `${prefixed}/admin/users`, baseHref: '/admin/users', label: 'Users', icon: Users },
+    { href: `${prefixed}/admin/content`, baseHref: '/admin/content', label: 'Content', icon: FileText },
+    { href: `${prefixed}/admin/logs`, baseHref: '/admin/logs', label: 'Activity Logs', icon: Activity },
+    { href: `${prefixed}/admin/health`, baseHref: '/admin/health', label: 'System Health', icon: HeartPulse },
   ];
 
   useEffect(() => {
@@ -52,7 +68,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         if (!result.success) {
           setError(result.error || 'Admin access required');
           setTimeout(() => {
-            router.push('/dashboard');
+            router.push(`${prefixed}/dashboard`);
           }, 2000);
           return;
         }
@@ -62,7 +78,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       } catch {
         setError('Failed to verify admin access');
         setTimeout(() => {
-          router.push('/dashboard');
+          router.push(`${prefixed}/dashboard`);
         }, 2000);
       }
     }
@@ -75,19 +91,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (isLoading || error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0b]">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="flex flex-col items-center gap-4"
         >
           <div className="relative">
-            <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-violet-600 to-rose-500 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
               <Shield className="w-8 h-8 text-white" />
             </div>
             {!error && (
               <motion.div
-                className="absolute inset-0 rounded-2xl bg-linear-to-br from-violet-600 to-rose-500"
+                className="absolute inset-0 rounded-2xl bg-linear-to-br from-violet-600 to-indigo-600"
                 animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity }}
               />
@@ -95,7 +111,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <p className={cn(
             "text-sm",
-            error ? "text-rose-400" : "text-zinc-500 animate-pulse"
+            error ? "text-rose-600" : "text-gray-500 animate-pulse"
           )}>
             {error || 'Verifying admin access...'}
           </p>
@@ -106,12 +122,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
 
   return (
-    <div className="min-h-screen bg-[#0a0a0b] text-zinc-100">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* Mobile Header */}
-      <header className="lg:hidden sticky top-0 z-50 bg-[#141416]/80 backdrop-blur-xl border-b border-[#2a2a2e]">
+      <header className="lg:hidden sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200">
         <div className="flex items-center justify-between px-4 h-16">
-          <Link href="/admin" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-violet-600 to-rose-500 flex items-center justify-center">
+          <Link href={`${prefixed}/admin`} className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
               <Shield className="w-4 h-4 text-white" />
             </div>
             <span className="font-bold text-lg font-['Playfair_Display']">Admin</span>
@@ -120,7 +136,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             variant="ghost" 
             size="icon" 
             onClick={() => setIsSidebarOpen(true)}
-            className="text-zinc-400 hover:text-white hover:bg-[#1c1c1f]"
+            className="text-gray-500 hover:text-gray-900 hover:bg-gray-100"
           >
             <Menu className="w-5 h-5" />
           </Button>
@@ -135,7 +151,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/70 z-50 lg:hidden"
+              className="fixed inset-0 bg-black/30 z-50 lg:hidden"
               onClick={() => setIsSidebarOpen(false)}
             />
             <motion.aside
@@ -143,12 +159,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed left-0 top-0 bottom-0 w-72 bg-[#141416] z-50 lg:hidden shadow-2xl"
+              className="fixed left-0 top-0 bottom-0 w-72 bg-white z-50 lg:hidden shadow-2xl"
             >
               <div className="flex flex-col h-full">
-                <div className="flex items-center justify-between p-4 border-b border-[#2a2a2e]">
-                  <Link href="/admin" className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-linear-to-br from-violet-600 to-rose-500 flex items-center justify-center">
+                <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                  <Link href={`${prefixed}/admin`} className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-linear-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
                       <Shield className="w-4 h-4 text-white" />
                     </div>
                     <span className="font-bold text-lg font-['Playfair_Display']">Admin</span>
@@ -157,15 +173,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     variant="ghost" 
                     size="icon" 
                     onClick={() => setIsSidebarOpen(false)}
-                    className="text-zinc-400 hover:text-white hover:bg-[#1c1c1f]"
+                    className="text-gray-500 hover:text-gray-900 hover:bg-gray-100"
                   >
                     <X className="w-5 h-5" />
                   </Button>
                 </div>
                 <nav className="flex-1 p-4 space-y-1">
                   {navItems.map((item) => {
-                    const isActive = pathname === item.href || 
-                      (item.href !== '/admin' && pathname.startsWith(item.href));
+                    const isActive = basePathname === item.baseHref ||
+                      (item.baseHref !== '/admin' && basePathname.startsWith(item.baseHref));
                     return (
                       <Link
                         key={item.href}
@@ -174,8 +190,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         className={cn(
                           'flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all',
                           isActive
-                            ? 'bg-[#1c1c1f] text-white'
-                            : 'text-zinc-400 hover:bg-[#1c1c1f]/50 hover:text-zinc-200'
+                            ? 'bg-violet-50 text-violet-700'
+                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                         )}
                       >
                         <item.icon className="w-5 h-5" />
@@ -184,22 +200,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     );
                   })}
                 </nav>
-                <div className="p-4 border-t border-[#2a2a2e]">
+                <div className="p-4 border-t border-gray-200">
                   <div className="flex items-center gap-3 mb-4">
                     <Avatar className="w-10 h-10">
-                      <AvatarFallback className="bg-linear-to-br from-violet-600 to-rose-500 text-white font-semibold">
+                      <AvatarFallback className="bg-linear-to-br from-violet-600 to-indigo-600 text-white font-semibold">
                         {initials}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold truncate">{admin?.name || 'Admin'}</p>
-                      <p className="text-sm text-zinc-500 truncate">{admin?.email}</p>
+                      <p className="text-sm text-gray-500 truncate">{admin?.email}</p>
                     </div>
                   </div>
-                  <Link href="/dashboard">
+                  <Link href={`${prefixed}/dashboard`}>
                     <Button 
                       variant="outline" 
-                      className="w-full justify-start border-[#2a2a2e] text-zinc-400 hover:text-white hover:bg-[#1c1c1f]"
+                      className="w-full justify-start border-gray-200 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                     >
                       <LogOut className="w-4 h-4 mr-2" />
                       Exit Admin
@@ -214,23 +230,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:flex flex-col w-72 h-screen sticky top-0 bg-[#141416] border-r border-[#2a2a2e]">
+        <aside className="hidden lg:flex flex-col w-72 h-screen sticky top-0 bg-white border-r border-gray-200">
           <div className="p-8 flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-linear-to-br from-violet-600 to-rose-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
+            <div className="w-11 h-11 rounded-xl bg-linear-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
               <Shield className="w-6 h-6 text-white" />
             </div>
             <div>
-              <span className="font-bold text-2xl tracking-tight font-['Playfair_Display'] text-white">
+              <span className="font-bold text-2xl tracking-tight font-['Playfair_Display'] text-gray-900">
                 Admin
               </span>
-              <p className="text-xs text-zinc-500 uppercase tracking-wider">Dashboard</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Dashboard</p>
             </div>
           </div>
 
           <nav className="flex-1 px-6 space-y-1.5">
             {navItems.map((item) => {
-              const isActive = pathname === item.href || 
-                (item.href !== '/admin' && pathname.startsWith(item.href));
+              const isActive = basePathname === item.baseHref ||
+                (item.baseHref !== '/admin' && basePathname.startsWith(item.baseHref));
               return (
                 <Link
                   key={item.href}
@@ -238,17 +254,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   className={cn(
                     'group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all relative',
                     isActive
-                      ? 'bg-linear-to-r from-violet-500/10 to-rose-500/10 text-white'
-                      : 'text-zinc-400 hover:bg-[#1c1c1f] hover:text-zinc-200'
+                      ? 'bg-violet-50 text-violet-700'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                   )}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="activeAdminNav"
-                      className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-linear-to-b from-violet-500 to-rose-500 rounded-full"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-linear-to-b from-violet-500 to-indigo-500 rounded-full"
                     />
                   )}
-                  <item.icon className={cn('w-5 h-5', isActive && 'text-violet-400')} />
+                  <item.icon className={cn('w-5 h-5', isActive && 'text-violet-600')} />
                   <div className="flex-1">
                     <span className="font-medium">{item.label}</span>
                   </div>
@@ -262,33 +278,33 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             })}
           </nav>
 
-          <div className="p-4 m-4 rounded-2xl bg-[#1c1c1f] border border-[#2a2a2e]">
+          <div className="p-4 m-4 rounded-2xl bg-gray-50 border border-gray-200">
             <div className="flex items-center gap-3 mb-4">
-              <Avatar className="w-10 h-10 ring-2 ring-[#2a2a2e]">
-                <AvatarFallback className="bg-linear-to-br from-violet-600 to-rose-500 text-white text-sm font-semibold">
+              <Avatar className="w-10 h-10 ring-2 ring-gray-200">
+                <AvatarFallback className="bg-linear-to-br from-violet-600 to-indigo-600 text-white text-sm font-semibold">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm truncate">{admin?.name || 'Admin'}</p>
-                <p className="text-xs text-zinc-500 truncate">{admin?.email}</p>
+                <p className="text-xs text-gray-500 truncate">{admin?.email}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 mb-3 px-1">
               <span className={cn(
                 "text-xs px-2 py-0.5 rounded-full",
                 admin?.role === 'super_admin' 
-                  ? "bg-rose-500/20 text-rose-400" 
-                  : "bg-violet-500/20 text-violet-400"
+                  ? "bg-rose-100 text-rose-600" 
+                  : "bg-violet-100 text-violet-600"
               )}>
                 {admin?.role === 'super_admin' ? 'Super Admin' : 'Admin'}
               </span>
             </div>
-            <Link href="/dashboard">
+            <Link href={`${prefixed}/dashboard`}>
               <Button 
                 variant="ghost" 
                 size="sm"
-                className="w-full justify-start text-zinc-400 hover:text-white hover:bg-[#2a2a2e]"
+                className="w-full justify-start text-gray-600 hover:text-gray-900 hover:bg-gray-100"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Exit Admin

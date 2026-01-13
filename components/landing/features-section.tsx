@@ -3,10 +3,10 @@
 import { motion } from 'framer-motion';
 import { Camera, Sparkles, Globe, BookOpen, Zap, Shield, Volume2, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 
 export function FeaturesSection() {
-  const { t } = useTranslation('landing');
+  const t = useTranslations('landing');
 
   const features = [
     {

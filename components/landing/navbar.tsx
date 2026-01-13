@@ -7,16 +7,18 @@ import { Sparkles, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { APP_CONFIG } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { LanguageSelector } from './language-selector';
+import { useLanguage } from '@/hooks/use-language';
 
 interface NavbarProps {
   user: { email: string } | null;
 }
 
 export function Navbar({ user }: NavbarProps) {
-  const { t } = useTranslation('landing');
-  const { t: tCommon } = useTranslation('common');
+  const t = useTranslations('landing');
+  const tCommon = useTranslations('common');
+  const { locale } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -41,7 +43,7 @@ export function Navbar({ user }: NavbarProps) {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href={`/${locale}`} className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-linear-to-br from-sky-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/15">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
@@ -61,15 +63,15 @@ export function Navbar({ user }: NavbarProps) {
           <div className="hidden md:flex items-center gap-3">
             <LanguageSelector />
             {user ? (
-              <Link href="/dashboard">
+              <Link href={`/${locale}/dashboard`}>
                 <Button>{tCommon('nav.goToDashboard')}</Button>
               </Link>
             ) : (
               <>
-                <Link href="/auth/login">
+                <Link href={`/${locale}/auth/login`}>
                   <Button variant="ghost">{tCommon('nav.signIn')}</Button>
                 </Link>
-                <Link href="/auth/register">
+                <Link href={`/${locale}/auth/register`}>
                   <Button className="bg-linear-to-r from-sky-600 via-teal-500 to-emerald-500 hover:from-sky-700 hover:via-teal-600 hover:to-emerald-600">
                     {tCommon('nav.getStarted')}
                   </Button>
@@ -114,15 +116,15 @@ export function Navbar({ user }: NavbarProps) {
               </div>
               <div className="flex flex-col gap-2 pt-4 border-t border-zinc-200 dark:border-zinc-800">
                 {user ? (
-                  <Link href="/dashboard">
+                  <Link href={`/${locale}/dashboard`}>
                     <Button className="w-full">{tCommon('nav.goToDashboard')}</Button>
                   </Link>
                 ) : (
                   <>
-                    <Link href="/auth/login">
+                    <Link href={`/${locale}/auth/login`}>
                       <Button variant="outline" className="w-full">{tCommon('nav.signIn')}</Button>
                     </Link>
-                    <Link href="/auth/register">
+                    <Link href={`/${locale}/auth/register`}>
                       <Button className="w-full">{tCommon('nav.getStarted')}</Button>
                     </Link>
                   </>

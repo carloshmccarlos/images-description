@@ -1,20 +1,21 @@
 import { redirect } from 'next/navigation';
+import { getLocale } from 'next-intl/server';
 import { getCurrentUser } from '@/lib/actions/user/get-current-user';
 import { getSavedAnalyses } from '@/lib/actions/analysis/get-saved-analyses';
 import { SavedAnalysesList } from '@/components/saved/saved-analyses-list';
 import { SavedHeader } from '@/components/saved/saved-header';
-
 interface PageProps {
   searchParams: Promise<{ q?: string; page?: string }>;
 }
 
 export default async function SavedPage({ searchParams }: PageProps) {
+  const locale = await getLocale();
   const params = await searchParams;
   
   const userResult = await getCurrentUser();
   
   if (!userResult.success) {
-    redirect('/auth/login');
+    redirect(`/${locale}/auth/login`);
   }
 
   const page = parseInt(params.page || '1');
