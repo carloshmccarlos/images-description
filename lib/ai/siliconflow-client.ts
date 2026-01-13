@@ -15,21 +15,30 @@ function normalizeIfEnglish(input: string): string {
   return trimmed || '';
 }
 
-interface SiliconFlowMessage {
+type ContentItem =
+  | { type: 'text'; text: string }
+  | { type: 'image_url'; image_url: { url: string; detail?: 'low' | 'high' | 'auto' } };
+
+type SiliconFlowMessage = {
   role: 'user' | 'assistant' | 'system';
-  content: Array<{
-    type: 'text' | 'image_url';
-    text?: string;
-    image_url?: { url: string; detail?: 'low' | 'high' | 'auto' };
-  }>;
-}
+  content: ContentItem[];
+};
 
 interface SiliconFlowResponse {
   choices: Array<{
     message: {
-      content: string;
+      content: string | ContentItem[];
     };
   }>;
+}
+
+function extractTextContent(content: string | ContentItem[] | undefined): string {
+  if (typeof content === 'string') return content;
+  if (Array.isArray(content)) {
+    const textItem = content.find((item): item is Extract<ContentItem, { type: 'text' }> => item.type === 'text');
+    return textItem?.text ?? '';
+  }
+  return '';
 }
 
 export async function analyzeImage(
@@ -40,12 +49,40 @@ export async function analyzeImage(
 ): Promise<AnalysisResult> {
   const prompt = createAnalysisPrompt(learningLanguage, motherLanguage, proficiencyLevel);
 
+  const levelGuidanceMap: Record<string, string> = {
+    beginner: 'Use simple vocabulary and short sentences. Focus on common, everyday words.',
+    intermediate: 'Use moderate vocabulary with some complex sentences. Include useful phrases.',
+    advanced: 'Use rich vocabulary including idioms and nuanced expressions.',
+  };
+  const levelGuidance = levelGuidanceMap[proficiencyLevel] || levelGuidanceMap.beginner;
+  const targetLang = learningLanguage;
+  const nativeLang = motherLanguage;
+
   const messages: SiliconFlowMessage[] = [
+    {
+      role: 'system',
+      content: [
+        {
+          type: 'text',
+          text: prompt,
+        },
+      ],
+    },
     {
       role: 'user',
       content: [
-        { type: 'image_url', image_url: { url: imageUrl, detail: 'auto' } },
-        { type: 'text', text: prompt },
+        {
+          type: 'image_url',
+          image_url: { url: imageUrl, detail: 'auto' },
+        },
+        {
+          type: 'text',
+          text: `
+targetLang: ${targetLang}
+nativeLang: ${nativeLang}
+levelGuidance: ${levelGuidance}
+          `.trim(),
+        },
       ],
     },
   ];
@@ -57,12 +94,15 @@ export async function analyzeImage(
       'Authorization': `Bearer ${process.env.SILICONFLOW_API_KEY}`,
     },
     body: JSON.stringify({
-      model: 'zai-org/GLM-4.6V',
+      model: process.env.SILICONFLOW_MODEL || 'Qwen/Qwen3-VL-32B-Instruct',
       messages,
-      max_tokens: 8192,
-      temperature: 0.6,
-      top_p: 0.95,
+      max_tokens: 4096,
+      temperature: 0.2,
+      top_p: 0.85,
       top_k: 20,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+      response_format: { type: 'json_object' },
     }),
   });
 
@@ -73,20 +113,20 @@ export async function analyzeImage(
   }
 
   const data = await response.json() as SiliconFlowResponse;
-  const text = data.choices[0]?.message?.content;
+  const content = data.choices?.[0]?.message?.content;
+  const text = extractTextContent(content);
 
   if (!text) {
     throw new Error('No response from AI');
   }
 
-  // Parse the JSON response
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
+  let parsed: AnalysisResult;
+  try {
+    parsed = JSON.parse(text) as AnalysisResult;
+  } catch {
     console.error('Failed to parse AI response:', text);
     throw new Error('Failed to parse AI response');
   }
-
-  const parsed = JSON.parse(jsonMatch[0]) as AnalysisResult;
 
   // Validate the response structure
   if (!parsed.description || !Array.isArray(parsed.vocabulary)) {

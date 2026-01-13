@@ -3,7 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { users, savedAnalyses, userStats, analysisTasks } from '@/lib/db/schema';
 import { eq, and, inArray } from 'drizzle-orm';
-import { checkDailyLimit, incrementUsage } from '@/lib/usage/daily-limits';
+import { checkDailyLimit } from '@/lib/actions/usage/check-daily-limit';
+import { incrementUsage } from '@/lib/actions/usage/increment-usage';
 import { analyzeImage } from '@/lib/ai/siliconflow-client';
 import { uploadToR2, generateImageKey } from '@/lib/storage/r2-client';
 import { IMAGE_CONFIG } from '@/lib/constants';
@@ -94,7 +95,15 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(await file.arrayBuffer());
     const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`;
 
-    // Try to upload to R2, fallback to base64 if not configured
+    // Analyze with AI (send base64 directly)
+    const result = await analyzeImage(
+      base64Image,
+      dbUser.learningLanguage || 'en',
+      dbUser.motherLanguage || 'zh-cn',
+      dbUser.proficiencyLevel || 'beginner'
+    );
+
+    // Upload to R2 only after successful analysis; fallback to base64 if upload fails/unconfigured
     let imageUrl = base64Image;
     try {
       if (process.env.CLOUDFLARE_R2_ACCESS_KEY_ID && 
@@ -106,16 +115,8 @@ export async function POST(request: Request) {
         imageUrl = await uploadToR2(buffer, key, file.type);
       }
     } catch (uploadError) {
-      console.warn('R2 upload failed, using base64:', uploadError);
+      console.warn('R2 upload failed after analysis, using base64:', uploadError);
     }
-
-    // Analyze with AI
-    const result = await analyzeImage(
-      base64Image,
-      dbUser.learningLanguage || 'es',
-      dbUser.motherLanguage || 'en',
-      dbUser.proficiencyLevel || 'beginner'
-    );
 
     // Save the analysis
     const [saved] = await db
@@ -124,6 +125,9 @@ export async function POST(request: Request) {
         userId: user.id,
         imageUrl,
         description: result.description,
+        descriptionNative: result.descriptionNative,
+        learningLanguage: dbUser.learningLanguage,
+        motherLanguage: dbUser.motherLanguage,
         vocabulary: result.vocabulary,
       })
       .returning();
@@ -148,6 +152,8 @@ export async function POST(request: Request) {
       imageUrl,
       description: result.description,
       descriptionNative: result.descriptionNative,
+      learningLanguage: dbUser.learningLanguage,
+      motherLanguage: dbUser.motherLanguage,
       vocabulary: result.vocabulary,
     });
   } catch (error) {
