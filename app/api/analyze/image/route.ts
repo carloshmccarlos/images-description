@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { users, savedAnalyses, userStats, analysisTasks } from '@/lib/db/schema';
-import { eq, and, inArray } from 'drizzle-orm';
+import { eq, and, inArray, lt } from 'drizzle-orm';
 import { checkDailyLimit } from '@/lib/actions/usage/check-daily-limit';
 import { incrementUsage } from '@/lib/actions/usage/increment-usage';
 import { analyzeImage } from '@/lib/ai/siliconflow-client';
@@ -19,6 +19,15 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Clean up stale tasks (older than 5 minutes) to prevent blocking
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    await db
+      .delete(analysisTasks)
+      .where(and(
+        eq(analysisTasks.userId, user.id),
+        lt(analysisTasks.createdAt, fiveMinutesAgo)
+      ));
 
     // Check for existing pending task
     const [existingTask] = await db
