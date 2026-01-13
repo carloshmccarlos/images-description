@@ -7,11 +7,12 @@ interface I18nProviderProps {
   children: ReactNode;
   locale: string;
   messages: Record<string, unknown>;
+  timeZone?: string;
 }
 
-export function I18nProvider({ children, locale, messages }: I18nProviderProps) {
+export function I18nProvider({ children, locale, messages, timeZone = 'UTC' }: I18nProviderProps) {
   return (
-    <Provider locale={locale} messages={messages}>
+    <Provider locale={locale} messages={messages} timeZone={timeZone}>
       {children}
     </Provider>
   );
