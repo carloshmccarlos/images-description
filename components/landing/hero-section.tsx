@@ -19,12 +19,10 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
 
   return (
     <section className="relative overflow-hidden pt-28 pb-16 md:pt-32 md:pb-24">
-      {/* Background gradient */}
       <div className="absolute inset-0 bg-linear-to-b from-zinc-50 via-white to-white dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-950" />
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(24,24,27,0.06)_1px,transparent_1px)] bg-size-[100%_28px] opacity-70 dark:opacity-25" />
       <div className="absolute inset-0 bg-[radial-gradient(1000px_circle_at_20%_20%,rgba(14,165,233,0.18),transparent_55%),radial-gradient(900px_circle_at_85%_25%,rgba(16,185,129,0.16),transparent_58%),radial-gradient(800px_circle_at_60%_85%,rgba(245,158,11,0.12),transparent_55%)]" />
 
-      {/* Animated background shapes */}
       <motion.div
         aria-hidden="true"
         animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
@@ -35,7 +33,6 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
       <div className="container mx-auto px-4 relative">
         <div className="mx-auto max-w-7xl grid gap-14 lg:grid-cols-[1.05fr_0.95fr] items-center">
           <div>
-            {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
@@ -51,7 +48,6 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
               </span>
             </motion.div>
 
-            {/* Headline */}
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -66,7 +62,6 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
               </span>
             </motion.h1>
 
-            {/* Subheadline */}
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -76,7 +71,6 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
               {t('hero.subtitle')}
             </motion.p>
 
-            {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -104,7 +98,6 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
               </a>
             </motion.div>
 
-            {/* Social proof */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -113,7 +106,13 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
             >
               <div className="inline-flex items-center gap-2">
                 <div className="flex -space-x-2">
-                  {['🇺🇸', '🇪🇸', '🇫🇷', '🇯🇵', '🇨🇳'].map((flag, i) => (
+                  {[
+                    '\u{1F1EB}\u{1F1F7}',
+                    '\u{1F1EE}\u{1F1F9}',
+                    '\u{1F1E9}\u{1F1EA}',
+                    '\u{1F1EF}\u{1F1F5}',
+                    '\u{1F1EA}\u{1F1F8}',
+                  ].map((flag, i) => (
                     <div
                       key={i}
                       className="h-8 w-8 rounded-full bg-white/80 dark:bg-zinc-900 flex items-center justify-center text-lg border border-zinc-200 dark:border-zinc-800"
@@ -145,7 +144,7 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
                   <div className="h-2.5 w-2.5 rounded-full bg-amber-400" />
                   <div className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                 </div>
-                <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400">LexiLens — preview</div>
+                <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400">LexiLens - preview</div>
               </div>
 
               <div className="grid grid-cols-12 gap-3">
@@ -156,7 +155,7 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
                 >
                   <div className="aspect-4/3 rounded-xl bg-[radial-gradient(400px_circle_at_30%_30%,rgba(14,165,233,0.25),transparent_60%),radial-gradient(340px_circle_at_70%_70%,rgba(16,185,129,0.22),transparent_58%)] dark:bg-[radial-gradient(400px_circle_at_30%_30%,rgba(14,165,233,0.22),transparent_60%),radial-gradient(340px_circle_at_70%_70%,rgba(16,185,129,0.18),transparent_58%)] flex items-center justify-center"
                   >
-                    <div className="text-5xl">📷</div>
+                    <div className="text-5xl">{'\u{1F4F7}'}</div>
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-2">
                     {['street', 'market', 'kitchen', 'coffee'].map((tag) => (
@@ -171,7 +170,7 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
                 </motion.div>
 
                 <div className="col-span-5 space-y-3">
-                  {[{ w: 'la manzana', t: 'apple' }, { w: 'el café', t: 'coffee' }, { w: 'la calle', t: 'street' }].map(
+                  {[{ w: 'la manzana', t: 'apple' }, { w: 'el caf\u00e9', t: 'coffee' }, { w: 'la calle', t: 'street' }].map(
                     (item, i) => (
                       <motion.div
                         key={item.w}
@@ -184,7 +183,7 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
                         <div className="flex items-center justify-between gap-3">
                           <div className="min-w-0">
                             <div className="truncate text-sm font-semibold text-zinc-900 dark:text-white">{item.w}</div>
-                            <div className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">/…/</div>
+                            <div className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">/sample/</div>
                           </div>
                           <div className="shrink-0 rounded-full bg-zinc-900 px-2.5 py-1 text-[11px] font-semibold text-white dark:bg-white dark:text-zinc-900">
                             {item.t}

@@ -15,11 +15,11 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/use-language';
 
 const LANGUAGES = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'zh-cn', name: '中文（简体）', flag: '🇨🇳' },
-  { code: 'zh-tw', name: '中文（繁體）', flag: '🇹🇼' },
-  { code: 'ja', name: '日本語', flag: '🇯🇵' },
-  { code: 'ko', name: '한국어', flag: '🇰🇷' },
+  { code: 'en', name: 'English', flag: '\u{1F1FA}\u{1F1F8}' },
+  { code: 'zh-cn', name: '\u4e2d\u6587\uff08\u7b80\u4f53\uff09', flag: '\u{1F1E8}\u{1F1F3}' },
+  { code: 'zh-tw', name: '\u4e2d\u6587\uff08\u7e41\u9ad4\uff09', flag: '\u{1F1F9}\u{1F1FC}' },
+  { code: 'ja', name: '\u65e5\u672c\u8a9e', flag: '\u{1F1EF}\u{1F1F5}' },
+  { code: 'ko', name: '\ud55c\uad6d\uc5b4', flag: '\u{1F1F0}\u{1F1F7}' },
 ] as const;
 
 export function LanguageSelector() {

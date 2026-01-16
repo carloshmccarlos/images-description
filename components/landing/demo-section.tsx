@@ -1,11 +1,8 @@
-'use client';
-
-import { motion } from 'framer-motion';
 import { Upload, Brain, BookOpen, ArrowRight } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
-export function DemoSection() {
-  const t = useTranslations('landing');
+export async function DemoSection() {
+  const t = await getTranslations('landing');
 
   const steps = [
     {
@@ -39,12 +36,7 @@ export function DemoSection() {
 
       <div className="container mx-auto px-4 relative">
         <div className="mx-auto max-w-7xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="grid gap-10 lg:grid-cols-[1fr_1fr] items-end mb-14"
-          >
+          <div className="grid gap-10 lg:grid-cols-[1fr_1fr] items-end mb-14 motion-safe:animate-in">
             <div>
               <div className="text-xs font-semibold tracking-[0.28em] uppercase text-zinc-500 dark:text-zinc-400">
                 {t('demo.sectionLabel')}
@@ -58,21 +50,17 @@ export function DemoSection() {
             <div className="text-lg md:text-xl text-zinc-600 dark:text-zinc-300">
               {t('demo.description')}
             </div>
-          </motion.div>
+          </div>
 
           <div className="max-w-7xl mx-auto">
             <div className="grid md:grid-cols-3 gap-4 relative">
-              {/* Connection lines */}
               <div className="hidden md:block absolute top-10 left-[12%] right-[12%] h-px bg-linear-to-r from-sky-300 via-emerald-300 to-amber-300 dark:from-sky-500/25 dark:via-emerald-500/20 dark:to-amber-500/20" />
 
               {steps.map((step, index) => (
-                <motion.div
+                <div
                   key={step.step}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.18 }}
-                  className="relative"
+                  className="relative motion-safe:animate-in"
+                  style={{ animationDelay: `${index * 160}ms` }}
                 >
                   <div className="h-full rounded-2xl border border-zinc-200 bg-white/80 p-6 shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/45">
                     <div className="flex items-start justify-between gap-4">
@@ -97,19 +85,12 @@ export function DemoSection() {
                       <ArrowRight className="w-7 h-7 text-zinc-300 dark:text-zinc-700" />
                     </div>
                   )}
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
 
-          {/* Demo preview */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.35 }}
-            className="mt-16 max-w-5xl mx-auto"
-          >
+          <div className="mt-16 max-w-5xl mx-auto motion-safe:animate-in">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-zinc-200 bg-white/70 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/40">
               <div className="bg-zinc-100/70 dark:bg-zinc-900/60 px-4 py-3 flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800">
                 <div className="flex gap-1.5">
@@ -117,14 +98,13 @@ export function DemoSection() {
                   <div className="w-3 h-3 rounded-full bg-amber-400" />
                   <div className="w-3 h-3 rounded-full bg-emerald-400" />
                 </div>
-                <span className="text-sm text-zinc-500 ml-2">LexiLens — Analyze</span>
+                <span className="text-sm text-zinc-500 ml-2">LexiLens - Analyze</span>
               </div>
               <div className="p-8">
                 <div className="grid md:grid-cols-2 gap-8">
-                  {/* Image preview */}
                   <div className="space-y-4">
                     <div className="aspect-video bg-linear-to-br from-amber-50 via-white to-sky-50 dark:from-amber-500/10 dark:via-zinc-950 dark:to-sky-500/10 rounded-xl flex items-center justify-center overflow-hidden border border-zinc-200 dark:border-zinc-800">
-                      <div className="text-6xl">🍎🍊🍋</div>
+                      <div className="text-6xl">{'\u{1F34E}\u{1F34A}\u{1F34B}'}</div>
                     </div>
                     <div className="p-4 bg-white/80 dark:bg-zinc-950/60 rounded-xl border border-zinc-200 dark:border-zinc-800">
                       <p className="text-sm text-zinc-600 dark:text-zinc-300">
@@ -133,24 +113,20 @@ export function DemoSection() {
                     </div>
                   </div>
 
-                  {/* Vocabulary cards */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <h4 className="font-semibold text-lg tracking-tight text-zinc-900 dark:text-white">{t('demo.vocabulary')}</h4>
                       <span className="text-[11px] font-semibold tracking-[0.22em] uppercase text-zinc-500 dark:text-zinc-400">{t('demo.sample')}</span>
                     </div>
                     {[
-                      { word: 'manzana', translation: 'apple', pronunciation: '/man-ˈθa-na/' },
-                      { word: 'naranja', translation: 'orange', pronunciation: '/na-ˈɾan-xa/' },
-                      { word: 'limón', translation: 'lemon', pronunciation: '/li-ˈmon/' },
+                      { word: 'manzana', translation: 'apple', pronunciation: '/man-\u02c8\u03b8a-na/' },
+                      { word: 'naranja', translation: 'orange', pronunciation: '/na-\u02c8\u027ean-xa/' },
+                      { word: 'lim\u00f3n', translation: 'lemon', pronunciation: '/li-\u02c8mon/' },
                     ].map((item, i) => (
-                      <motion.div
+                      <div
                         key={item.word}
-                        initial={{ opacity: 0, x: 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.5 + i * 0.08 }}
-                        className="p-4 bg-white/80 dark:bg-zinc-950/60 rounded-xl border border-zinc-200 dark:border-zinc-800"
+                        className="p-4 bg-white/80 dark:bg-zinc-950/60 rounded-xl border border-zinc-200 dark:border-zinc-800 motion-safe:animate-in"
+                        style={{ animationDelay: `${480 + i * 90}ms` }}
                       >
                         <div className="flex items-center justify-between gap-3">
                           <div>
@@ -161,13 +137,13 @@ export function DemoSection() {
                             {item.translation}
                           </p>
                         </div>
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

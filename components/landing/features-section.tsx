@@ -1,12 +1,9 @@
-'use client';
-
-import { motion } from 'framer-motion';
 import { Camera, Sparkles, Globe, BookOpen, Zap, Shield, Volume2, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
-export function FeaturesSection() {
-  const t = useTranslations('landing');
+export async function FeaturesSection() {
+  const t = await getTranslations('landing');
 
   const features = [
     {
@@ -66,12 +63,7 @@ export function FeaturesSection() {
 
       <div className="container mx-auto px-4 relative">
         <div className="mx-auto max-w-7xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] items-end mb-14"
-          >
+          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] items-end mb-14 motion-safe:animate-in">
             <div>
               <div className="text-xs font-semibold tracking-[0.28em] uppercase text-zinc-500 dark:text-zinc-400">
                 {t('features.sectionLabel')}
@@ -85,16 +77,14 @@ export function FeaturesSection() {
             <div className="text-lg md:text-xl text-zinc-600 dark:text-zinc-300">
               {t('features.description')}
             </div>
-          </motion.div>
+          </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {features.map((feature, index) => (
-              <motion.div
+              <div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.06 }}
+                className="motion-safe:animate-in"
+                style={{ animationDelay: `${index * 80}ms` }}
               >
                 <Card className="h-full border border-zinc-200 bg-white/75 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-950/40">
                   <CardContent className="p-6">
@@ -117,7 +107,7 @@ export function FeaturesSection() {
                     <div className="mt-6 h-px w-full bg-linear-to-r from-amber-200 via-emerald-200 to-sky-200 dark:from-amber-500/20 dark:via-emerald-500/15 dark:to-sky-500/15" />
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

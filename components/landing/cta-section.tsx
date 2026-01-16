@@ -1,55 +1,35 @@
-'use client';
-
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTranslations } from 'next-intl';
-import { useLanguage } from '@/hooks/use-language';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 interface CTASectionProps {
   isLoggedIn: boolean;
 }
 
-export function CTASection({ isLoggedIn }: CTASectionProps) {
-  const t = useTranslations('landing');
-  const tCommon = useTranslations('common');
-  const { locale } = useLanguage();
+export async function CTASection({ isLoggedIn }: CTASectionProps) {
+  const t = await getTranslations('landing');
+  const tCommon = await getTranslations('common');
+  const locale = await getLocale();
 
   return (
     <section className="py-24 relative overflow-hidden">
-      {/* Background */}
       <div className="absolute inset-0 bg-zinc-950" />
       <div className="absolute inset-0 bg-[radial-gradient(1200px_circle_at_20%_30%,rgba(14,165,233,0.35),transparent_55%),radial-gradient(1100px_circle_at_80%_35%,rgba(16,185,129,0.30),transparent_58%),radial-gradient(1000px_circle_at_55%_90%,rgba(245,158,11,0.22),transparent_55%)]" />
       <div className="absolute inset-0 opacity-20 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.16)_1px,transparent_1px)] bg-size-[100%_34px]" />
 
-      {/* Animated shapes */}
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 70, repeat: Infinity, ease: 'linear' }}
-        className="absolute top-0 left-0 w-[520px] h-[520px] bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"
+      <div
+        className="absolute top-0 left-0 w-[520px] h-[520px] bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 motion-safe:animate-[spin_70s_linear_infinite]"
       />
-      <motion.div
-        animate={{ rotate: -360 }}
-        transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
-        className="absolute bottom-0 right-0 w-[520px] h-[520px] bg-white/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"
+      <div
+        className="absolute bottom-0 right-0 w-[520px] h-[520px] bg-white/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2 motion-safe:animate-[spin_60s_linear_infinite]"
       />
 
       <div className="container mx-auto px-4 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-3xl mx-auto text-center text-white"
-        >
-          <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            className="w-20 h-20 mx-auto mb-8 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/15"
-          >
+        <div className="max-w-3xl mx-auto text-center text-white motion-safe:animate-in">
+          <div className="w-20 h-20 mx-auto mb-8 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/15 motion-safe:animate-in">
             <Sparkles className="w-10 h-10" />
-          </motion.div>
+          </div>
 
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             {t('cta.title')}
@@ -83,7 +63,7 @@ export function CTASection({ isLoggedIn }: CTASectionProps) {
           <p className="mt-8 text-sm text-white/60">
             {t('cta.disclaimer')}
           </p>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

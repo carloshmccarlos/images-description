@@ -21,14 +21,10 @@ export function useLanguage() {
   const router = useRouter();
 
   const changeLanguage = useCallback((newLocale: Locale) => {
-    // Set cookie for server-side
     document.cookie = `NEXT_LOCALE=${newLocale};path=/;max-age=31536000`;
 
-    // Navigate to new locale path
     const search = typeof window !== 'undefined' ? window.location.search : '';
     const newPath = `${withLocalePrefix(pathname, newLocale)}${search}`;
-    
-    // Use router for navigation
     router.push(newPath);
     router.refresh();
   }, [pathname, router]);
@@ -39,20 +35,18 @@ export function useLanguage() {
   };
 }
 
-// Language display names
 export const languageNames: Record<Locale, string> = {
   en: 'English',
-  'zh-cn': '中文（简体）',
-  'zh-tw': '中文（繁體）',
-  ja: '日本語',
-  ko: '한국어',
+  'zh-cn': '\u4e2d\u6587\uff08\u7b80\u4f53\uff09',
+  'zh-tw': '\u4e2d\u6587\uff08\u7e41\u9ad4\uff09',
+  ja: '\u65e5\u672c\u8a9e',
+  ko: '\ud55c\uad6d\uc5b4',
 };
 
-// Language flags (emoji)
 export const languageFlags: Record<Locale, string> = {
-  en: '🇺🇸',
-  'zh-cn': '🇨🇳',
-  'zh-tw': '🇹🇼',
-  ja: '🇯🇵',
-  ko: '🇰🇷',
+  en: '\u{1F1FA}\u{1F1F8}',
+  'zh-cn': '\u{1F1E8}\u{1F1F3}',
+  'zh-tw': '\u{1F1F9}\u{1F1FC}',
+  ja: '\u{1F1EF}\u{1F1F5}',
+  ko: '\u{1F1F0}\u{1F1F7}',
 };

@@ -1,20 +1,16 @@
-'use client';
-
 import Link from 'next/link';
-import { Sparkles, Github, Twitter } from 'lucide-react';
+import { Github, Twitter, Sparkles } from 'lucide-react';
 import { APP_CONFIG } from '@/lib/constants';
-import { useTranslations } from 'next-intl';
-import { useLanguage } from '@/hooks/use-language';
+import { getLocale, getTranslations } from 'next-intl/server';
 
-export function Footer() {
-  const t = useTranslations('landing');
-  const { locale } = useLanguage();
+export async function Footer() {
+  const t = await getTranslations('landing');
+  const locale = await getLocale();
 
   return (
     <footer className="bg-zinc-50 dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800">
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-4 gap-8">
-          {/* Brand */}
           <div className="md:col-span-2">
             <Link href={`/${locale}`} className="flex items-center gap-2 mb-4">
               <div className="w-9 h-9 rounded-xl bg-linear-to-br from-sky-600 to-emerald-500 flex items-center justify-center">
@@ -27,7 +23,6 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Links */}
           <div>
             <h3 className="font-semibold mb-4 text-base">{t('footer.product')}</h3>
             <ul className="space-y-2 text-zinc-600 dark:text-zinc-400">
@@ -37,7 +32,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
           <div>
             <h3 className="font-semibold mb-4 text-base">{t('footer.contact')}</h3>
             <ul className="space-y-2 text-zinc-600 dark:text-zinc-400">
