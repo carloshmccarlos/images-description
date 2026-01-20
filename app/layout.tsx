@@ -193,6 +193,11 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script
+          defer
+          src="https://umami-ten-khaki-92.vercel.app/script.js"
+          data-website-id="5785a8f2-3294-451f-aebd-3f7200b3d3f1"
+        />
         <JsonLd />
         <link rel="manifest" href="/manifest.json" />
       </head>
