@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db';
 import { adminLogs, AdminAction } from '@/lib/db/schema';
-import { verifyAdminAccess } from '@/lib/admin/middleware';
+import { verifyAdminAccess } from '@/lib/actions/admin/verify-admin-access';
 import * as v from 'valibot';
 
 const CreateActivityLogSchema = v.object({

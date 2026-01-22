@@ -2,8 +2,9 @@
 
 import { db } from '@/lib/db';
 import { systemMetrics, savedAnalyses } from '@/lib/db/schema';
-import { verifyAdminAccess } from '@/lib/admin/middleware';
+import { verifyAdminAccess } from '@/lib/actions/admin/verify-admin-access';
 import { eq, gte, count, sql } from 'drizzle-orm';
+import * as v from 'valibot';
 
 export interface SystemHealthMetrics {
   apiResponseTime: {
@@ -28,6 +29,11 @@ export interface GetSystemHealthResult {
 }
 
 export async function getSystemHealth(): Promise<GetSystemHealthResult> {
+  const validated = v.safeParse(v.object({}), {});
+  if (!validated.success) {
+    return { success: false, error: 'Invalid input parameters' };
+  }
+
   // Verify admin access
   const adminCheck = await verifyAdminAccess();
   if (!adminCheck.success) {

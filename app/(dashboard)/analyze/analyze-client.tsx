@@ -10,7 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/use-language';
-import type { VocabularyItem } from '@/lib/db/schema';
+import type { VocabularyItem } from '@/lib/types/analysis';
 
 interface AnalyzeClientProps {
   hasRunningTask?: boolean;

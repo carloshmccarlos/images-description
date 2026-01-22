@@ -2,29 +2,27 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users, UserRole } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import * as v from 'valibot';
 
-interface UserProfile {
+const inputSchema = v.object({});
+
+export interface AdminUser {
   id: string;
   email: string;
   name: string | null;
-  motherLanguage: string;
-  learningLanguage: string;
-  proficiencyLevel: string;
-  createdAt: Date;
+  role: UserRole;
 }
 
-interface GetCurrentUserResult {
+export interface AdminCheckResult {
   success: boolean;
-  data?: UserProfile;
+  data?: AdminUser;
   error?: string;
-  needsSetup?: boolean;
 }
 
-export async function getCurrentUser(): Promise<GetCurrentUserResult> {
-  const validated = v.safeParse(v.object({}), {});
+export async function verifyAdminAccess(): Promise<AdminCheckResult> {
+  const validated = v.safeParse(inputSchema, {});
   if (!validated.success) {
     return { success: false, error: 'Invalid input' };
   }
@@ -37,12 +35,26 @@ export async function getCurrentUser(): Promise<GetCurrentUserResult> {
   }
 
   const [dbUser] = await db
-    .select()
+    .select({
+      id: users.id,
+      email: users.email,
+      name: users.name,
+      role: users.role,
+      status: users.status,
+    })
     .from(users)
     .where(eq(users.id, user.id));
 
   if (!dbUser) {
-    return { success: false, needsSetup: true, error: 'User profile not found' };
+    return { success: false, error: 'User not found' };
+  }
+
+  if (dbUser.status === 'suspended') {
+    return { success: false, error: 'Account suspended' };
+  }
+
+  if (dbUser.role !== 'admin' && dbUser.role !== 'super_admin') {
+    return { success: false, error: 'Admin access required' };
   }
 
   return {
@@ -51,10 +63,7 @@ export async function getCurrentUser(): Promise<GetCurrentUserResult> {
       id: dbUser.id,
       email: dbUser.email,
       name: dbUser.name,
-      motherLanguage: dbUser.motherLanguage || 'zh-cn',
-      learningLanguage: dbUser.learningLanguage || 'en',
-      proficiencyLevel: dbUser.proficiencyLevel || 'beginner',
-      createdAt: dbUser.createdAt,
+      role: dbUser.role,
     },
   };
 }

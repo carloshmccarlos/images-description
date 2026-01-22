@@ -2,16 +2,24 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
-import { dailyUsage, type DailyUsage } from '@/lib/db/schema';
+import { dailyUsage } from '@/lib/db/schema';
 import { desc, sql } from 'drizzle-orm';
+import * as v from 'valibot';
+import type { DailyUsageSummary } from '@/lib/types/stats';
 
 interface GetRecentActivityResult {
   success: boolean;
-  data?: DailyUsage[];
+  data?: DailyUsageSummary[];
   error?: string;
 }
 
-export async function getRecentActivity(days: number = 7): Promise<GetRecentActivityResult> {
+const inputSchema = v.object({
+  days: v.optional(v.pipe(v.number(), v.minValue(1), v.maxValue(30))),
+});
+
+export async function getRecentActivity(
+  input: v.InferInput<typeof inputSchema> = {}
+): Promise<GetRecentActivityResult> {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -19,6 +27,12 @@ export async function getRecentActivity(days: number = 7): Promise<GetRecentActi
     return { success: false, error: 'Not authenticated' };
   }
 
+  const validated = v.safeParse(inputSchema, input);
+  if (!validated.success) {
+    return { success: false, error: 'Invalid input' };
+  }
+
+  const days = validated.output.days ?? 7;
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
   const startDateStr = startDate.toISOString().split('T')[0];
@@ -31,6 +45,9 @@ export async function getRecentActivity(days: number = 7): Promise<GetRecentActi
 
   return {
     success: true,
-    data: activity,
+    data: activity.map((item) => ({
+      date: item.date,
+      usageCount: item.usageCount,
+    })),
   };
 }

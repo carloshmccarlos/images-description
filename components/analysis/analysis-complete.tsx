@@ -6,7 +6,7 @@ import { CheckCircle, ArrowRight, Camera, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { VocabularyCard } from './vocabulary-card';
-import type { VocabularyItem } from '@/lib/db/schema';
+import type { VocabularyItem } from '@/lib/types/analysis';
 
 interface AnalysisCompleteProps {
   imageUrl: string;

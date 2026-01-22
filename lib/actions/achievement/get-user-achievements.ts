@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { achievements } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
+import * as v from 'valibot';
 
 interface AchievementData {
   id: string;
@@ -18,6 +19,11 @@ interface GetUserAchievementsResult {
 }
 
 export async function getUserAchievements(): Promise<GetUserAchievementsResult> {
+  const validated = v.safeParse(v.object({}), {});
+  if (!validated.success) {
+    return { success: false, error: 'Invalid input' };
+  }
+
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 

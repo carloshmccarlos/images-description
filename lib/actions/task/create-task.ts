@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { analysisTasks } from '@/lib/db/schema';
+import * as v from 'valibot';
 
 interface CreateTaskResult {
   success: boolean;
@@ -10,7 +11,14 @@ interface CreateTaskResult {
   error?: string;
 }
 
+const inputSchema = v.object({});
+
 export async function createTask(): Promise<CreateTaskResult> {
+  const validated = v.safeParse(inputSchema, {});
+  if (!validated.success) {
+    return { success: false, error: 'Invalid input' };
+  }
+
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 

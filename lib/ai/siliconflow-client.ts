@@ -1,5 +1,5 @@
 import { createAnalysisPrompt } from './prompts';
-import type { VocabularyItem } from '@/lib/db/schema';
+import type { VocabularyItem } from '@/lib/types/analysis';
 
 export interface AnalysisResult {
   description: string;

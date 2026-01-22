@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { verifyAdminAccess } from '@/lib/admin/middleware';
+import { verifyAdminAccess } from '@/lib/actions/admin/verify-admin-access';
 
 export async function GET() {
   const result = await verifyAdminAccess();

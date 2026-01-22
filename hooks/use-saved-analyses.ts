@@ -1,18 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import type { VocabularyItem } from '@/lib/db/schema';
-
-interface SavedAnalysis {
-  id: string;
-  userId: string;
-  imageUrl: string;
-  description: string;
-  vocabulary: VocabularyItem[];
-  createdAt: Date;
-}
+import type { AnalysisDetail, AnalysisSummary } from '@/lib/types/analysis';
 
 interface SavedAnalysesResponse {
-  analyses: SavedAnalysis[];
+  analyses: AnalysisSummary[];
   page: number;
   limit: number;
 }
@@ -33,7 +24,7 @@ async function fetchSavedAnalyses(
   return res.json();
 }
 
-async function fetchSavedAnalysis(id: string): Promise<SavedAnalysis> {
+async function fetchSavedAnalysis(id: string): Promise<AnalysisDetail> {
   const res = await fetch(`/api/saved/${id}`);
   if (!res.ok) throw new Error('Failed to fetch analysis');
   return res.json();

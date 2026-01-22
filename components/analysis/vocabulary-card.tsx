@@ -5,7 +5,7 @@ import { Volume2, Loader2, BookOpen, MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { VocabularyItem } from '@/lib/db/schema';
+import type { VocabularyItem } from '@/lib/types/analysis';
 import { useAudioStore } from '@/stores/audio-store';
 
 interface VocabularyCardProps {

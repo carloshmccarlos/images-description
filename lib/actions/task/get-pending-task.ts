@@ -4,8 +4,10 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { analysisTasks } from '@/lib/db/schema';
 import { eq, and, inArray, desc } from 'drizzle-orm';
+import * as v from 'valibot';
 
 const STALE_TASK_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
+const inputSchema = v.object({});
 
 interface GetPendingTaskResult {
   success: boolean;
@@ -14,6 +16,11 @@ interface GetPendingTaskResult {
 }
 
 export async function getPendingTask(): Promise<GetPendingTaskResult> {
+  const validated = v.safeParse(inputSchema, {});
+  if (!validated.success) {
+    return { success: false, error: 'Invalid input' };
+  }
+
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 

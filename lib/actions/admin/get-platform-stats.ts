@@ -2,8 +2,9 @@
 
 import { db } from '@/lib/db';
 import { users, savedAnalyses, userStats, dailyUsage } from '@/lib/db/schema';
-import { verifyAdminAccess } from '@/lib/admin/middleware';
+import { verifyAdminAccess } from '@/lib/actions/admin/verify-admin-access';
 import { count, sum, sql, gte, eq } from 'drizzle-orm';
+import * as v from 'valibot';
 
 export interface TimeSeriesDataPoint {
   date: string;
@@ -24,6 +25,11 @@ export interface PlatformStatsResult {
 }
 
 export async function getPlatformStats(): Promise<PlatformStatsResult> {
+  const validated = v.safeParse(v.object({}), {});
+  if (!validated.success) {
+    return { success: false, error: 'Invalid input parameters' };
+  }
+
   // Verify admin access
   const adminCheck = await verifyAdminAccess();
   if (!adminCheck.success) {

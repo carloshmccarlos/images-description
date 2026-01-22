@@ -1,32 +1,24 @@
 'use server';
 
-import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { savedAnalyses } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
-import type { VocabularyItem } from '@/lib/db/schema';
+import type { AnalysisSummary } from '@/lib/types/analysis';
+import * as v from 'valibot';
 
-const inputSchema = z.object({
-  limit: z.number().min(1).max(20).default(4),
+const inputSchema = v.object({
+  limit: v.pipe(v.number(), v.minValue(1), v.maxValue(20)),
 });
-
-interface RecentAnalysis {
-  id: string;
-  imageUrl: string;
-  description: string;
-  vocabulary: VocabularyItem[];
-  createdAt: Date;
-}
 
 interface GetRecentAnalysesResult {
   success: boolean;
-  data?: RecentAnalysis[];
+  data?: AnalysisSummary[];
   error?: string;
 }
 
 export async function getRecentAnalyses(
-  input: z.infer<typeof inputSchema> = { limit: 4 }
+  input: v.InferInput<typeof inputSchema>
 ): Promise<GetRecentAnalysesResult> {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -35,7 +27,7 @@ export async function getRecentAnalyses(
     return { success: false, error: 'Not authenticated' };
   }
 
-  const validated = inputSchema.safeParse(input);
+  const validated = v.safeParse(inputSchema, input);
   if (!validated.success) {
     return { success: false, error: 'Invalid input parameters' };
   }
@@ -45,11 +37,11 @@ export async function getRecentAnalyses(
     .from(savedAnalyses)
     .where(eq(savedAnalyses.userId, user.id))
     .orderBy(desc(savedAnalyses.createdAt))
-    .limit(validated.data.limit);
+    .limit(validated.output.limit);
 
   return {
     success: true,
-    data: analyses.map(a => ({
+    data: analyses.map((a) => ({
       id: a.id,
       imageUrl: a.imageUrl,
       description: a.description,

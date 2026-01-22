@@ -1,16 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import type { VocabularyItem } from '@/lib/db/schema';
-
-interface RecentAnalysis {
-  id: string;
-  imageUrl: string;
-  description: string;
-  vocabulary: VocabularyItem[];
-  createdAt: Date;
-}
+import type { AnalysisSummary } from '@/lib/types/analysis';
 
 interface RecentAnalysesResponse {
-  analyses: RecentAnalysis[];
+  analyses: AnalysisSummary[];
 }
 
 async function fetchRecentAnalyses(limit: number): Promise<RecentAnalysesResponse> {

@@ -1,27 +1,22 @@
 'use server';
 
-import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { analysisTasks } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
-import type { VocabularyItem } from '@/lib/db/schema';
+import type { VocabularyItem } from '@/lib/types/analysis';
+import { vocabularyItemSchema } from '@/lib/validations/image';
+import * as v from 'valibot';
 
-const updateTaskSchema = z.object({
-  taskId: z.string().uuid(),
-  status: z.enum(['pending', 'uploading', 'analyzing', 'completed', 'failed']).optional(),
-  progress: z.number().min(0).max(100).optional(),
-  imageUrl: z.string().optional(),
-  description: z.string().optional(),
-  vocabulary: z.array(z.object({
-    word: z.string(),
-    translation: z.string(),
-    pronunciation: z.string(),
-    exampleSentence: z.string(),
-    category: z.string().optional(),
-  })).optional(),
-  errorMessage: z.string().optional(),
-  savedAnalysisId: z.string().uuid().optional(),
+const updateTaskSchema = v.object({
+  taskId: v.pipe(v.string(), v.uuid()),
+  status: v.optional(v.picklist(['pending', 'uploading', 'analyzing', 'completed', 'error', 'failed'])),
+  progress: v.optional(v.pipe(v.number(), v.minValue(0), v.maxValue(100))),
+  imageUrl: v.optional(v.string()),
+  description: v.optional(v.string()),
+  vocabulary: v.optional(v.array(vocabularyItemSchema)),
+  errorMessage: v.optional(v.string()),
+  savedAnalysisId: v.optional(v.pipe(v.string(), v.uuid())),
 });
 
 interface UpdateTaskResult {
@@ -30,7 +25,7 @@ interface UpdateTaskResult {
 }
 
 export async function updateTask(
-  input: z.infer<typeof updateTaskSchema>
+  input: v.InferInput<typeof updateTaskSchema>
 ): Promise<UpdateTaskResult> {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -39,12 +34,12 @@ export async function updateTask(
     return { success: false, error: 'Not authenticated' };
   }
 
-  const validated = updateTaskSchema.safeParse(input);
+  const validated = v.safeParse(updateTaskSchema, input);
   if (!validated.success) {
     return { success: false, error: 'Invalid input' };
   }
 
-  const { taskId, ...updates } = validated.data;
+  const { taskId, ...updates } = validated.output;
 
   const updateData: Record<string, unknown> = { updatedAt: new Date() };
   

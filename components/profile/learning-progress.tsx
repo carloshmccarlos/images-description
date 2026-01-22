@@ -3,10 +3,10 @@
 import { motion } from 'framer-motion';
 import { TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { DailyUsage } from '@/lib/db/schema';
+import type { DailyUsageSummary } from '@/lib/types/stats';
 
 interface LearningProgressProps {
-  recentActivity: DailyUsage[];
+  recentActivity: DailyUsageSummary[];
 }
 
 export function LearningProgress({ recentActivity }: LearningProgressProps) {

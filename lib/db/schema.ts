@@ -1,4 +1,5 @@
 import { pgTable, uuid, text, timestamp, integer, date, jsonb, uniqueIndex, boolean, numeric, index } from 'drizzle-orm/pg-core';
+import type { VocabularyItem } from '@/lib/types/analysis';
 
 // User roles type
 export type UserRole = 'user' | 'admin' | 'super_admin';
@@ -121,14 +122,6 @@ export const systemMetrics = pgTable('system_metrics', {
 ]);
 
 // Types
-export interface VocabularyItem {
-  word: string;
-  translation: string;
-  pronunciation: string;
-  exampleSentence: string;
-  category?: string;
-}
-
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type DailyUsage = typeof dailyUsage.$inferSelect;

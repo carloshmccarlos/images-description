@@ -24,7 +24,7 @@ export default async function ProfilePage() {
   const [statsResult, achievementsResult, activityResult, analysesResult] = await Promise.all([
     getUserStats(),
     getUserAchievements(),
-    getRecentActivity(7),
+    getRecentActivity({ days: 7 }),
     getSavedAnalyses({ page: 1, limit: 1 }),
   ]);
 

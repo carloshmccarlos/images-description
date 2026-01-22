@@ -1,10 +1,12 @@
 'use server';
 
+import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { dailyUsage, userStats, userLimits } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { getUTCDateString } from '@/lib/utils';
 import type { UsageInfo } from './check-daily-limit';
+import * as v from 'valibot';
 
 async function resolveDailyLimit(userId: string): Promise<number> {
   const [limitRow] = await db
@@ -19,7 +21,36 @@ async function resolveDailyLimit(userId: string): Promise<number> {
   return 10;
 }
 
-export async function incrementUsage(userId: string): Promise<UsageInfo> {
+const inputSchema = v.object({
+  userId: v.optional(v.pipe(v.string(), v.uuid())),
+});
+
+interface IncrementUsageResult {
+  success: boolean;
+  data?: UsageInfo;
+  error?: string;
+}
+
+export async function incrementUsage(
+  input: v.InferInput<typeof inputSchema> = {}
+): Promise<IncrementUsageResult> {
+  const supabase = await createClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return { success: false, error: 'Not authenticated' };
+  }
+
+  const validated = v.safeParse(inputSchema, input);
+  if (!validated.success) {
+    return { success: false, error: 'Invalid input' };
+  }
+
+  const userId = validated.output.userId ?? user.id;
+  if (validated.output.userId && validated.output.userId !== user.id) {
+    return { success: false, error: 'Unauthorized' };
+  }
+
   const today = getUTCDateString();
   const dailyLimit = await resolveDailyLimit(userId);
 
@@ -78,9 +109,12 @@ export async function incrementUsage(userId: string): Promise<UsageInfo> {
   }
 
   return {
-    used: (existing?.usageCount ?? 0) + 1,
-    limit: dailyLimit,
-    remaining: Math.max(0, dailyLimit - ((existing?.usageCount ?? 0) + 1)),
-    canAnalyze: dailyLimit - ((existing?.usageCount ?? 0) + 1) > 0,
+    success: true,
+    data: {
+      used: (existing?.usageCount ?? 0) + 1,
+      limit: dailyLimit,
+      remaining: Math.max(0, dailyLimit - ((existing?.usageCount ?? 0) + 1)),
+      canAnalyze: dailyLimit - ((existing?.usageCount ?? 0) + 1) > 0,
+    },
   };
 }

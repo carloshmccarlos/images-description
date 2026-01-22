@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { db } from '@/lib/db';
-import { analysisTasks } from '@/lib/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { getTaskById } from '@/lib/actions/task/get-task-by-id';
 
 export async function GET(
   request: Request,
@@ -10,34 +7,21 @@ export async function GET(
 ) {
   try {
     const { taskId } = await params;
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const result = await getTaskById({ taskId });
+
+    if (!result.success) {
+      const status =
+        result.error === 'Not authenticated' ? 401
+          : result.error === 'Invalid task ID' ? 400
+            : 404;
+      return NextResponse.json(
+        { error: result.error ?? 'Failed to fetch task' },
+        { status }
+      );
     }
 
-    const [task] = await db
-      .select()
-      .from(analysisTasks)
-      .where(and(
-        eq(analysisTasks.id, taskId),
-        eq(analysisTasks.userId, user.id)
-      ));
-
-    if (!task) {
-      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
-    }
-
-    return NextResponse.json({
-      id: task.id,
-      status: task.status,
-      imageUrl: task.imageUrl,
-      description: task.description,
-      vocabulary: task.vocabulary,
-      savedAnalysisId: task.savedAnalysisId,
-      errorMessage: task.errorMessage,
-    });
+    return NextResponse.json(result.data);
   } catch (error) {
     console.error('Error fetching task:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

@@ -1,34 +1,19 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
-import { languagePreferencesSchema } from '@/lib/validations/user';
-import * as v from 'valibot';
+import { getUserSettings } from '@/lib/actions/user/get-user-settings';
+import { updateUserSettings } from '@/lib/actions/user/update-user-settings';
 
 export async function GET() {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const result = await getUserSettings();
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error ?? 'Failed to fetch user settings' },
+        { status: result.error === 'Not authenticated' ? 401 : 404 }
+      );
     }
 
-    const [dbUser] = await db.select().from(users).where(eq(users.id, user.id));
-
-    if (!dbUser) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    return NextResponse.json({
-      id: dbUser.id,
-      email: dbUser.email,
-      name: dbUser.name,
-      motherLanguage: dbUser.motherLanguage,
-      learningLanguage: dbUser.learningLanguage,
-      proficiencyLevel: dbUser.proficiencyLevel,
-    });
+    return NextResponse.json(result.data);
   } catch (error) {
     console.error('Error fetching user settings:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -37,46 +22,14 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const body = await request.json();
-    const validatedData = v.safeParse(languagePreferencesSchema, body);
+    const result = await updateUserSettings(body);
 
-    if (!validatedData.success) {
+    if (!result.success) {
       return NextResponse.json(
-        { error: 'Invalid data', issues: validatedData.issues },
-        { status: 400 }
+        { error: result.error ?? 'Invalid data' },
+        { status: result.error === 'Not authenticated' ? 401 : 400 }
       );
-    }
-
-    const { motherLanguage, learningLanguage, proficiencyLevel } = validatedData.output;
-
-    // Check if user exists, if not create them
-    const [existingUser] = await db.select().from(users).where(eq(users.id, user.id));
-
-    if (!existingUser) {
-      await db.insert(users).values({
-        id: user.id,
-        email: user.email!,
-        motherLanguage,
-        learningLanguage,
-        proficiencyLevel,
-      });
-    } else {
-      await db
-        .update(users)
-        .set({
-          motherLanguage,
-          learningLanguage,
-          proficiencyLevel,
-          updatedAt: new Date(),
-        })
-        .where(eq(users.id, user.id));
     }
 
     return NextResponse.json({ success: true });

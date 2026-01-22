@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { dailyUsage, userLimits } from '@/lib/db/schema';
 import { sql } from 'drizzle-orm';
+import * as v from 'valibot';
 
 interface DailyUsageData {
   date: string;
@@ -21,7 +22,13 @@ function getTodayDate(): string {
   return new Date().toISOString().split('T')[0];
 }
 
-export async function getDailyUsage(date?: string): Promise<GetDailyUsageResult> {
+const inputSchema = v.object({
+  date: v.optional(v.pipe(v.string(), v.isoDate())),
+});
+
+export async function getDailyUsage(
+  input: v.InferInput<typeof inputSchema> = {}
+): Promise<GetDailyUsageResult> {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -29,7 +36,12 @@ export async function getDailyUsage(date?: string): Promise<GetDailyUsageResult>
     return { success: false, error: 'Not authenticated' };
   }
 
-  const targetDate = date || getTodayDate();
+  const validated = v.safeParse(inputSchema, input);
+  if (!validated.success) {
+    return { success: false, error: 'Invalid input' };
+  }
+
+  const targetDate = validated.output.date || getTodayDate();
 
   const [limitRow] = await db
     .select({ dailyLimit: userLimits.dailyLimit })

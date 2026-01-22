@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatDate, cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import type { VocabularyItem } from '@/lib/db/schema';
+import type { VocabularyItem } from '@/lib/types/analysis';
 import { useLanguage } from '@/hooks/use-language';
 
 interface AnalysisItem {

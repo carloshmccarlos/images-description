@@ -1,7 +1,7 @@
 'use client';
 
 import { usePrefetchAudio } from '@/hooks/use-prefetch-audio';
-import type { VocabularyItem } from '@/lib/db/schema';
+import type { VocabularyItem } from '@/lib/types/analysis';
 
 interface AudioPrefetcherProps {
   vocabulary: VocabularyItem[];

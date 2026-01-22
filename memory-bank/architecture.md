@@ -3,6 +3,8 @@
 ## Overview
 LexiLens is an image-based language learning platform built with Next.js 16, Supabase, and AI vision models. The system currently uses SiliconFlow (Qwen/Qwen3-VL-32B-Instruct) for vision-language analysis with JSON-enforced outputs. Descriptions are translated into the user's native language, and English vocabulary outputs are normalized to lowercase.
 
+All database access is centralized in reusable server actions. API routes are thin adapters that call actions and translate domain errors into HTTP responses.
+
 ## Tech Stack
 - **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS v4
 - **Backend**: Next.js API Routes

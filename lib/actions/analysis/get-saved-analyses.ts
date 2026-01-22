@@ -1,30 +1,22 @@
 'use server';
 
-import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { savedAnalyses } from '@/lib/db/schema';
 import { eq, desc, sql } from 'drizzle-orm';
-import type { VocabularyItem } from '@/lib/db/schema';
+import type { AnalysisSummary } from '@/lib/types/analysis';
+import * as v from 'valibot';
 
-const inputSchema = z.object({
-  page: z.number().min(1).default(1),
-  limit: z.number().min(1).max(50).default(12),
-  searchQuery: z.string().optional(),
+const inputSchema = v.object({
+  page: v.pipe(v.number(), v.minValue(1), v.maxValue(1000)),
+  limit: v.pipe(v.number(), v.minValue(1), v.maxValue(50)),
+  searchQuery: v.optional(v.string()),
 });
-
-interface AnalysisItem {
-  id: string;
-  imageUrl: string;
-  description: string;
-  vocabulary: VocabularyItem[];
-  createdAt: Date;
-}
 
 interface GetSavedAnalysesResult {
   success: boolean;
   data?: {
-    analyses: AnalysisItem[];
+    analyses: AnalysisSummary[];
     totalCount: number;
     totalPages: number;
     currentPage: number;
@@ -33,7 +25,7 @@ interface GetSavedAnalysesResult {
 }
 
 export async function getSavedAnalyses(
-  input: z.infer<typeof inputSchema> = { page: 1, limit: 12 }
+  input: v.InferInput<typeof inputSchema>
 ): Promise<GetSavedAnalysesResult> {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -42,15 +34,15 @@ export async function getSavedAnalyses(
     return { success: false, error: 'Not authenticated' };
   }
 
-  const validated = inputSchema.safeParse(input);
+  const validated = v.safeParse(inputSchema, input);
   if (!validated.success) {
     return { success: false, error: 'Invalid input parameters' };
   }
 
-  const { page, limit, searchQuery } = validated.data;
+  const { page, limit, searchQuery } = validated.output;
   const offset = (page - 1) * limit;
 
-  let analyses: AnalysisItem[];
+  let analyses: AnalysisSummary[];
   let totalCount: number;
 
   if (searchQuery?.trim()) {
@@ -98,7 +90,7 @@ export async function getSavedAnalyses(
   return {
     success: true,
     data: {
-      analyses: analyses.map(a => ({
+      analyses: analyses.map((a) => ({
         id: a.id,
         imageUrl: a.imageUrl,
         description: a.description,

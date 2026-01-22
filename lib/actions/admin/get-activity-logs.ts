@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db';
 import { adminLogs, users, AdminAction } from '@/lib/db/schema';
-import { verifyAdminAccess } from '@/lib/admin/middleware';
+import { verifyAdminAccess } from '@/lib/actions/admin/verify-admin-access';
 import { eq, gte, lte, and, desc, count } from 'drizzle-orm';
 import * as v from 'valibot';
 

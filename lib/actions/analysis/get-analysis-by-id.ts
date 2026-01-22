@@ -4,25 +4,12 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { savedAnalyses } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
-import type { VocabularyItem } from '@/lib/db/schema';
+import type { AnalysisDetail } from '@/lib/types/analysis';
 import * as v from 'valibot';
 
 const inputSchema = v.object({
   id: v.pipe(v.string(), v.uuid()),
 });
-
-interface AnalysisDetail {
-  id: string;
-  imageUrl: string;
-  description: string;
-  descriptionNative: string | null;
-  learningLanguage: string | null;
-  motherLanguage: string | null;
-  descriptionAudioUrl: string | null;
-  descriptionNativeAudioUrl: string | null;
-  vocabulary: VocabularyItem[];
-  createdAt: Date;
-}
 
 interface GetAnalysisByIdResult {
   success: boolean;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import type { VocabularyItem } from '@/lib/db/schema';
+import type { VocabularyItem } from '@/lib/types/analysis';
 
 export function usePrefetchAudio(vocabulary: VocabularyItem[], language: string) {
   useEffect(() => {

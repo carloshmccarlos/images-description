@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db';
 import { savedAnalyses, adminLogs } from '@/lib/db/schema';
-import { verifyAdminAccess } from '@/lib/admin/middleware';
+import { verifyAdminAccess } from '@/lib/actions/admin/verify-admin-access';
 import { deleteFromR2, getKeyFromUrl } from '@/lib/storage/r2-client';
 import { eq } from 'drizzle-orm';
 import * as v from 'valibot';
