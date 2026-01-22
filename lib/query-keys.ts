@@ -3,6 +3,9 @@ export const queryKeys = {
   // Stats
   stats: ['stats'] as const,
 
+  // User settings
+  userSettings: ['userSettings'] as const,
+
   // Recent analyses
   recentAnalyses: (limit: number) => ['recentAnalyses', limit] as const,
 

@@ -1,11 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getLocale } from 'next-intl/server';
 import { getCurrentUser } from '@/lib/actions/user/get-current-user';
-import { SettingsHeader } from '@/components/settings/settings-header';
-import { UILanguageCard } from '@/components/settings/ui-language-card';
-import { LanguageSettingsCard } from '@/components/settings/language-settings-card';
-import { AccountSettingsCard } from '@/components/settings/account-settings-card';
-import { DangerZoneCard } from '@/components/settings/danger-zone-card';
+import { SettingsClient } from '@/components/settings/settings-client';
 export default async function SettingsPage() {
   const [locale, userResult] = await Promise.all([getLocale(), getCurrentUser()]);
 
@@ -14,26 +10,16 @@ export default async function SettingsPage() {
     redirect(`/${locale}/auth/login`);
   }
 
-  const user = userResult.data!;
-
   return (
-    <div className="max-w-screen-2xl mx-auto space-y-10">
-      <SettingsHeader />
-
-      <UILanguageCard />
-      
-      <LanguageSettingsCard
-        motherLanguage={user.motherLanguage}
-        learningLanguage={user.learningLanguage}
-        proficiencyLevel={user.proficiencyLevel}
-      />
-
-      <AccountSettingsCard
-        name={user.name || ''}
-        email={user.email}
-      />
-
-      <DangerZoneCard />
-    </div>
+    <SettingsClient
+      initialSettings={{
+        id: userResult.data!.id,
+        email: userResult.data!.email,
+        name: userResult.data!.name,
+        motherLanguage: userResult.data!.motherLanguage,
+        learningLanguage: userResult.data!.learningLanguage,
+        proficiencyLevel: userResult.data!.proficiencyLevel,
+      }}
+    />
   );
 }

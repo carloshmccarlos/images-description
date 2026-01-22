@@ -85,32 +85,32 @@ export async function getActivityLogs(
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    // Get total count
-    const [countResult] = await db
-      .select({ count: count() })
-      .from(adminLogs)
-      .where(whereClause);
-    const total = countResult?.count ?? 0;
+    const [countRows, logsData] = await Promise.all([
+      db
+        .select({ count: count() })
+        .from(adminLogs)
+        .where(whereClause),
+      db
+        .select({
+          id: adminLogs.id,
+          adminId: adminLogs.adminId,
+          adminEmail: users.email,
+          adminName: users.name,
+          action: adminLogs.action,
+          targetType: adminLogs.targetType,
+          targetId: adminLogs.targetId,
+          details: adminLogs.details,
+          createdAt: adminLogs.createdAt,
+        })
+        .from(adminLogs)
+        .innerJoin(users, eq(adminLogs.adminId, users.id))
+        .where(whereClause)
+        .orderBy(desc(adminLogs.createdAt))
+        .limit(limit)
+        .offset(offset),
+    ]);
 
-    // Get logs with admin info
-    const logsData = await db
-      .select({
-        id: adminLogs.id,
-        adminId: adminLogs.adminId,
-        adminEmail: users.email,
-        adminName: users.name,
-        action: adminLogs.action,
-        targetType: adminLogs.targetType,
-        targetId: adminLogs.targetId,
-        details: adminLogs.details,
-        createdAt: adminLogs.createdAt,
-      })
-      .from(adminLogs)
-      .innerJoin(users, eq(adminLogs.adminId, users.id))
-      .where(whereClause)
-      .orderBy(desc(adminLogs.createdAt))
-      .limit(limit)
-      .offset(offset);
+    const total = countRows[0]?.count ?? 0;
 
     const logs: AdminActivityLog[] = logsData.map(log => ({
       id: log.id,

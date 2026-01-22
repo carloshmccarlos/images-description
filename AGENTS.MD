@@ -278,7 +278,7 @@ Forbidden everywhere:
 
 ## Package Manager Rules (STRICT)
 
-* ALWAYS use Bun
+* ALWAYS use pnpm
 * NEVER use:
 
   * npm
@@ -288,9 +288,9 @@ Forbidden everywhere:
 
 All commands must use:
 
-* `bun install`
-* `bun add`
-* `bun run`
+* `pnpm install`
+* `pnpm add`
+* `pnpm run`
 
 ---
 
@@ -317,11 +317,11 @@ Every code response MUST clearly indicate:
 
 ## IMPORTANT (ENFORCED)
 
-* Always read `memory-bank/@architecture.md` before writing code
-* Always read `memory-bank/@prd.md` before writing code
+* Always read `memory-bank/architecture.md` before writing code
+* Always read `memory-bank/prd.md` before writing code
 * Always include the **entire database schema** when required
-* After major changes, update  in `memory-bank/@architecture.md`
+* After major changes, update  in `memory-bank/architecture.md`
 * No backward compatibility — break freely
 * Always check MCP before coding
-* Always use Bun instead of npm, pnpm
+* Always use pnpm instead of npm, pnpm
 * Always use `SKILL.md` for UI design

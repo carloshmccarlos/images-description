@@ -37,56 +37,43 @@ export async function getPlatformStats(): Promise<PlatformStatsResult> {
   }
 
   try {
-    // Get total users count
-    const [usersResult] = await db
-      .select({ count: count() })
-      .from(users);
-    const totalUsers = usersResult?.count ?? 0;
-
-    // Get total analyses count
-    const [analysesResult] = await db
-      .select({ count: count() })
-      .from(savedAnalyses);
-    const totalAnalyses = analysesResult?.count ?? 0;
-
-    // Get total words learned
-    const [wordsResult] = await db
-      .select({ total: sum(userStats.totalWordsLearned) })
-      .from(userStats);
-    const totalWordsLearned = Number(wordsResult?.total ?? 0);
-
-    // Get daily active users (users with activity today)
     const today = new Date().toISOString().split('T')[0];
-    const [dauResult] = await db
-      .select({ count: count() })
-      .from(dailyUsage)
-      .where(eq(dailyUsage.date, today));
-    const dailyActiveUsers = dauResult?.count ?? 0;
+    const [usersRows, analysesRows, wordsRows, dauRows] = await Promise.all([
+      db.select({ count: count() }).from(users),
+      db.select({ count: count() }).from(savedAnalyses),
+      db.select({ total: sum(userStats.totalWordsLearned) }).from(userStats),
+      db.select({ count: count() }).from(dailyUsage).where(eq(dailyUsage.date, today)),
+    ]);
+
+    const totalUsers = usersRows[0]?.count ?? 0;
+    const totalAnalyses = analysesRows[0]?.count ?? 0;
+    const totalWordsLearned = Number(wordsRows[0]?.total ?? 0);
+    const dailyActiveUsers = dauRows[0]?.count ?? 0;
 
     // Get user registrations for past 30 days
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
-    const userGrowthData = await db
-      .select({
-        date: sql<string>`DATE(${users.createdAt})`,
-        count: count(),
-      })
-      .from(users)
-      .where(gte(users.createdAt, thirtyDaysAgo))
-      .groupBy(sql`DATE(${users.createdAt})`)
-      .orderBy(sql`DATE(${users.createdAt})`);
-
-    // Get analyses for past 30 days
-    const analysisGrowthData = await db
-      .select({
-        date: sql<string>`DATE(${savedAnalyses.createdAt})`,
-        count: count(),
-      })
-      .from(savedAnalyses)
-      .where(gte(savedAnalyses.createdAt, thirtyDaysAgo))
-      .groupBy(sql`DATE(${savedAnalyses.createdAt})`)
-      .orderBy(sql`DATE(${savedAnalyses.createdAt})`);
+    const [userGrowthData, analysisGrowthData] = await Promise.all([
+      db
+        .select({
+          date: sql<string>`DATE(${users.createdAt})`,
+          count: count(),
+        })
+        .from(users)
+        .where(gte(users.createdAt, thirtyDaysAgo))
+        .groupBy(sql`DATE(${users.createdAt})`)
+        .orderBy(sql`DATE(${users.createdAt})`),
+      db
+        .select({
+          date: sql<string>`DATE(${savedAnalyses.createdAt})`,
+          count: count(),
+        })
+        .from(savedAnalyses)
+        .where(gte(savedAnalyses.createdAt, thirtyDaysAgo))
+        .groupBy(sql`DATE(${savedAnalyses.createdAt})`)
+        .orderBy(sql`DATE(${savedAnalyses.createdAt})`),
+    ]);
 
     // Fill in missing dates with zero counts
     const userGrowth = fillMissingDates(userGrowthData, thirtyDaysAgo);

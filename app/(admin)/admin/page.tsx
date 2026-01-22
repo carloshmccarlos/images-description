@@ -4,8 +4,13 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Users, FileText, TrendingUp, BookOpen } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { MetricCard } from '@/components/admin/metric-card';
-import { TimeSeriesChart } from '@/components/admin/time-series-chart';
+
+const TimeSeriesChart = dynamic(
+  () => import('@/components/admin/time-series-chart').then((mod) => mod.TimeSeriesChart),
+  { ssr: false }
+);
 
 interface PlatformStats {
   totalUsers: number;

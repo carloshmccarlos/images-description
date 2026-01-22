@@ -10,6 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-keys';
+import type { UserSettings } from '@/hooks/use-user-settings';
 
 interface AccountSettingsCardProps {
   name: string;
@@ -21,6 +24,7 @@ export function AccountSettingsCard({ name: initialName, email }: AccountSetting
   const [name, setName] = useState(initialName);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const hasChanges = name !== initialName;
 
@@ -36,6 +40,10 @@ export function AccountSettingsCard({ name: initialName, email }: AccountSetting
       if (!response.ok) throw new Error('Failed to save');
 
       toast.success(t('account.profileUpdated'));
+      queryClient.setQueryData<UserSettings>(queryKeys.userSettings, (current) => {
+        if (!current) return current;
+        return { ...current, name };
+      });
       router.refresh();
     } catch {
       toast.error(t('account.updateFailed'));

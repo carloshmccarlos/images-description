@@ -1,8 +1,9 @@
 'use server';
 
+import { cache } from 'react';
 import { getAuthUser } from '@/lib/supabase/get-auth-user';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users, type UserRole, type UserStatus } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import * as v from 'valibot';
 
@@ -13,6 +14,8 @@ interface UserProfile {
   motherLanguage: string;
   learningLanguage: string;
   proficiencyLevel: string;
+  role: UserRole;
+  status: UserStatus;
   createdAt: Date;
 }
 
@@ -23,7 +26,7 @@ interface GetCurrentUserResult {
   needsSetup?: boolean;
 }
 
-export async function getCurrentUser(): Promise<GetCurrentUserResult> {
+async function getCurrentUserInternal(): Promise<GetCurrentUserResult> {
   const validated = v.safeParse(v.object({}), {});
   if (!validated.success) {
     return { success: false, error: 'Invalid input' };
@@ -52,7 +55,11 @@ export async function getCurrentUser(): Promise<GetCurrentUserResult> {
       motherLanguage: dbUser.motherLanguage || 'zh-cn',
       learningLanguage: dbUser.learningLanguage || 'en',
       proficiencyLevel: dbUser.proficiencyLevel || 'beginner',
+      role: dbUser.role,
+      status: dbUser.status,
       createdAt: dbUser.createdAt,
     },
   };
 }
+
+export const getCurrentUser = cache(getCurrentUserInternal);

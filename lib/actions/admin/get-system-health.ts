@@ -45,23 +45,40 @@ export async function getSystemHealth(): Promise<GetSystemHealthResult> {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Get API response time metrics from the last 24 hours
-    const responseTimeMetrics = await db
-      .select({
-        average: sql<number>`AVG(${systemMetrics.value})`,
-        p95: sql<number>`PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY ${systemMetrics.value})`,
-        p99: sql<number>`PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY ${systemMetrics.value})`,
-      })
-      .from(systemMetrics)
-      .where(
-        sql`${systemMetrics.metricType} = 'api_response_time' AND ${systemMetrics.recordedAt} >= ${today}`
-      );
+    const [responseTimeRows, apiCallsRows, errorRateRows, analysesRows] = await Promise.all([
+      db
+        .select({
+          average: sql<number>`AVG(${systemMetrics.value})`,
+          p95: sql<number>`PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY ${systemMetrics.value})`,
+          p99: sql<number>`PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY ${systemMetrics.value})`,
+        })
+        .from(systemMetrics)
+        .where(
+          sql`${systemMetrics.metricType} = 'api_response_time' AND ${systemMetrics.recordedAt} >= ${today}`
+        ),
+      db
+        .select({ total: sql<number>`SUM(${systemMetrics.value})` })
+        .from(systemMetrics)
+        .where(
+          sql`${systemMetrics.metricType} = 'api_calls' AND ${systemMetrics.recordedAt} >= ${today}`
+        ),
+      db
+        .select({ rate: sql<number>`AVG(${systemMetrics.value})` })
+        .from(systemMetrics)
+        .where(
+          sql`${systemMetrics.metricType} = 'error_rate' AND ${systemMetrics.recordedAt} >= ${today}`
+        ),
+      db.select({ count: count() }).from(savedAnalyses),
+    ]);
 
     const apiResponseTime = {
-      average: Number(responseTimeMetrics[0]?.average ?? 0),
-      p95: Number(responseTimeMetrics[0]?.p95 ?? 0),
-      p99: Number(responseTimeMetrics[0]?.p99 ?? 0),
+      average: Number(responseTimeRows[0]?.average ?? 0),
+      p95: Number(responseTimeRows[0]?.p95 ?? 0),
+      p99: Number(responseTimeRows[0]?.p99 ?? 0),
     };
+
+    const dailyApiCalls = Number(apiCallsRows[0]?.total ?? 0);
+    const errorRate = Number(errorRateRows[0]?.rate ?? 0);
 
     // Check response time thresholds
     if (apiResponseTime.average > 1000) {
@@ -71,26 +88,6 @@ export async function getSystemHealth(): Promise<GetSystemHealthResult> {
       warnings.push('High P95 API response time');
     }
 
-    // Get daily API calls count
-    const [apiCallsResult] = await db
-      .select({ total: sql<number>`SUM(${systemMetrics.value})` })
-      .from(systemMetrics)
-      .where(
-        sql`${systemMetrics.metricType} = 'api_calls' AND ${systemMetrics.recordedAt} >= ${today}`
-      );
-
-    const dailyApiCalls = Number(apiCallsResult?.total ?? 0);
-
-    // Get error rate from the last 24 hours
-    const [errorRateResult] = await db
-      .select({ rate: sql<number>`AVG(${systemMetrics.value})` })
-      .from(systemMetrics)
-      .where(
-        sql`${systemMetrics.metricType} = 'error_rate' AND ${systemMetrics.recordedAt} >= ${today}`
-      );
-
-    const errorRate = Number(errorRateResult?.rate ?? 0);
-
     // Check error rate threshold
     if (errorRate > 5) {
       warnings.push('High error rate detected');
@@ -98,11 +95,7 @@ export async function getSystemHealth(): Promise<GetSystemHealthResult> {
 
     // Estimate storage usage based on saved analyses count
     // This is a rough estimate since we don't have direct R2 usage metrics
-    const [analysesCount] = await db
-      .select({ count: count() })
-      .from(savedAnalyses);
-
-    const estimatedStorageUsed = (analysesCount?.count ?? 0) * 0.5; // Assume 0.5MB per analysis
+    const estimatedStorageUsed = (analysesRows[0]?.count ?? 0) * 0.5; // Assume 0.5MB per analysis
     const storageLimit = 10000; // 10GB limit (example)
     const storagePercentage = (estimatedStorageUsed / storageLimit) * 100;
 

@@ -69,13 +69,6 @@ export async function getAdminUsers(input: GetAdminUsersInput = {}): Promise<Get
         )
       : undefined;
 
-    // Get total count
-    const [countResult] = await db
-      .select({ count: count() })
-      .from(users)
-      .where(searchCondition);
-    const total = countResult?.count ?? 0;
-
     // Build sort order
     const sortColumn = sortBy === 'lastActivityAt' 
       ? userStats.lastActivityDate
@@ -85,25 +78,32 @@ export async function getAdminUsers(input: GetAdminUsersInput = {}): Promise<Get
     
     const orderFn = sortDirection === 'asc' ? asc : desc;
 
-    // Get users with stats
-    const usersData = await db
-      .select({
-        id: users.id,
-        email: users.email,
-        name: users.name,
-        status: users.status,
-        role: users.role,
-        createdAt: users.createdAt,
-        lastActivityDate: userStats.lastActivityDate,
-        totalAnalyses: userStats.totalAnalyses,
-        totalWordsLearned: userStats.totalWordsLearned,
-      })
-      .from(users)
-      .leftJoin(userStats, eq(users.id, userStats.userId))
-      .where(searchCondition)
-      .orderBy(orderFn(sortColumn))
-      .limit(limit)
-      .offset(offset);
+    const [countRows, usersData] = await Promise.all([
+      db
+        .select({ count: count() })
+        .from(users)
+        .where(searchCondition),
+      db
+        .select({
+          id: users.id,
+          email: users.email,
+          name: users.name,
+          status: users.status,
+          role: users.role,
+          createdAt: users.createdAt,
+          lastActivityDate: userStats.lastActivityDate,
+          totalAnalyses: userStats.totalAnalyses,
+          totalWordsLearned: userStats.totalWordsLearned,
+        })
+        .from(users)
+        .leftJoin(userStats, eq(users.id, userStats.userId))
+        .where(searchCondition)
+        .orderBy(orderFn(sortColumn))
+        .limit(limit)
+        .offset(offset),
+    ]);
+
+    const total = countRows[0]?.count ?? 0;
 
     const adminUsers: AdminUser[] = usersData.map(u => ({
       id: u.id,

@@ -76,33 +76,33 @@ export async function getModerationContent(
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    // Get total count
-    const [countResult] = await db
-      .select({ count: count() })
-      .from(savedAnalyses)
-      .where(whereClause);
-    const total = countResult?.count ?? 0;
+    const [countRows, analysesData] = await Promise.all([
+      db
+        .select({ count: count() })
+        .from(savedAnalyses)
+        .where(whereClause),
+      db
+        .select({
+          id: savedAnalyses.id,
+          userId: savedAnalyses.userId,
+          userEmail: users.email,
+          imageUrl: savedAnalyses.imageUrl,
+          description: savedAnalyses.description,
+          createdAt: savedAnalyses.createdAt,
+          flagged: savedAnalyses.flagged,
+          flagReason: savedAnalyses.flagReason,
+          flaggedAt: savedAnalyses.flaggedAt,
+          flaggedBy: savedAnalyses.flaggedBy,
+        })
+        .from(savedAnalyses)
+        .innerJoin(users, eq(savedAnalyses.userId, users.id))
+        .where(whereClause)
+        .orderBy(desc(savedAnalyses.createdAt))
+        .limit(limit)
+        .offset(offset),
+    ]);
 
-    // Get analyses with user info
-    const analysesData = await db
-      .select({
-        id: savedAnalyses.id,
-        userId: savedAnalyses.userId,
-        userEmail: users.email,
-        imageUrl: savedAnalyses.imageUrl,
-        description: savedAnalyses.description,
-        createdAt: savedAnalyses.createdAt,
-        flagged: savedAnalyses.flagged,
-        flagReason: savedAnalyses.flagReason,
-        flaggedAt: savedAnalyses.flaggedAt,
-        flaggedBy: savedAnalyses.flaggedBy,
-      })
-      .from(savedAnalyses)
-      .innerJoin(users, eq(savedAnalyses.userId, users.id))
-      .where(whereClause)
-      .orderBy(desc(savedAnalyses.createdAt))
-      .limit(limit)
-      .offset(offset);
+    const total = countRows[0]?.count ?? 0;
 
     const analyses: ModeratableAnalysis[] = analysesData.map(a => ({
       id: a.id,

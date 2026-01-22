@@ -11,6 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { SUPPORTED_LANGUAGES, PROFICIENCY_LEVELS } from '@/lib/constants';
 import { useTranslations } from 'next-intl';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-keys';
+import type { UserSettings } from '@/hooks/use-user-settings';
 
 interface LanguageSettingsCardProps {
   motherLanguage: string;
@@ -29,6 +32,7 @@ export function LanguageSettingsCard({
   const [proficiencyLevel, setProficiencyLevel] = useState(initialLevel);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const hasChanges =
     motherLanguage !== initialMother ||
@@ -47,6 +51,15 @@ export function LanguageSettingsCard({
       if (!response.ok) throw new Error('Failed to save');
 
       toast.success(t('language.saved'));
+      queryClient.setQueryData<UserSettings>(queryKeys.userSettings, (current) => {
+        if (!current) return current;
+        return {
+          ...current,
+          motherLanguage,
+          learningLanguage,
+          proficiencyLevel,
+        };
+      });
       router.refresh();
     } catch {
       toast.error(t('language.saveFailed'));
