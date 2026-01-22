@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/get-auth-user';
 import { db } from '@/lib/db';
 import { analysisTasks } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
@@ -27,10 +27,8 @@ interface UpdateTaskResult {
 export async function updateTask(
   input: v.InferInput<typeof updateTaskSchema>
 ): Promise<UpdateTaskResult> {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  const user = await getAuthUser();
+  if (!user) {
     return { success: false, error: 'Not authenticated' };
   }
 

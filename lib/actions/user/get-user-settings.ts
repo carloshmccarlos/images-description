@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/get-auth-user';
 import { db } from '@/lib/db';
 import { users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
@@ -29,10 +29,8 @@ export async function getUserSettings(): Promise<GetUserSettingsResult> {
     return { success: false, error: 'Invalid input' };
   }
 
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  const user = await getAuthUser();
+  if (!user) {
     return { success: false, error: 'Not authenticated' };
   }
 

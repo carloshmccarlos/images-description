@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/get-auth-user';
 import { db } from '@/lib/db';
 import { savedAnalyses, userStats } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
@@ -23,10 +23,8 @@ interface SaveAnalysisResult {
 export async function saveAnalysis(
   input: v.InferInput<typeof inputSchema>
 ): Promise<SaveAnalysisResult> {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  const user = await getAuthUser();
+  if (!user) {
     return { success: false, error: 'Not authenticated' };
   }
 

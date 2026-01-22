@@ -17,8 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-  const locale = await getLocale();
-  const userResult = await getCurrentUser();
+  const [locale, userResult] = await Promise.all([getLocale(), getCurrentUser()]);
   
   if (!userResult.success) {
     if (userResult.needsSetup) redirect(`/${locale}/auth/setup`);

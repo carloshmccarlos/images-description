@@ -11,8 +11,7 @@ import { AchievementsList } from '@/components/profile/achievements-list';
 import { LearningProgress } from '@/components/profile/learning-progress';
 import { SUPPORTED_LANGUAGES } from '@/lib/constants';
 export default async function ProfilePage() {
-  const locale = await getLocale();
-  const userResult = await getCurrentUser();
+  const [locale, userResult] = await Promise.all([getLocale(), getCurrentUser()]);
   
   if (!userResult.success) {
     if (userResult.needsSetup) redirect(`/${locale}/auth/setup`);

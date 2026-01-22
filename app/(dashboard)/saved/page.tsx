@@ -9,10 +9,11 @@ interface PageProps {
 }
 
 export default async function SavedPage({ searchParams }: PageProps) {
-  const locale = await getLocale();
-  const params = await searchParams;
-  
-  const userResult = await getCurrentUser();
+  const [locale, params, userResult] = await Promise.all([
+    getLocale(),
+    searchParams,
+    getCurrentUser(),
+  ]);
   
   if (!userResult.success) {
     redirect(`/${locale}/auth/login`);

@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/get-auth-user';
 import { db } from '@/lib/db';
 import { analysisTasks, savedAnalyses, userStats, users } from '@/lib/db/schema';
 import { and, eq, inArray, lt } from 'drizzle-orm';
@@ -51,10 +51,8 @@ export async function analyzeImageUpload(
   let taskId: string | null = null;
 
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    const user = await getAuthUser();
+    if (!user) {
       return { success: false, error: 'Not authenticated' };
     }
 

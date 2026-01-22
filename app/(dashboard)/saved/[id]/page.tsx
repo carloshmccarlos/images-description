@@ -17,10 +17,11 @@ interface PageProps {
 }
 
 export default async function SavedAnalysisPage({ params }: PageProps) {
-  const locale = await getLocale();
-  const t = await getTranslations('saved');
-
-  const { id } = await params;
+  const [locale, t, { id }] = await Promise.all([
+    getLocale(),
+    getTranslations('saved'),
+    params,
+  ]);
   
   const result = await getAnalysisById({ id });
 

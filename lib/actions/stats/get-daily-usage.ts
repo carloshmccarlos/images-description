@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/get-auth-user';
 import { db } from '@/lib/db';
 import { dailyUsage, userLimits } from '@/lib/db/schema';
 import { sql } from 'drizzle-orm';
@@ -29,10 +29,8 @@ const inputSchema = v.object({
 export async function getDailyUsage(
   input: v.InferInput<typeof inputSchema> = {}
 ): Promise<GetDailyUsageResult> {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  const user = await getAuthUser();
+  if (!user) {
     return { success: false, error: 'Not authenticated' };
   }
 

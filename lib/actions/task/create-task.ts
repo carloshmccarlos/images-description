@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { getAuthUser } from '@/lib/supabase/get-auth-user';
 import { db } from '@/lib/db';
 import { analysisTasks } from '@/lib/db/schema';
 import * as v from 'valibot';
@@ -19,10 +19,8 @@ export async function createTask(): Promise<CreateTaskResult> {
     return { success: false, error: 'Invalid input' };
   }
 
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  const user = await getAuthUser();
+  if (!user) {
     return { success: false, error: 'Not authenticated' };
   }
 

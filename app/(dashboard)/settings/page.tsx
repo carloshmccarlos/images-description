@@ -7,8 +7,7 @@ import { LanguageSettingsCard } from '@/components/settings/language-settings-ca
 import { AccountSettingsCard } from '@/components/settings/account-settings-card';
 import { DangerZoneCard } from '@/components/settings/danger-zone-card';
 export default async function SettingsPage() {
-  const locale = await getLocale();
-  const userResult = await getCurrentUser();
+  const [locale, userResult] = await Promise.all([getLocale(), getCurrentUser()]);
 
   if (!userResult.success) {
     if (userResult.needsSetup) redirect(`/${locale}/auth/setup`);

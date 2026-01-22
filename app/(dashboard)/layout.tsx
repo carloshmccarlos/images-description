@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -35,7 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const LOCALES = ['en', 'zh-cn', 'zh-tw', 'ja', 'ko'] as const;
   function stripLocale(path: string) {
@@ -85,7 +85,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
     getUser();
     checkAdmin();
-  }, [router, supabase.auth, prefixed]);
+  }, [prefixed, router, supabase]);
 
   const initials = user?.name
     ? user.name.split(' ').map((n) => n[0]).join('').toUpperCase()
