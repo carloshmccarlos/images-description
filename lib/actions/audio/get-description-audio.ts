@@ -40,7 +40,7 @@ function generateDescriptionAudioKey(analysisId: string, kind: 'translated' | 'n
 }
 
 export async function getDescriptionAudio(
-  input: v.InferInput<typeof inputSchema>
+  input: unknown
 ): Promise<GetDescriptionAudioResult> {
   if (!isDescriptionAudioEnabled()) {
     return { success: false, error: 'Description audio feature is disabled' };
