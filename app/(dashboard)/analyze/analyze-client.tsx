@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Sparkles, AlertCircle, Loader2, Volume2 } from 'lucide-react';
+import { Camera, Sparkles, AlertCircle, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { ImageUploader } from '@/components/image/image-uploader';
@@ -17,7 +17,7 @@ interface AnalyzeClientProps {
   runningTaskId?: string | null;
 }
 
-type AnalysisState = 'idle' | 'analyzing' | 'generating_audio' | 'error';
+type AnalysisState = 'idle' | 'analyzing' | 'error';
 
 type TaskStatus = 'pending' | 'analyzing' | 'completed' | 'error';
 
@@ -47,34 +47,6 @@ async function pollAnalyzeTask(taskId: string): Promise<AnalyzeTaskResponse> {
   }
 
   throw new Error('Analysis is taking longer than expected. Please try again in a moment.');
-}
-
-async function prefetchVocabularyAudio(vocabulary: VocabularyItem[], language: string): Promise<void> {
-  const lang = language.toLowerCase();
-  
-  await Promise.all(
-    vocabulary.map(async (item) => {
-      const word = item.word?.toLowerCase?.() ?? item.word;
-      try {
-        const res = await fetch('/api/audio/vocabulary', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ language: lang, word }),
-        });
-        if (res.ok) {
-          const { audioUrl } = (await res.json()) as { audioUrl?: string };
-          if (audioUrl) {
-            // Preload audio into browser cache
-            const audio = new Audio();
-            audio.preload = 'auto';
-            audio.src = audioUrl;
-          }
-        }
-      } catch {
-        // Silently fail
-      }
-    })
-  );
 }
 
 export function AnalyzeClient({ hasRunningTask = false, runningTaskId = null }: AnalyzeClientProps) {
@@ -184,12 +156,6 @@ export function AnalyzeClient({ hasRunningTask = false, runningTaskId = null }: 
           description: `${data.vocabulary?.length || 0} ${t('wordsAdded')}`,
         });
 
-        // Prefetch vocabulary audio before navigating
-        if (data.vocabulary?.length > 0 && data.learningLanguage) {
-          setState('generating_audio');
-          await prefetchVocabularyAudio(data.vocabulary, data.learningLanguage);
-        }
-
         router.push(`/${locale}/saved/${data.id}`);
       }
     } catch (err) {
@@ -201,7 +167,6 @@ export function AnalyzeClient({ hasRunningTask = false, runningTaskId = null }: 
   }
 
   const showAnalyzing = state === 'analyzing';
-  const showGeneratingAudio = state === 'generating_audio';
   const showUploader = state === 'idle';
   const showError = state === 'error';
 
@@ -313,38 +278,6 @@ export function AnalyzeClient({ hasRunningTask = false, runningTaskId = null }: 
                     </p>
                   </div>
                   <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {showGeneratingAudio && (
-          <motion.div
-            key="generating-audio"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-          >
-            <Card className="border border-zinc-200 bg-white/75 shadow-lg backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/40">
-              <CardContent className="py-16">
-                <div className="flex flex-col items-center gap-6">
-                  <motion.div
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                    className="w-20 h-20 rounded-2xl bg-linear-to-br from-violet-500 via-purple-500 to-fuchsia-500 flex items-center justify-center shadow-xl shadow-purple-500/25"
-                  >
-                    <Volume2 className="w-10 h-10 text-white" />
-                  </motion.div>
-                  <div className="text-center space-y-2">
-                    <h3 className="text-xl font-semibold text-zinc-900 dark:text-white">
-                      {t('generatingAudio')}
-                    </h3>
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      {t('progressGeneratingAudio')}
-                    </p>
-                  </div>
-                  <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
                 </div>
               </CardContent>
             </Card>

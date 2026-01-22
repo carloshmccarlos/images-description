@@ -90,7 +90,12 @@ export default async function SavedAnalysisPage({ params }: PageProps) {
 
   return (
     <div className="max-w-screen-2xl mx-auto space-y-10 pb-12">
-      <AudioPrefetcher vocabulary={analysis.vocabulary} language={analysis.learningLanguage ?? 'en'} />
+      <AudioPrefetcher
+        vocabulary={analysis.vocabulary}
+        language={analysis.learningLanguage ?? 'en'}
+        descriptionAudioUrl={analysis.descriptionAudioUrl}
+        descriptionNativeAudioUrl={analysis.descriptionNativeAudioUrl}
+      />
       <div className="flex items-center justify-between px-2">
         <Link href={`/${locale}/saved`}>
           <Button variant="ghost" className="rounded-xl font-bold text-zinc-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-all group">
