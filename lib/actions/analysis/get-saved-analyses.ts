@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { savedAnalyses } from '@/lib/db/schema';
 import { eq, desc, sql } from 'drizzle-orm';
-import type { AnalysisSummary } from '@/lib/types/analysis';
+import type { AnalysisListItem } from '@/lib/types/analysis';
 import * as v from 'valibot';
 
 const inputSchema = v.object({
@@ -16,7 +16,7 @@ const inputSchema = v.object({
 interface GetSavedAnalysesResult {
   success: boolean;
   data?: {
-    analyses: AnalysisSummary[];
+    analyses: AnalysisListItem[];
     totalCount: number;
     totalPages: number;
     currentPage: number;
@@ -42,14 +42,20 @@ export async function getSavedAnalyses(
   const { page, limit, searchQuery } = validated.output;
   const offset = (page - 1) * limit;
 
-  let analyses: AnalysisSummary[];
+  let analyses: AnalysisListItem[];
   let totalCount: number;
 
   if (searchQuery?.trim()) {
     const searchPattern = `%${searchQuery.trim()}%`;
     
     analyses = await db
-      .select()
+      .select({
+        id: savedAnalyses.id,
+        imageUrl: savedAnalyses.imageUrl,
+        description: savedAnalyses.description,
+        createdAt: savedAnalyses.createdAt,
+        vocabularyCount: sql<number>`jsonb_array_length(${savedAnalyses.vocabulary})`,
+      })
       .from(savedAnalyses)
       .where(
         sql`${savedAnalyses.userId} = ${user.id} AND (
@@ -73,7 +79,13 @@ export async function getSavedAnalyses(
     totalCount = Number(countResult?.count || 0);
   } else {
     analyses = await db
-      .select()
+      .select({
+        id: savedAnalyses.id,
+        imageUrl: savedAnalyses.imageUrl,
+        description: savedAnalyses.description,
+        createdAt: savedAnalyses.createdAt,
+        vocabularyCount: sql<number>`jsonb_array_length(${savedAnalyses.vocabulary})`,
+      })
       .from(savedAnalyses)
       .where(eq(savedAnalyses.userId, user.id))
       .orderBy(desc(savedAnalyses.createdAt))
@@ -90,13 +102,7 @@ export async function getSavedAnalyses(
   return {
     success: true,
     data: {
-      analyses: analyses.map((a) => ({
-        id: a.id,
-        imageUrl: a.imageUrl,
-        description: a.description,
-        vocabulary: a.vocabulary,
-        createdAt: a.createdAt,
-      })),
+      analyses,
       totalCount,
       totalPages: Math.ceil(totalCount / limit),
       currentPage: page,

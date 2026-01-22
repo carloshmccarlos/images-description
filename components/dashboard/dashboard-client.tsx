@@ -31,13 +31,7 @@ interface DashboardClientProps {
     id: string;
     imageUrl: string;
     description: string;
-    vocabulary: Array<{
-      word: string;
-      translation: string;
-      pronunciation: string;
-      exampleSentence: string;
-      category?: string;
-    }>;
+    vocabularyCount: number;
     createdAt: Date;
   }>;
 }

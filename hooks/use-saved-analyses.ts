@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import type { AnalysisDetail, AnalysisSummary } from '@/lib/types/analysis';
+import type { AnalysisDetail, AnalysisListItem } from '@/lib/types/analysis';
 
 interface SavedAnalysesResponse {
-  analyses: AnalysisSummary[];
+  analyses: AnalysisListItem[];
   page: number;
   limit: number;
 }

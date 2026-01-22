@@ -8,19 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import type { VocabularyItem } from '@/lib/types/analysis';
+import type { AnalysisListItem } from '@/lib/types/analysis';
 import { useLanguage } from '@/hooks/use-language';
 
-interface RecentAnalysis {
-  id: string;
-  imageUrl: string;
-  description: string;
-  vocabulary: VocabularyItem[];
-  createdAt: Date;
-}
-
 interface RecentAnalysesProps {
-  analyses: RecentAnalysis[];
+  analyses: AnalysisListItem[];
 }
 
 export function RecentAnalyses({ analyses }: RecentAnalysesProps) {
@@ -98,7 +90,7 @@ export function RecentAnalyses({ analyses }: RecentAnalysesProps) {
                     <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg border border-emerald-100 dark:border-emerald-500/20">
                       <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                       <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                        {analysis.vocabulary.length} {t('recentAnalyses.words')}
+                        {analysis.vocabularyCount} {t('recentAnalyses.words')}
                       </span>
                     </div>
                     <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all">

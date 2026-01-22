@@ -6,7 +6,7 @@ import { savedAnalyses, userStats } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import * as v from 'valibot';
 import { vocabularyItemSchema } from '@/lib/validations/image';
-import type { AnalysisSummary } from '@/lib/types/analysis';
+import type { AnalysisSavedItem } from '@/lib/types/analysis';
 
 const inputSchema = v.object({
   imageUrl: v.pipe(v.string(), v.url()),
@@ -16,7 +16,7 @@ const inputSchema = v.object({
 
 interface SaveAnalysisResult {
   success: boolean;
-  data?: AnalysisSummary;
+  data?: AnalysisSavedItem;
   error?: string;
 }
 

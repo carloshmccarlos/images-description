@@ -9,19 +9,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatDate, cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import type { VocabularyItem } from '@/lib/types/analysis';
+import type { AnalysisListItem } from '@/lib/types/analysis';
 import { useLanguage } from '@/hooks/use-language';
 
-interface AnalysisItem {
-  id: string;
-  imageUrl: string;
-  description: string;
-  vocabulary: VocabularyItem[];
-  createdAt: Date;
-}
-
 interface SavedAnalysesListProps {
-  analyses: AnalysisItem[];
+  analyses: AnalysisListItem[];
   currentPage: number;
   totalPages: number;
   searchQuery?: string;
@@ -111,7 +103,7 @@ export function SavedAnalysesList({
                       <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg border border-emerald-100 dark:border-emerald-500/20 shadow-sm">
                         <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                         <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                          {analysis.vocabulary.length} {t('list.words')}
+                          {analysis.vocabularyCount} {t('list.words')}
                         </span>
                       </div>
                     </div>

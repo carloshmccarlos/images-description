@@ -30,7 +30,7 @@ export default async function SavedPage({ searchParams }: PageProps) {
   const analyses = analysesResult.data?.analyses || [];
   const totalCount = analysesResult.data?.totalCount || 0;
   const totalPages = analysesResult.data?.totalPages || 1;
-  const totalWords = analyses.reduce((sum, a) => sum + a.vocabulary.length, 0);
+  const totalWords = analyses.reduce((sum, a) => sum + a.vocabularyCount, 0);
 
   return (
     <div className="max-w-screen-2xl mx-auto space-y-10">

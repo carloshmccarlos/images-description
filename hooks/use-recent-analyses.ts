@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import type { AnalysisSummary } from '@/lib/types/analysis';
+import type { AnalysisListItem } from '@/lib/types/analysis';
 
 interface RecentAnalysesResponse {
-  analyses: AnalysisSummary[];
+  analyses: AnalysisListItem[];
 }
 
 async function fetchRecentAnalyses(limit: number): Promise<RecentAnalysesResponse> {

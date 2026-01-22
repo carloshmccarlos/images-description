@@ -3,16 +3,39 @@
 import { useEffect } from 'react';
 import type { VocabularyItem } from '@/lib/types/analysis';
 
-export function usePrefetchAudio(vocabulary: VocabularyItem[], language: string) {
+const audioUrlCache = new Map<string, string>();
+const inFlight = new Set<string>();
+const DEFAULT_CONCURRENCY = 4;
+
+interface PrefetchOptions {
+  maxItems?: number;
+  concurrency?: number;
+}
+
+function buildCacheKey(language: string, word: string): string {
+  return `${language}:${word}`;
+}
+
+export function usePrefetchAudio(
+  vocabulary: VocabularyItem[],
+  language: string,
+  options: PrefetchOptions = {}
+) {
   useEffect(() => {
     if (!vocabulary?.length || !language) return;
 
     const lang = language.toLowerCase();
+    const maxItems = options.maxItems ?? vocabulary.length;
+    const concurrency = options.concurrency ?? DEFAULT_CONCURRENCY;
+    const queue = vocabulary.slice(0, maxItems);
+    let isCancelled = false;
 
-    // Pre-fetch audio URLs and preload audio for all vocabulary items
-    vocabulary.forEach(async (item) => {
+    async function prefetchItem(item: VocabularyItem): Promise<void> {
       const word = item.word?.toLowerCase?.() ?? item.word;
+      const cacheKey = buildCacheKey(lang, word);
+      if (audioUrlCache.has(cacheKey) || inFlight.has(cacheKey)) return;
 
+      inFlight.add(cacheKey);
       try {
         const res = await fetch('/api/audio/vocabulary', {
           method: 'POST',
@@ -23,7 +46,7 @@ export function usePrefetchAudio(vocabulary: VocabularyItem[], language: string)
         if (res.ok) {
           const { audioUrl } = (await res.json()) as { audioUrl?: string };
           if (audioUrl) {
-            // Preload the actual audio file into browser cache
+            audioUrlCache.set(cacheKey, audioUrl);
             const audio = new Audio();
             audio.preload = 'auto';
             audio.src = audioUrl;
@@ -31,7 +54,32 @@ export function usePrefetchAudio(vocabulary: VocabularyItem[], language: string)
         }
       } catch {
         // Silently fail - audio will be fetched on demand
+      } finally {
+        inFlight.delete(cacheKey);
       }
-    });
-  }, [vocabulary, language]);
+    }
+
+    async function runQueue(): Promise<void> {
+      let index = 0;
+
+      async function worker(): Promise<void> {
+        while (!isCancelled) {
+          const item = queue[index];
+          if (!item) break;
+          index += 1;
+          await prefetchItem(item);
+        }
+      }
+
+      await Promise.all(
+        Array.from({ length: concurrency }, () => worker())
+      );
+    }
+
+    runQueue();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [vocabulary, language, options.concurrency, options.maxItems]);
 }

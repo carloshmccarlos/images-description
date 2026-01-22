@@ -6,20 +6,33 @@ export interface VocabularyItem {
   category?: string;
 }
 
-export interface AnalysisSummary {
+export interface AnalysisListItem {
+  id: string;
+  imageUrl: string;
+  description: string;
+  vocabularyCount: number;
+  createdAt: Date;
+}
+
+export interface AnalysisDetail {
   id: string;
   imageUrl: string;
   description: string;
   vocabulary: VocabularyItem[];
   createdAt: Date;
-}
-
-export interface AnalysisDetail extends AnalysisSummary {
   descriptionNative: string | null;
   learningLanguage: string | null;
   motherLanguage: string | null;
   descriptionAudioUrl: string | null;
   descriptionNativeAudioUrl: string | null;
+}
+
+export interface AnalysisSavedItem {
+  id: string;
+  imageUrl: string;
+  description: string;
+  vocabulary: VocabularyItem[];
+  createdAt: Date;
 }
 
 export interface AnalysisTaskDetail {

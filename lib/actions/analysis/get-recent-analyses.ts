@@ -3,8 +3,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/lib/db';
 import { savedAnalyses } from '@/lib/db/schema';
-import { eq, desc } from 'drizzle-orm';
-import type { AnalysisSummary } from '@/lib/types/analysis';
+import { eq, desc, sql } from 'drizzle-orm';
+import type { AnalysisListItem } from '@/lib/types/analysis';
 import * as v from 'valibot';
 
 const inputSchema = v.object({
@@ -13,7 +13,7 @@ const inputSchema = v.object({
 
 interface GetRecentAnalysesResult {
   success: boolean;
-  data?: AnalysisSummary[];
+  data?: AnalysisListItem[];
   error?: string;
 }
 
@@ -33,7 +33,13 @@ export async function getRecentAnalyses(
   }
 
   const analyses = await db
-    .select()
+    .select({
+      id: savedAnalyses.id,
+      imageUrl: savedAnalyses.imageUrl,
+      description: savedAnalyses.description,
+      createdAt: savedAnalyses.createdAt,
+      vocabularyCount: sql<number>`jsonb_array_length(${savedAnalyses.vocabulary})`,
+    })
     .from(savedAnalyses)
     .where(eq(savedAnalyses.userId, user.id))
     .orderBy(desc(savedAnalyses.createdAt))
@@ -41,12 +47,6 @@ export async function getRecentAnalyses(
 
   return {
     success: true,
-    data: analyses.map((a) => ({
-      id: a.id,
-      imageUrl: a.imageUrl,
-      description: a.description,
-      vocabulary: a.vocabulary,
-      createdAt: a.createdAt,
-    })),
+    data: analyses,
   };
 }
