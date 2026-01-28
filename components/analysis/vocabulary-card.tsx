@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import type { VocabularyItem } from '@/lib/types/analysis';
 import { useAudioStore } from '@/stores/audio-store';
+import { ensureAudioCached, getCachedAudioObjectUrl } from '@/lib/audio/audio-cache';
 
 interface VocabularyCardProps {
   item: VocabularyItem;
@@ -60,6 +61,7 @@ export function VocabularyCard({ item, index, language }: VocabularyCardProps) {
 
   async function handleSpeak() {
     const lang = (language ?? 'en').toLowerCase();
+    let cachedObjectUrl: string | null = null;
 
     setIsLoading(true);
     setPlaying(word);
@@ -84,10 +86,21 @@ export function VocabularyCard({ item, index, language }: VocabularyCardProps) {
         setCachedUrl(lang, word, audioUrl);
       }
 
-      const audio = new Audio(audioUrl);
+      cachedObjectUrl = await getCachedAudioObjectUrl(audioUrl);
+      const playbackUrl = cachedObjectUrl ?? audioUrl;
+
+      if (!cachedObjectUrl) {
+        void ensureAudioCached(audioUrl);
+      }
+
+      const audio = new Audio(playbackUrl);
       setIsLoading(false);
-      audio.onended = () => setPlaying(null);
+      audio.onended = () => {
+        if (cachedObjectUrl) URL.revokeObjectURL(cachedObjectUrl);
+        setPlaying(null);
+      };
       audio.onerror = () => {
+        if (cachedObjectUrl) URL.revokeObjectURL(cachedObjectUrl);
         // Fallback to Web Speech API
         if ('speechSynthesis' in window) {
           const utterance = new SpeechSynthesisUtterance(word);
@@ -101,6 +114,7 @@ export function VocabularyCard({ item, index, language }: VocabularyCardProps) {
       await audio.play();
     } catch {
       setIsLoading(false);
+      if (cachedObjectUrl) URL.revokeObjectURL(cachedObjectUrl);
       // Fallback to Web Speech API
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(word);

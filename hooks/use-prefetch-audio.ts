@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 import type { VocabularyItem } from '@/lib/types/analysis';
+import { ensureAudioCached } from '@/lib/audio/audio-cache';
+import { useAudioStore } from '@/stores/audio-store';
 
 const audioUrlCache = new Map<string, string>();
 const inFlight = new Set<string>();
@@ -21,6 +23,8 @@ export function usePrefetchAudio(
   language: string,
   options: PrefetchOptions = {}
 ) {
+  const setCachedUrl = useAudioStore((state) => state.setCachedUrl);
+
   useEffect(() => {
     if (!vocabulary?.length || !language) return;
 
@@ -32,6 +36,7 @@ export function usePrefetchAudio(
 
     async function prefetchItem(item: VocabularyItem): Promise<void> {
       const word = item.word?.toLowerCase?.() ?? item.word;
+      if (!word) return;
       const cacheKey = buildCacheKey(lang, word);
       if (audioUrlCache.has(cacheKey) || inFlight.has(cacheKey)) return;
 
@@ -47,9 +52,8 @@ export function usePrefetchAudio(
           const { audioUrl } = (await res.json()) as { audioUrl?: string };
           if (audioUrl) {
             audioUrlCache.set(cacheKey, audioUrl);
-            const audio = new Audio();
-            audio.preload = 'auto';
-            audio.src = audioUrl;
+            setCachedUrl(lang, word, audioUrl);
+            await ensureAudioCached(audioUrl);
           }
         }
       } catch {
@@ -81,5 +85,5 @@ export function usePrefetchAudio(
     return () => {
       isCancelled = true;
     };
-  }, [vocabulary, language, options.concurrency, options.maxItems]);
+  }, [vocabulary, language, options.concurrency, options.maxItems, setCachedUrl]);
 }

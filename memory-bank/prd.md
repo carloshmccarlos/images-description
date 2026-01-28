@@ -169,6 +169,7 @@ Reset time: 00:00 UTC daily
 
 - Cache user session on the client to avoid refetching on every navigation.
 - Use TanStack Query as the single source of truth for client data and minimize per-navigation requests via cached, aggregated API responses.
+- Pre-cache vocabulary audio files on saved detail views to ensure near-instant playback.
 
 ---
 

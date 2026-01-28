@@ -48,16 +48,18 @@ AZURE_TTS_VOICE_KO
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| External Service Integration | ✅ Done | `VocabularyCard` calls external service directly |
-| API Route (proxy) | ✅ Updated | `app/api/audio/vocabulary/route.ts` returns external URL |
-| Fallback | ✅ Done | Web Speech API fallback on error |
+| External Service Integration | Done | `VocabularyCard` requests audio via `/api/audio/vocabulary` |
+| API Route (proxy) | Done | `app/api/audio/vocabulary/route.ts` proxies CDN audio |
+| Fallback | Done | Web Speech API fallback on error |
+| Browser Audio Cache | Done | Saved detail prefetch caches audio files in Cache Storage |
 
 **External Service:** https://vocabulary-audio-service.loveyouall.qzz.io/docs
 
 **How it works:**
-1. `VocabularyCard` constructs audio URL directly: `https://vocabulary-audio-service.loveyouall.qzz.io/api/{lang}/{word}`
-2. Plays audio via `new Audio(url).play()`
-3. Falls back to Web Speech API if external service fails
+1. `VocabularyCard` requests audio URL via `/api/audio/vocabulary`
+2. Saved detail prefetch stores audio files in browser Cache Storage
+3. Plays audio via `new Audio(url).play()` with cached blobs when available
+4. Falls back to Web Speech API if external service fails
 
 ### 1.4 Session Caching (IMPLEMENTED)
 
@@ -110,13 +112,16 @@ AZURE_TTS_VOICE_KO
 ### 2.1 Vocabulary Audio - External Service Integration
 
 **Files Modified:**
-- `components/analysis/vocabulary-card.tsx` - Now calls external service directly
-- `app/api/audio/vocabulary/route.ts` - Simplified to return external URL
+- `components/analysis/vocabulary-card.tsx` - Uses cached audio when available
+- `app/api/audio/vocabulary/route.ts` - Proxies CDN audio
+- `hooks/use-prefetch-audio.ts` - Prefetches audio URLs and caches files
+- `lib/audio/audio-cache.ts` - Browser Cache Storage helpers
 
 **Behavior:**
-- Client constructs URL: `https://vocabulary-audio-service.loveyouall.qzz.io/api/{lang}/{word}`
-- Falls back to Web Speech API on error
-- No local TTS generation, no local audio DB needed
+- Client requests audio URL via `/api/audio/vocabulary`
+- Saved detail view prefetches and caches all vocabulary audio files
+- Cached blobs are used for near-instant playback
+- Web Speech API remains as fallback on error
 
 ### 2.2 Description Audio - Feature Flag Added
 
