@@ -80,7 +80,8 @@ export function useAnalyzeTaskStatus(taskId: string | null) {
     queryFn: () => fetchAnalyzeTask(taskId ?? ''),
     enabled: Boolean(taskId),
     staleTime: Infinity,
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
+      const data = query.state.data;
       if (!data) return 1500;
       return data.status === 'pending' || data.status === 'analyzing' ? 1500 : false;
     },
