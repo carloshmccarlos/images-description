@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { Loader2, Sparkles } from 'lucide-react';
@@ -14,13 +13,14 @@ import { toast } from 'sonner';
 import { useUserStore } from '@/stores/user-store';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/hooks/use-language';
+import { useUpdateUserSettings } from '@/hooks/use-user-settings';
 
 export function LanguageSetupForm() {
   const t = useTranslations('auth');
   const { locale } = useLanguage();
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const setPreferences = useUserStore((state) => state.setPreferences);
+  const { mutateAsync, isPending } = useUpdateUserSettings();
 
   const {
     setValue,
@@ -41,29 +41,15 @@ export function LanguageSetupForm() {
   const proficiencyLevel = watch('proficiencyLevel');
 
   async function onSubmit(data: LanguagePreferencesInput) {
-    setIsLoading(true);
     try {
-      const response = await fetch('/api/user/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to save preferences');
-      }
-
+      await mutateAsync(data);
       setPreferences({ ...data, name: null });
       toast.success('Preferences saved!');
       router.push(`/${locale}/dashboard`);
-      router.refresh();
     } catch (error) {
       toast.error('Error', {
         description: error instanceof Error ? error.message : 'Failed to save preferences',
       });
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -134,9 +120,9 @@ export function LanguageSetupForm() {
       <Button 
         type="submit" 
         className="w-full h-14 rounded-2xl bg-linear-to-r from-sky-600 to-emerald-500 hover:from-sky-700 hover:to-emerald-600 text-white font-bold text-lg shadow-xl shadow-emerald-500/20 transition-all active:scale-[0.98]" 
-        disabled={isLoading}
+        disabled={isPending}
       >
-        {isLoading ? (
+        {isPending ? (
           <Loader2 className="mr-2 h-6 w-6 animate-spin" />
         ) : (
           <Sparkles className="mr-2 h-6 w-6" />

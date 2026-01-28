@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-keys';
 
 interface UserStats {
   totalWordsLearned: number;
@@ -26,9 +27,10 @@ async function fetchStats(): Promise<StatsResponse> {
 
 export function useStats() {
   return useQuery({
-    queryKey: ['stats'],
+    queryKey: queryKeys.stats,
     queryFn: fetchStats,
-    staleTime: 30 * 1000, // 30 seconds
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 }

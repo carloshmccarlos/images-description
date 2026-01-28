@@ -239,7 +239,8 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "deleted": "Analysis deleted",
-      "deleteFailed": "Failed to delete analysis"
+      "deleteFailed": "Failed to delete analysis",
+      "loadError": "Unable to load this analysis."
     },
     "delete": {
       "button": "Delete Exploration",

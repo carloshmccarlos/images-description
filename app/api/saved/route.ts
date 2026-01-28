@@ -24,6 +24,8 @@ export async function GET(request: Request) {
       analyses: result.data?.analyses ?? [],
       page: result.data?.currentPage ?? page,
       limit,
+      totalCount: result.data?.totalCount ?? 0,
+      totalPages: result.data?.totalPages ?? 1,
     });
   } catch (error) {
     console.error('Error fetching saved analyses:', error);

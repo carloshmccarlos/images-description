@@ -1,0 +1,26 @@
+import { NextResponse } from 'next/server';
+import { getUserStats } from '@/lib/actions/stats/get-user-stats';
+import { getDailyUsage } from '@/lib/actions/stats/get-daily-usage';
+import { getRecentAnalyses } from '@/lib/actions/analysis/get-recent-analyses';
+
+export async function GET() {
+  const [statsResult, usageResult, analysesResult] = await Promise.all([
+    getUserStats(),
+    getDailyUsage(),
+    getRecentAnalyses({ limit: 2 }),
+  ]);
+
+  const error = statsResult.error ?? usageResult.error ?? analysesResult.error;
+  if (!statsResult.success || !usageResult.success || !analysesResult.success) {
+    return NextResponse.json(
+      { error: error ?? 'Failed to fetch dashboard data' },
+      { status: error === 'Not authenticated' ? 401 : 400 }
+    );
+  }
+
+  return NextResponse.json({
+    stats: statsResult.data,
+    usage: usageResult.data,
+    analyses: analysesResult.data ?? [],
+  });
+}

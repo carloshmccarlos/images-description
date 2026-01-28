@@ -239,7 +239,8 @@
       "cancel": "キャンセル",
       "delete": "削除",
       "deleted": "分析を削除しました",
-      "deleteFailed": "分析の削除に失敗しました"
+      "deleteFailed": "分析の削除に失敗しました",
+      "loadError": "????????????????"
     },
     "delete": {
       "button": "探索を削除",

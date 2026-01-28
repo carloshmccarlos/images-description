@@ -1,7 +1,4 @@
 import type { Metadata } from 'next';
-import { getUserStats } from '@/lib/actions/stats/get-user-stats';
-import { getDailyUsage } from '@/lib/actions/stats/get-daily-usage';
-import { getRecentAnalyses } from '@/lib/actions/analysis/get-recent-analyses';
 import { DashboardClient } from '@/components/dashboard/dashboard-client';
 
 export const metadata: Metadata = {
@@ -13,18 +10,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function DashboardPage() {
-  const [statsResult, usageResult, analysesResult] = await Promise.all([
-    getUserStats(),
-    getDailyUsage(),
-    getRecentAnalyses({ limit: 2 }),
-  ]);
-
-  return (
-    <DashboardClient
-      initialStats={statsResult.data}
-      initialUsage={usageResult.data}
-      initialAnalyses={analysesResult.data || []}
-    />
-  );
+export default function DashboardPage() {
+  return <DashboardClient />;
 }

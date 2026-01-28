@@ -6,6 +6,8 @@ interface SavedAnalysesResponse {
   analyses: AnalysisListItem[];
   page: number;
   limit: number;
+  totalCount: number;
+  totalPages: number;
 }
 
 async function fetchSavedAnalyses(
@@ -39,7 +41,9 @@ export function useSavedAnalyses(page = 1, limit = 10, search?: string) {
   return useQuery({
     queryKey: queryKeys.savedAnalyses.list(page, limit, search),
     queryFn: () => fetchSavedAnalyses(page, limit, search),
-    staleTime: 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 }
 
@@ -47,8 +51,10 @@ export function useSavedAnalysis(id: string) {
   return useQuery({
     queryKey: queryKeys.savedAnalyses.detail(id),
     queryFn: () => fetchSavedAnalysis(id),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000,
     enabled: !!id,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 }
 
@@ -96,8 +102,8 @@ export function useDeleteSavedAnalysis() {
     onSettled: () => {
       // Invalidate to refetch fresh data
       queryClient.invalidateQueries({ queryKey: queryKeys.savedAnalyses.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.stats });
-      queryClient.invalidateQueries({ queryKey: ['recentAnalyses'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboardOverview });
+      queryClient.invalidateQueries({ queryKey: queryKeys.profileOverview });
     },
   });
 }

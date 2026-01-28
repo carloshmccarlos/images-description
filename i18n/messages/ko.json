@@ -239,7 +239,8 @@
       "cancel": "취소",
       "delete": "삭제",
       "deleted": "분석이 삭제되었습니다",
-      "deleteFailed": "분석 삭제에 실패했습니다"
+      "deleteFailed": "분석 삭제에 실패했습니다",
+      "loadError": "? ??? ??? ? ????."
     },
     "delete": {
       "button": "탐색 삭제",

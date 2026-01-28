@@ -1,8 +1,6 @@
 'use client';
 
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { languagePreferencesSchema, type LanguagePreferencesInput } from '@/lib/validations/user';
 import { valibotResolver } from '@/lib/validations/react-hook-form-valibot-resolver';
@@ -12,15 +10,15 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { useUserStore } from '@/stores/user-store';
+import { useUpdateUserSettings } from '@/hooks/use-user-settings';
 
 interface LanguageSettingsFormProps {
   defaultValues: LanguagePreferencesInput;
 }
 
 export function LanguageSettingsForm({ defaultValues }: LanguageSettingsFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   const setPreferences = useUserStore((state) => state.setPreferences);
+  const { mutateAsync, isPending } = useUpdateUserSettings();
 
   const {
     setValue,
@@ -37,28 +35,14 @@ export function LanguageSettingsForm({ defaultValues }: LanguageSettingsFormProp
   const proficiencyLevel = watch('proficiencyLevel');
 
   async function onSubmit(data: LanguagePreferencesInput) {
-    setIsLoading(true);
     try {
-      const response = await fetch('/api/user/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to save preferences');
-      }
-
+      await mutateAsync(data);
       setPreferences({ ...data, name: null });
       toast.success('Settings saved!');
-      router.refresh();
     } catch (error) {
       toast.error('Error', {
         description: error instanceof Error ? error.message : 'Failed to save settings',
       });
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -128,10 +112,10 @@ export function LanguageSettingsForm({ defaultValues }: LanguageSettingsFormProp
 
       <Button 
         type="submit" 
-        disabled={isLoading}
+        disabled={isPending}
         className="w-full sm:w-auto h-11 px-8 rounded-xl bg-linear-to-r from-sky-600 to-emerald-500 hover:from-sky-700 hover:to-emerald-600 text-white font-bold shadow-lg shadow-emerald-500/10 transition-all active:scale-[0.98]"
       >
-        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Save Changes
       </Button>
     </form>

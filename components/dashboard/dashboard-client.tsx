@@ -1,7 +1,6 @@
 'use client';
 
-import { useStats } from '@/hooks/use-stats';
-import { useRecentAnalyses } from '@/hooks/use-recent-analyses';
+import { useDashboardOverview } from '@/hooks/use-dashboard-overview';
 import { UsageStats } from './usage-stats';
 import { RecentAnalyses } from './recent-analyses';
 import { QuickActions } from './quick-actions';
@@ -11,35 +10,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSession } from '@/hooks/use-session';
 
-interface DashboardClientProps {
-  // Initial data for SSR
-  initialStats?: {
-    totalWordsLearned: number;
-    totalAnalyses: number;
-    currentStreak: number;
-    longestStreak: number;
-  } | null;
-  initialUsage?: {
-    usageCount: number;
-    dailyLimit?: number;
-  } | null;
-  initialAnalyses?: Array<{
-    id: string;
-    imageUrl: string;
-    description: string;
-    vocabularyCount: number;
-    createdAt: Date;
-  }>;
-}
-
-export function DashboardClient({
-  initialStats,
-  initialUsage,
-  initialAnalyses = [],
-}: DashboardClientProps) {
+export function DashboardClient() {
   const { data: sessionData, isLoading: isSessionLoading } = useSession();
-  const { data: statsData, isLoading: isStatsLoading } = useStats();
-  const { data: analysesData, isLoading: isAnalysesLoading } = useRecentAnalyses(2);
+  const { data: overview, isLoading: isOverviewLoading } = useDashboardOverview();
 
   const user = sessionData?.user ?? null;
   const fallbackLearning = SUPPORTED_LANGUAGES.find((l) => l.code === 'en') ?? SUPPORTED_LANGUAGES[0];
@@ -49,9 +22,9 @@ export function DashboardClient({
 
   const userName = user?.name || user?.email?.split('@')[0] || 'Learner';
 
-  const stats = statsData?.stats ?? initialStats;
-  const usage = statsData?.usage ?? initialUsage;
-  const analyses = analysesData?.analyses ?? initialAnalyses;
+  const stats = overview?.stats ?? null;
+  const usage = overview?.usage ?? null;
+  const analyses = overview?.analyses ?? [];
 
   const usageCount = usage?.usageCount ?? 0;
   const dailyLimit = usage?.dailyLimit ?? DAILY_FREE_LIMIT;
@@ -78,7 +51,7 @@ export function DashboardClient({
         />
       )}
 
-      {isStatsLoading && !initialStats ? (
+      {isOverviewLoading && !overview ? (
         <StatsLoadingSkeleton />
       ) : (
         <UsageStats
@@ -92,7 +65,7 @@ export function DashboardClient({
 
       <div className="grid lg:grid-cols-3 gap-6 items-stretch">
         <div className="lg:col-span-2 h-full">
-          {isAnalysesLoading && initialAnalyses.length === 0 ? (
+          {isOverviewLoading && analyses.length === 0 ? (
             <AnalysesLoadingSkeleton />
           ) : (
             <RecentAnalyses analyses={analyses} />

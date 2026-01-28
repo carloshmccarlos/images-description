@@ -5,6 +5,8 @@ LexiLens is an image-based language learning platform built with Next.js 16, Sup
 
 All database access is centralized in reusable server actions. API routes are thin adapters that call actions and translate domain errors into HTTP responses.
 
+Client data flow uses TanStack Query as the single source of truth. Page-level data is fetched via aggregated API routes (e.g., dashboard/profile overview) to minimize navigation requests and maximize cache reuse.
+
 ## Tech Stack
 - **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS v4
 - **Backend**: Next.js API Routes

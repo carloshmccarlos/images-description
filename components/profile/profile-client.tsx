@@ -6,41 +6,16 @@ import { AchievementsList } from '@/components/profile/achievements-list';
 import { LearningProgress } from '@/components/profile/learning-progress';
 import { SUPPORTED_LANGUAGES } from '@/lib/constants';
 import { useSession } from '@/hooks/use-session';
-import type { DailyUsageSummary } from '@/lib/types/stats';
+import { useProfileOverview } from '@/hooks/use-profile-overview';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface UserStatsData {
-  totalWordsLearned: number;
-  totalAnalyses: number;
-  currentStreak: number;
-  longestStreak: number;
-  lastActivityDate: string | null;
-}
-
-interface AchievementData {
-  id: string;
-  type: string;
-  unlockedAt: string | Date;
-}
-
-interface ProfileClientProps {
-  stats: UserStatsData | null | undefined;
-  achievements: AchievementData[];
-  recentActivity: DailyUsageSummary[];
-  savedAnalysesCount: number;
-}
-
-export function ProfileClient({
-  stats,
-  achievements,
-  recentActivity,
-  savedAnalysesCount,
-}: ProfileClientProps) {
+export function ProfileClient() {
   const { data: sessionData, isLoading } = useSession();
+  const { data: overview, isLoading: isOverviewLoading } = useProfileOverview();
   const user = sessionData?.user ?? null;
 
-  if (isLoading) {
+  if (isLoading || isOverviewLoading) {
     return (
       <div className="max-w-screen-2xl mx-auto space-y-10">
         <Card className="border border-zinc-200 dark:border-zinc-800">
@@ -56,6 +31,11 @@ export function ProfileClient({
   if (!user) {
     return null;
   }
+
+  const stats = overview?.stats ?? null;
+  const achievements = overview?.achievements ?? [];
+  const recentActivity = overview?.recentActivity ?? [];
+  const savedAnalysesCount = overview?.savedAnalysesCount ?? 0;
 
   const fallbackLearning = SUPPORTED_LANGUAGES.find((l) => l.code === 'en') ?? SUPPORTED_LANGUAGES[0];
   const fallbackNative = SUPPORTED_LANGUAGES.find((l) => l.code === 'zh-cn') ?? fallbackLearning;

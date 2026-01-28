@@ -29,18 +29,23 @@ export async function getUserAchievements(): Promise<GetUserAchievementsResult> 
     return { success: false, error: 'Not authenticated' };
   }
 
-  const userAchievements = await db
-    .select()
-    .from(achievements)
-    .where(eq(achievements.userId, user.id))
-    .orderBy(desc(achievements.unlockedAt));
+  try {
+    const userAchievements = await db
+      .select()
+      .from(achievements)
+      .where(eq(achievements.userId, user.id))
+      .orderBy(desc(achievements.unlockedAt));
 
-  return {
-    success: true,
-    data: userAchievements.map(a => ({
-      id: a.id,
-      type: a.type,
-      unlockedAt: a.unlockedAt,
-    })),
-  };
+    return {
+      success: true,
+      data: userAchievements.map((achievement) => ({
+        id: achievement.id,
+        type: achievement.type,
+        unlockedAt: achievement.unlockedAt,
+      })),
+    };
+  } catch (error) {
+    console.error('Failed to fetch achievements:', error);
+    return { success: false, error: 'Failed to fetch achievements' };
+  }
 }

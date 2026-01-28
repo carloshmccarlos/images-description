@@ -10,95 +10,59 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/use-language';
-import type { VocabularyItem } from '@/lib/types/analysis';
+import { useAnalyzeImage, useAnalyzeTaskStatus, usePendingAnalyzeTask } from '@/hooks/use-analyze-task';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-keys';
 
-interface AnalyzeClientProps {
-  hasRunningTask?: boolean;
-  runningTaskId?: string | null;
-}
 
 type AnalysisState = 'idle' | 'analyzing' | 'error';
 
-type TaskStatus = 'pending' | 'analyzing' | 'completed' | 'error';
+type AnalyzeError = Error & { status?: number; data?: { taskId?: string; status?: string; error?: string } };
 
-interface AnalyzeTaskResponse {
-  id: string;
-  status: TaskStatus;
-  vocabulary?: VocabularyItem[] | null;
-  savedAnalysisId?: string | null;
-  errorMessage?: string | null;
-}
-
-async function wait(ms: number) {
-  await new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function pollAnalyzeTask(taskId: string): Promise<AnalyzeTaskResponse> {
-  for (let attempt = 0; attempt < 45; attempt += 1) {
-    const res = await fetch(`/api/analyze/task/${encodeURIComponent(taskId)}`, { cache: 'no-store' });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: 'Failed to fetch task' }));
-      throw new Error(err.error || 'Failed to fetch task');
-    }
-
-    const data = (await res.json()) as AnalyzeTaskResponse;
-    if (data.status === 'completed' || data.status === 'error') return data;
-    await wait(1500);
-  }
-
-  throw new Error('Analysis is taking longer than expected. Please try again in a moment.');
-}
-
-export function AnalyzeClient({ hasRunningTask = false, runningTaskId = null }: AnalyzeClientProps) {
+export function AnalyzeClient() {
   const t = useTranslations('analyze');
   const router = useRouter();
   const { locale } = useLanguage();
+  const queryClient = useQueryClient();
 
-  const [state, setState] = useState<AnalysisState>(hasRunningTask ? 'analyzing' : 'idle');
+  const { data: pendingData } = usePendingAnalyzeTask();
+  const pendingTaskId = pendingData?.task?.id ?? null;
+  const { data: taskData, error: taskError } = useAnalyzeTaskStatus(pendingTaskId);
+  const analyzeMutation = useAnalyzeImage();
+
+  const [state, setState] = useState<AnalysisState>(pendingTaskId ? 'analyzing' : 'idle');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!hasRunningTask || !runningTaskId) return;
+    if (pendingTaskId) {
+      setState('analyzing');
+    }
+  }, [pendingTaskId]);
 
-    const taskId = runningTaskId;
+  useEffect(() => {
+    if (!taskData) return;
 
-    let isCancelled = false;
-
-    async function resume() {
-      try {
-        setState('analyzing');
-        const task = await pollAnalyzeTask(taskId);
-        if (isCancelled) return;
-
-        if (task.status === 'error') {
-          setError(task.errorMessage || t('errorTitle'));
-          setState('error');
-          return;
-        }
-
-        if (!task.savedAnalysisId) {
-          setError(t('errorTitle'));
-          setState('error');
-          return;
-        }
-
-        router.push(`/${locale}/saved/${task.savedAnalysisId}`);
-      } catch (err) {
-        if (isCancelled) return;
-        const message = err instanceof Error ? err.message : t('errorTitle');
-        setError(message);
-        setState('error');
-      }
+    if (taskData.status === 'error') {
+      setError(taskData.errorMessage || t('errorTitle'));
+      setState('error');
+      queryClient.setQueryData(queryKeys.pendingAnalyzeTask, { task: null });
+      return;
     }
 
-    resume();
+    if (taskData.status === 'completed' && taskData.savedAnalysisId) {
+      queryClient.setQueryData(queryKeys.pendingAnalyzeTask, { task: null });
+      router.push(`/${locale}/saved/${taskData.savedAnalysisId}`);
+    }
+  }, [locale, queryClient, router, t, taskData]);
 
-    return () => {
-      isCancelled = true;
-    };
-  }, [hasRunningTask, locale, router, runningTaskId, t]);
+  useEffect(() => {
+    if (!taskError) return;
+    const message = taskError instanceof Error ? taskError.message : t('errorTitle');
+    setError(message);
+    setState('error');
+  }, [t, taskError]);
 
   function handleImageSelect(file: File, preview: string) {
     setSelectedImage(preview);
@@ -114,44 +78,15 @@ export function AnalyzeClient({ hasRunningTask = false, runningTaskId = null }: 
   }
 
   async function handleAnalyze() {
-    if (!selectedFile) return;
+    if (!selectedFile || analyzeMutation.isPending) return;
 
     setState('analyzing');
     setError(null);
 
     try {
-      const formData = new FormData();
-      formData.append('image', selectedFile);
+      const data = await analyzeMutation.mutateAsync(selectedFile);
 
-      const response = await fetch('/api/analyze/image', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (response.status === 429) {
-          setError(t('dailyLimitReached'));
-          setState('error');
-          return;
-        }
-        if (response.status === 409 && typeof data?.taskId === 'string') {
-          const task = await pollAnalyzeTask(data.taskId);
-          if (task.status === 'error') {
-            throw new Error(task.errorMessage || t('errorTitle'));
-          }
-          if (!task.savedAnalysisId) {
-            throw new Error(t('errorTitle'));
-          }
-          router.push(`/${locale}/saved/${task.savedAnalysisId}`);
-          return;
-        }
-        throw new Error(data.error || t('errorTitle'));
-      }
-
-      // Analysis completed - generate audio
-      if (data.id) {
+      if (data?.id) {
         toast.success(t('successBanner'), {
           description: `${data.vocabulary?.length || 0} ${t('wordsAdded')}`,
         });
@@ -159,7 +94,25 @@ export function AnalyzeClient({ hasRunningTask = false, runningTaskId = null }: 
         router.push(`/${locale}/saved/${data.id}`);
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('errorTitle');
+      const errorObject = err as AnalyzeError;
+      if (errorObject.status === 429) {
+        setError(t('dailyLimitReached'));
+        setState('error');
+        return;
+      }
+
+      if (errorObject.status === 409 && errorObject.data?.taskId) {
+        queryClient.setQueryData(queryKeys.pendingAnalyzeTask, {
+          task: {
+            id: errorObject.data.taskId,
+            status: (errorObject.data.status as 'pending' | 'analyzing') ?? 'pending',
+          },
+        });
+        setState('analyzing');
+        return;
+      }
+
+      const message = errorObject?.message || t('errorTitle');
       setError(message);
       setState('error');
       toast.error(t('errorTitle'), { description: message });
@@ -220,8 +173,12 @@ export function AnalyzeClient({ hasRunningTask = false, runningTaskId = null }: 
                 animate={{ opacity: 1, y: 0 }}
                 className="flex justify-center"
               >
-                <Button size="lg" onClick={handleAnalyze} className="px-8">
-                  <Camera className="w-5 h-5 mr-2" />
+                <Button size="lg" onClick={handleAnalyze} className="px-8" disabled={analyzeMutation.isPending}>
+                  {analyzeMutation.isPending ? (
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  ) : (
+                    <Camera className="w-5 h-5 mr-2" />
+                  )}
                   {t('analyzeButton')}
                 </Button>
               </motion.div>

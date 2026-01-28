@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Globe, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -11,9 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { SUPPORTED_LANGUAGES, PROFICIENCY_LEVELS } from '@/lib/constants';
 import { useTranslations } from 'next-intl';
-import { useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/query-keys';
-import type { UserSettings } from '@/hooks/use-user-settings';
+import { useUpdateUserSettings } from '@/hooks/use-user-settings';
 
 interface LanguageSettingsCardProps {
   motherLanguage: string;
@@ -30,9 +27,7 @@ export function LanguageSettingsCard({
   const [motherLanguage, setMotherLanguage] = useState(initialMother);
   const [learningLanguage, setLearningLanguage] = useState(initialLearning);
   const [proficiencyLevel, setProficiencyLevel] = useState(initialLevel);
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-  const queryClient = useQueryClient();
+  const { mutateAsync, isPending } = useUpdateUserSettings();
 
   const hasChanges =
     motherLanguage !== initialMother ||
@@ -40,31 +35,11 @@ export function LanguageSettingsCard({
     proficiencyLevel !== initialLevel;
 
   async function handleSave() {
-    setIsLoading(true);
     try {
-      const response = await fetch('/api/user/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ motherLanguage, learningLanguage, proficiencyLevel }),
-      });
-
-      if (!response.ok) throw new Error('Failed to save');
-
+      await mutateAsync({ motherLanguage, learningLanguage, proficiencyLevel });
       toast.success(t('language.saved'));
-      queryClient.setQueryData<UserSettings>(queryKeys.userSettings, (current) => {
-        if (!current) return current;
-        return {
-          ...current,
-          motherLanguage,
-          learningLanguage,
-          proficiencyLevel,
-        };
-      });
-      router.refresh();
     } catch {
       toast.error(t('language.saveFailed'));
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -140,10 +115,10 @@ export function LanguageSettingsCard({
 
           <Button 
             onClick={handleSave} 
-            disabled={!hasChanges || isLoading}
+            disabled={!hasChanges || isPending}
             className="w-full sm:w-auto h-11 px-8 rounded-xl bg-linear-to-r from-sky-600 to-emerald-500 hover:from-sky-700 hover:to-emerald-600 text-white font-bold shadow-lg shadow-emerald-500/10 transition-all active:scale-[0.98]"
           >
-            {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             {t('language.saveChanges')}
           </Button>
         </CardContent>

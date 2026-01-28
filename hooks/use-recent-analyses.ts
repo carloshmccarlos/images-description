@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-keys';
 import type { AnalysisListItem } from '@/lib/types/analysis';
 
 interface RecentAnalysesResponse {
@@ -13,9 +14,10 @@ async function fetchRecentAnalyses(limit: number): Promise<RecentAnalysesRespons
 
 export function useRecentAnalyses(limit = 2) {
   return useQuery({
-    queryKey: ['recentAnalyses', limit],
+    queryKey: queryKeys.recentAnalyses(limit),
     queryFn: () => fetchRecentAnalyses(limit),
-    staleTime: 60 * 1000, // 1 minute
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 }

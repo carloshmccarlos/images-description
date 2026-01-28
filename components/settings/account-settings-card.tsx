@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { User, Loader2, Mail } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -10,9 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
-import { useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/query-keys';
-import type { UserSettings } from '@/hooks/use-user-settings';
+import { useUpdateUserSettings } from '@/hooks/use-user-settings';
 
 interface AccountSettingsCardProps {
   name: string;
@@ -22,33 +19,16 @@ interface AccountSettingsCardProps {
 export function AccountSettingsCard({ name: initialName, email }: AccountSettingsCardProps) {
   const t = useTranslations('settings');
   const [name, setName] = useState(initialName);
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-  const queryClient = useQueryClient();
+  const { mutateAsync, isPending } = useUpdateUserSettings();
 
   const hasChanges = name !== initialName;
 
   async function handleSave() {
-    setIsLoading(true);
     try {
-      const response = await fetch('/api/user/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
-      });
-
-      if (!response.ok) throw new Error('Failed to save');
-
+      await mutateAsync({ name });
       toast.success(t('account.profileUpdated'));
-      queryClient.setQueryData<UserSettings>(queryKeys.userSettings, (current) => {
-        if (!current) return current;
-        return { ...current, name };
-      });
-      router.refresh();
     } catch {
       toast.error(t('account.updateFailed'));
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -97,10 +77,10 @@ export function AccountSettingsCard({ name: initialName, email }: AccountSetting
 
           <Button 
             onClick={handleSave} 
-            disabled={!hasChanges || isLoading}
+            disabled={!hasChanges || isPending}
             className="w-full sm:w-auto h-11 px-8 rounded-xl bg-linear-to-r from-purple-600 to-indigo-500 hover:from-purple-700 hover:to-indigo-600 text-white font-bold shadow-lg shadow-purple-500/10 transition-all active:scale-[0.98]"
           >
-            {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             {t('account.updateProfile')}
           </Button>
         </CardContent>

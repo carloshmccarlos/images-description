@@ -168,6 +168,7 @@ Reset time: 00:00 UTC daily
 | Uptime | 99.5% |
 
 - Cache user session on the client to avoid refetching on every navigation.
+- Use TanStack Query as the single source of truth for client data and minimize per-navigation requests via cached, aggregated API responses.
 
 ---
 

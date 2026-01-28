@@ -77,6 +77,32 @@ AZURE_TTS_VOICE_KO
 - Landing CTA shows loading skeletons while session resolves
 - Playwright visual check added for landing header + CTA
 
+### 1.5 Query-First Data Fetching (IMPLEMENTED)
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Dashboard Overview API | Done | `app/api/dashboard/overview/route.ts` |
+| Profile Overview API | Done | `app/api/profile/overview/route.ts` |
+| Analyze Pending API | Done | `app/api/analyze/pending/route.ts` |
+| Client Hooks | Done | `hooks/use-dashboard-overview.ts`, `hooks/use-profile-overview.ts`, `hooks/use-analyze-task.ts` |
+| Saved List API | Done | `app/api/saved/route.ts` now returns totals |
+
+**Behavior:**
+- Dashboard/Profile/Saved/Analyze now fetch via TanStack Query hooks
+- Aggregated overview endpoints reduce navigation request count
+- Query defaults tuned to minimize refetch on mount/window focus
+
+### 1.6 Analytics Request Gating (IMPLEMENTED)
+
+| Component | Status | Notes |
+|---------|--------|-------|
+| Umami Script | Done | Loaded only when `NEXT_PUBLIC_ANALYTICS_ENABLED=true` |
+| Vercel Analytics | Done | Rendered only when enabled |
+| Speed Insights | Done | Rendered only when enabled |
+
+**Behavior:**
+- Production navigation no longer triggers analytics requests unless explicitly enabled
+
 ---
 
 ## 2. Completed Changes
@@ -128,6 +154,9 @@ SUPABASE_SERVICE_ROLE_KEY
 
 # Site
 NEXT_PUBLIC_SITE_URL
+
+# Analytics (optional)
+NEXT_PUBLIC_ANALYTICS_ENABLED
 
 # AI
 DOUBAO_API_KEY

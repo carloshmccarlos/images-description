@@ -28,6 +28,7 @@ const geistMono = Geist_Mono({
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lexilens.app';
+const isAnalyticsEnabled = process.env.NEXT_PUBLIC_ANALYTICS_ENABLED === 'true';
 
 function getBcp47Locale(locale: Locale): string {
   if (locale === 'zh-cn') return 'zh-CN';
@@ -193,11 +194,13 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <script
-          defer
-          src="https://umami-ten-khaki-92.vercel.app/script.js"
-          data-website-id="5785a8f2-3294-451f-aebd-3f7200b3d3f1"
-        />
+        {isAnalyticsEnabled ? (
+          <script
+            defer
+            src="https://umami-ten-khaki-92.vercel.app/script.js"
+            data-website-id="5785a8f2-3294-451f-aebd-3f7200b3d3f1"
+          />
+        ) : null}
         <JsonLd />
         <link rel="manifest" href="/manifest.json" />
       </head>
@@ -207,8 +210,12 @@ export default async function RootLayout({
             <QueryProvider>
               {children}
               <Toaster />
-              <Analytics />
-              <SpeedInsights />
+              {isAnalyticsEnabled ? (
+                <>
+                  <Analytics />
+                  <SpeedInsights />
+                </>
+              ) : null}
             </QueryProvider>
           </I18nProvider>
         </ThemeProvider>
