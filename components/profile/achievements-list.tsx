@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 interface AchievementData {
   id: string;
   type: string;
-  unlockedAt: Date;
+  unlockedAt: string | Date;
 }
 
 interface UserStatsData {
