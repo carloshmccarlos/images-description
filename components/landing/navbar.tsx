@@ -9,16 +9,18 @@ import { APP_CONFIG } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import { LanguageSelector } from './language-selector';
-import { useLanguage } from '@/hooks/use-language';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface NavbarProps {
-  user: { email: string } | null;
+  locale: string;
+  isLoggedIn: boolean;
+  isLoading: boolean;
+  dashboardHref: string;
 }
 
-export function Navbar({ user }: NavbarProps) {
+export function Navbar({ locale, isLoggedIn, isLoading, dashboardHref }: NavbarProps) {
   const t = useTranslations('landing');
   const tCommon = useTranslations('common');
-  const { locale } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -34,6 +36,7 @@ export function Navbar({ user }: NavbarProps) {
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
+      data-testid="landing-header"
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
         isScrolled
@@ -62,8 +65,13 @@ export function Navbar({ user }: NavbarProps) {
 
           <div className="hidden md:flex items-center gap-3">
             <LanguageSelector />
-            {user ? (
-              <Link href={`/${locale}/dashboard`}>
+            {isLoading ? (
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-9 w-24 rounded-full" />
+                <Skeleton className="h-9 w-28 rounded-full" />
+              </div>
+            ) : isLoggedIn ? (
+              <Link href={dashboardHref}>
                 <Button>{tCommon('nav.goToDashboard')}</Button>
               </Link>
             ) : (
@@ -115,8 +123,13 @@ export function Navbar({ user }: NavbarProps) {
                 <LanguageSelector />
               </div>
               <div className="flex flex-col gap-2 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                {user ? (
-                  <Link href={`/${locale}/dashboard`}>
+                {isLoading ? (
+                  <div className="space-y-2">
+                    <Skeleton className="h-10 w-full rounded-xl" />
+                    <Skeleton className="h-10 w-full rounded-xl" />
+                  </div>
+                ) : isLoggedIn ? (
+                  <Link href={dashboardHref}>
                     <Button className="w-full">{tCommon('nav.goToDashboard')}</Button>
                   </Link>
                 ) : (

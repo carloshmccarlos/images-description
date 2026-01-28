@@ -1,14 +1,12 @@
-import { redirect } from 'next/navigation';
-import { getLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
-import { createClient } from '@/lib/supabase/server';
 import { HeroSection } from '@/components/landing/hero-section';
 import { FeaturesSection } from '@/components/landing/features-section';
 import { DemoSection } from '@/components/landing/demo-section';
 import { StatsSection } from '@/components/landing/stats-section';
 import { CTASection } from '@/components/landing/cta-section';
 import { Footer } from '@/components/landing/footer';
-import { Navbar } from '@/components/landing/navbar';
+import { PublicHeader } from '@/components/layout/public-header';
+
 export const metadata: Metadata = {
   title: 'LexiLens - Learn Vocabulary Through Images | AI-Powered Language Learning',
   description: 'Transform how you learn languages. Upload any photo and let AI teach you vocabulary in your target language. Support for English, Chinese (Simplified/Traditional), Japanese, and Korean.',
@@ -19,24 +17,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function HomePage() {
-  const locale = await getLocale();
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  // Redirect logged-in users to dashboard
-  if (user) {
-    redirect(`/${locale}/dashboard`);
-  }
-
+export default function HomePage() {
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950">
-      <Navbar user={null} />
-      <HeroSection isLoggedIn={false} />
+      <PublicHeader />
+      <HeroSection />
       <StatsSection />
       <FeaturesSection />
       <DemoSection />
-      <CTASection isLoggedIn={false} />
+      <CTASection />
       <Footer />
     </div>
   );

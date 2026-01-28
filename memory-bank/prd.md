@@ -167,6 +167,8 @@ Reset time: 00:00 UTC daily
 | API Response | < 500ms |
 | Uptime | 99.5% |
 
+- Cache user session on the client to avoid refetching on every navigation.
+
 ---
 
 ## 7. Future Enhancements (v2.0+)

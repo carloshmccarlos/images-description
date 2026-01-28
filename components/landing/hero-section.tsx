@@ -6,16 +6,19 @@ import { ArrowRight, Play, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 import { useLanguage } from '@/hooks/use-language';
+import { useSession } from '@/hooks/use-session';
+import { Skeleton } from '@/components/ui/skeleton';
 
-interface HeroSectionProps {
-  isLoggedIn: boolean;
-}
-
-export function HeroSection({ isLoggedIn }: HeroSectionProps) {
+export function HeroSection() {
   const t = useTranslations('landing');
   const tCommon = useTranslations('common');
   const { locale } = useLanguage();
-  const prefixed = `/${locale}`;
+  const { data: sessionData, isLoading } = useSession();
+  const needsSetup = Boolean(sessionData?.needsSetup);
+  const isLoggedIn = Boolean(sessionData?.user) || needsSetup;
+  const primaryHref = isLoggedIn
+    ? (needsSetup ? `/${locale}/auth/setup` : `/${locale}/dashboard`)
+    : `/${locale}/auth/register`;
 
   return (
     <section className="relative overflow-hidden pt-28 pb-16 md:pt-32 md:pb-24">
@@ -77,25 +80,34 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
               transition={{ delay: 0.26 }}
               className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center"
             >
-              <Link href={isLoggedIn ? `${prefixed}/dashboard` : `${prefixed}/auth/register`}>
-                <Button
-                  size="lg"
-                  className="h-14 px-7 text-base shadow-lg shadow-emerald-500/10 bg-linear-to-r from-sky-600 via-teal-500 to-emerald-500 hover:from-sky-700 hover:via-teal-600 hover:to-emerald-600"
-                >
-                  {isLoggedIn ? tCommon('nav.goToDashboard') : t('hero.cta')}
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <a href="#demo" className="sm:inline-flex">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-14 px-7 text-base border-zinc-300 bg-white/60 hover:bg-white/90 dark:bg-zinc-950/40 dark:border-zinc-700 dark:hover:bg-zinc-950"
-                >
-                  <Play className="mr-2 h-5 w-5" />
-                  {t('hero.ctaHow')}
-                </Button>
-              </a>
+              {isLoading ? (
+                <>
+                  <Skeleton className="h-14 w-52 rounded-xl" />
+                  <Skeleton className="h-14 w-44 rounded-xl" />
+                </>
+              ) : (
+                <>
+                  <Link href={primaryHref}>
+                    <Button
+                      size="lg"
+                      className="h-14 px-7 text-base shadow-lg shadow-emerald-500/10 bg-linear-to-r from-sky-600 via-teal-500 to-emerald-500 hover:from-sky-700 hover:via-teal-600 hover:to-emerald-600"
+                    >
+                      {isLoggedIn ? tCommon('nav.goToDashboard') : t('hero.cta')}
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </Link>
+                  <a href="#demo" className="sm:inline-flex">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="h-14 px-7 text-base border-zinc-300 bg-white/60 hover:bg-white/90 dark:bg-zinc-950/40 dark:border-zinc-700 dark:hover:bg-zinc-950"
+                    >
+                      <Play className="mr-2 h-5 w-5" />
+                      {t('hero.ctaHow')}
+                    </Button>
+                  </a>
+                </>
+              )}
             </motion.div>
 
             <motion.div

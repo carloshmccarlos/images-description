@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -22,18 +22,22 @@ import { APP_CONFIG } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import { LogoutDialog } from '@/components/auth/logout-dialog';
+import { useLanguage } from '@/hooks/use-language';
+import { useSession } from '@/hooks/use-session';
 
 interface DashboardShellProps {
   children: React.ReactNode;
-  user: { email: string; name?: string | null };
-  isAdmin: boolean;
-  locale: string;
 }
 
-export function DashboardShell({ children, user, isAdmin, locale }: DashboardShellProps) {
+export function DashboardShell({ children }: DashboardShellProps) {
   const t = useTranslations('common');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { locale } = useLanguage();
+  const { data: sessionData, isLoading: isSessionLoading } = useSession();
+  const user = sessionData?.user ?? null;
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
 
   const LOCALES = ['en', 'zh-cn', 'zh-tw', 'ja', 'ko'] as const;
   function stripLocale(path: string) {
@@ -48,6 +52,17 @@ export function DashboardShell({ children, user, isAdmin, locale }: DashboardShe
 
   const basePathname = stripLocale(pathname);
   const prefixed = `/${locale}`;
+
+  useEffect(() => {
+    if (isSessionLoading) return;
+    if (sessionData?.needsSetup) {
+      router.push(`/${locale}/auth/setup`);
+      return;
+    }
+    if (!user) {
+      router.push(`/${locale}/auth/login`);
+    }
+  }, [isSessionLoading, sessionData?.needsSetup, user, locale, router]);
 
   const navItems = [
     { href: `${prefixed}/dashboard`, baseHref: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },

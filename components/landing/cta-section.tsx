@@ -1,19 +1,26 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
+import { useLanguage } from '@/hooks/use-language';
+import { useSession } from '@/hooks/use-session';
+import { Skeleton } from '@/components/ui/skeleton';
 
-interface CTASectionProps {
-  isLoggedIn: boolean;
-}
-
-export async function CTASection({ isLoggedIn }: CTASectionProps) {
-  const t = await getTranslations('landing');
-  const tCommon = await getTranslations('common');
-  const locale = await getLocale();
+export function CTASection() {
+  const t = useTranslations('landing');
+  const tCommon = useTranslations('common');
+  const { locale } = useLanguage();
+  const { data: sessionData, isLoading } = useSession();
+  const needsSetup = Boolean(sessionData?.needsSetup);
+  const isLoggedIn = Boolean(sessionData?.user) || needsSetup;
+  const primaryHref = isLoggedIn
+    ? (needsSetup ? `/${locale}/auth/setup` : `/${locale}/analyze`)
+    : `/${locale}/auth/register`;
 
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="py-24 relative overflow-hidden" data-testid="landing-cta">
       <div className="absolute inset-0 bg-zinc-950" />
       <div className="absolute inset-0 bg-[radial-gradient(1200px_circle_at_20%_30%,rgba(14,165,233,0.35),transparent_55%),radial-gradient(1100px_circle_at_80%_35%,rgba(16,185,129,0.30),transparent_58%),radial-gradient(1000px_circle_at_55%_90%,rgba(245,158,11,0.22),transparent_55%)]" />
       <div className="absolute inset-0 opacity-20 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.16)_1px,transparent_1px)] bg-size-[100%_34px]" />
@@ -41,22 +48,31 @@ export async function CTASection({ isLoggedIn }: CTASectionProps) {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href={isLoggedIn ? `/${locale}/analyze` : `/${locale}/auth/register`}>
-              <Button size="lg" className="text-lg px-8 h-14 bg-white text-zinc-900 hover:bg-white/90 shadow-xl">
-                {isLoggedIn ? t('cta.ctaLoggedIn') : t('cta.ctaLoggedOut')}
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
-            {!isLoggedIn && (
-              <Link href={`/${locale}/auth/login`}>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="text-lg px-8 h-14 bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
-                >
-                  {tCommon('nav.signIn')}
-                </Button>
-              </Link>
+            {isLoading ? (
+              <>
+                <Skeleton className="h-14 w-52 rounded-xl bg-white/20" />
+                <Skeleton className="h-14 w-40 rounded-xl bg-white/10" />
+              </>
+            ) : (
+              <>
+                <Link href={primaryHref}>
+                  <Button size="lg" className="text-lg px-8 h-14 bg-white text-zinc-900 hover:bg-white/90 shadow-xl">
+                    {isLoggedIn ? t('cta.ctaLoggedIn') : t('cta.ctaLoggedOut')}
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </Link>
+                {!isLoggedIn && (
+                  <Link href={`/${locale}/auth/login`}>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="text-lg px-8 h-14 bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
+                    >
+                      {tCommon('nav.signIn')}
+                    </Button>
+                  </Link>
+                )}
+              </>
             )}
           </div>
 

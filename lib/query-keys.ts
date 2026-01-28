@@ -1,5 +1,8 @@
 // Centralized query key factories for TanStack Query
 export const queryKeys = {
+  // Session
+  session: ['session'] as const,
+
   // Stats
   stats: ['stats'] as const,
 

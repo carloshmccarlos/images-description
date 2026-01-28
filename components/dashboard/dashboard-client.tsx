@@ -6,16 +6,12 @@ import { UsageStats } from './usage-stats';
 import { RecentAnalyses } from './recent-analyses';
 import { QuickActions } from './quick-actions';
 import { WelcomeCard } from './welcome-card';
-import { DAILY_FREE_LIMIT } from '@/lib/constants';
+import { DAILY_FREE_LIMIT, SUPPORTED_LANGUAGES } from '@/lib/constants';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
+import { useSession } from '@/hooks/use-session';
 
 interface DashboardClientProps {
-  userName: string;
-  learningLanguage: string;
-  learningFlag: string;
-  nativeLanguage: string;
-  nativeFlag: string;
   // Initial data for SSR
   initialStats?: {
     totalWordsLearned: number;
@@ -37,17 +33,21 @@ interface DashboardClientProps {
 }
 
 export function DashboardClient({
-  userName,
-  learningLanguage,
-  learningFlag,
-  nativeLanguage,
-  nativeFlag,
   initialStats,
   initialUsage,
   initialAnalyses = [],
 }: DashboardClientProps) {
+  const { data: sessionData, isLoading: isSessionLoading } = useSession();
   const { data: statsData, isLoading: isStatsLoading } = useStats();
   const { data: analysesData, isLoading: isAnalysesLoading } = useRecentAnalyses(2);
+
+  const user = sessionData?.user ?? null;
+  const fallbackLearning = SUPPORTED_LANGUAGES.find((l) => l.code === 'en') ?? SUPPORTED_LANGUAGES[0];
+  const fallbackNative = SUPPORTED_LANGUAGES.find((l) => l.code === 'zh-cn') ?? fallbackLearning;
+  const learningLang = SUPPORTED_LANGUAGES.find((l) => l.code === (user?.learningLanguage ?? 'en')) ?? fallbackLearning;
+  const nativeLang = SUPPORTED_LANGUAGES.find((l) => l.code === (user?.motherLanguage ?? 'zh-cn')) ?? fallbackNative;
+
+  const userName = user?.name || user?.email?.split('@')[0] || 'Learner';
 
   const stats = statsData?.stats ?? initialStats;
   const usage = statsData?.usage ?? initialUsage;
@@ -59,14 +59,24 @@ export function DashboardClient({
 
   return (
     <div className="space-y-10 max-w-screen-2xl mx-auto">
-      <WelcomeCard 
-        userName={userName}
-        learningLanguage={learningLanguage}
-        learningFlag={learningFlag}
-        nativeLanguage={nativeLanguage}
-        nativeFlag={nativeFlag}
-        remainingAnalyses={remainingAnalyses}
-      />
+      {isSessionLoading && !user ? (
+        <Card className="border border-zinc-200 dark:border-zinc-800">
+          <CardContent className="p-6 space-y-4">
+            <Skeleton className="h-7 w-48" />
+            <Skeleton className="h-4 w-72" />
+            <Skeleton className="h-12 w-40 rounded-xl" />
+          </CardContent>
+        </Card>
+      ) : (
+        <WelcomeCard 
+          userName={userName}
+          learningLanguage={learningLang?.name ?? ''}
+          learningFlag={learningLang?.flag ?? ''}
+          nativeLanguage={nativeLang?.name ?? ''}
+          nativeFlag={nativeLang?.flag ?? ''}
+          remainingAnalyses={remainingAnalyses}
+        />
+      )}
 
       {isStatsLoading && !initialStats ? (
         <StatsLoadingSkeleton />

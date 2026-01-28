@@ -10,14 +10,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface SettingsClientProps {
-  initialSettings: UserSettings;
+  initialSettings?: UserSettings;
 }
 
 export function SettingsClient({ initialSettings }: SettingsClientProps) {
   const { data, isLoading } = useUserSettings(initialSettings);
   const settings = data ?? initialSettings;
 
-  if (isLoading && !data) {
+  if ((isLoading && !settings) || !settings) {
     return (
       <div className="max-w-screen-2xl mx-auto space-y-10">
         <SettingsHeader />

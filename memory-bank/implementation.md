@@ -59,6 +59,24 @@ AZURE_TTS_VOICE_KO
 2. Plays audio via `new Audio(url).play()`
 3. Falls back to Web Speech API if external service fails
 
+### 1.4 Session Caching (IMPLEMENTED)
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Session API | Done | `app/api/user/session/route.ts` |
+| Client Hook | Done | `hooks/use-session.ts` |
+| Cache Provider | Done | `components/providers/session-provider.tsx` |
+| UI Usage | Done | Dashboard/Profile use cached session |
+
+**Behavior:**
+- Session is cached in TanStack Query with infinite stale time
+- Cache invalidates on Supabase auth state changes
+- Navigation reuses cached session (no per-page session fetch)
+- Landing Navbar/Hero/CTA read cached session to render auth CTAs without server auth calls
+- Public header component wraps the landing Navbar with cached session logic
+- Landing CTA shows loading skeletons while session resolves
+- Playwright visual check added for landing header + CTA
+
 ---
 
 ## 2. Completed Changes
